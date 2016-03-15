@@ -1,0 +1,60 @@
+/*
+ * Copyright 2016 Michael Rozumyanskiy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.michaelrocks.grip
+
+import io.michaelrocks.grip.commons.LazyMap
+import io.michaelrocks.grip.mirrors.ClassMirror
+import org.objectweb.asm.Type
+
+interface ClassesResult : Map<Type, ClassMirror> {
+  val types: Set<Type>
+    get() = keys
+  val classes: Collection<ClassMirror>
+    get() = values
+
+  fun containsType(type: Type) =
+    containsKey(type)
+  fun containsClass(classMirror: ClassMirror) =
+    containsValue(classMirror)
+
+  class Builder {
+    private val classes = LazyMap<Type, ClassMirror>()
+
+    fun addClass(mirror: ClassMirror) = apply {
+      val oldMirror = classes.put(mirror.type, mirror)
+      require(oldMirror == null)
+    }
+
+    fun build(): ClassesResult = ImmutableClassesResult(
+        this)
+
+    private class ImmutableClassesResult(
+        builder: Builder
+    ) : ClassesResult, Map<Type, ClassMirror> by builder.classes.detachImmutableCopy()
+  }
+}
+
+internal inline fun buildClassesResult(body: ClassesResult.Builder.() -> Unit) =
+    ClassesResult.Builder().run {
+      body()
+      build()
+    }
+
+val Map.Entry<Type, ClassMirror>.type: Type
+  get() = key
+val Map.Entry<Type, ClassMirror>.classMirror: ClassMirror
+  get() = value
