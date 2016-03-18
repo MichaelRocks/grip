@@ -33,8 +33,8 @@ internal abstract class AbstractQueryBuilder<M, R>(
   override fun from(file: File): QueryConfigurator<M, R> =
       from(Collections.singletonList(file))
 
-  override fun from(files: List<File>): QueryConfigurator<M, R> = apply {
-    classMirrorSource = FilesClassMirrorSource(classRegistry, ArrayList(files))
+  override fun from(files: Iterable<File>): QueryConfigurator<M, R> = apply {
+    classMirrorSource = FilesClassMirrorSource(classRegistry, files.toList())
   }
 
   override fun from(query: Query<ClassesResult>): QueryConfigurator<M, R> = apply {

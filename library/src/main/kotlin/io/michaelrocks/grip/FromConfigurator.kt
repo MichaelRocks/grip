@@ -22,7 +22,7 @@ import java.util.*
 
 interface FromConfigurator<M, R> {
   infix fun from(file: File): QueryConfigurator<M, R>
-  infix fun from(files: List<File>): QueryConfigurator<M, R>
+  infix fun from(files: Iterable<File>): QueryConfigurator<M, R>
   infix fun from(query: Query<ClassesResult>): QueryConfigurator<M, R>
   infix fun from(classMirror: ClassMirror): QueryConfigurator<M, R>
 }
