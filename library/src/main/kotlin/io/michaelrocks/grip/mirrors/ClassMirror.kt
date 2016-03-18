@@ -30,7 +30,7 @@ interface ClassMirror : Element, Annotated {
   val version: Int
   val superName: String?
   val superType: Type?
-  val signature: ClassSignatureMirror?
+  val signature: ClassSignatureMirror
   val interfaces: List<Type>
 
   val fields: Collection<FieldMirror>
