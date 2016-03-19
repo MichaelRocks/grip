@@ -16,7 +16,9 @@
 
 package io.michaelrocks.grip
 
-interface Grip {
+import java.io.Closeable
+
+interface Grip : Closeable {
   val fileRegistry: FileRegistry
   val classRegistry: ClassRegistry
 
@@ -25,8 +27,22 @@ interface Grip {
 
 internal class GripImpl(
     override val fileRegistry: FileRegistry,
-    override val classRegistry: ClassRegistry
+    override val classRegistry: ClassRegistry,
+    private val closeable: Closeable
 ) : Grip {
-  override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> =
-      projection.configurator(this)
+
+  private var closed = false
+
+  override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
+    check(!closed) { "Grip was closed" }
+    return projection.configurator(this)
+  }
+
+  override fun close() {
+    try {
+      closeable.close()
+    } finally {
+      closed = true
+    }
+  }
 }
