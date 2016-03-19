@@ -59,24 +59,38 @@ internal class FileRegistryImpl(
     check(!sources.isEmpty()) { "Classpath is empty" }
   }
 
-  override fun contains(file: File): Boolean = file.canonicalFile in sources
+  override fun contains(file: File): Boolean {
+    checkNotClosed()
+    return file.canonicalFile in sources
+  }
 
-  override fun classpath(): Collection<File> = sources.keys.immutable()
+  override fun classpath(): Collection<File> {
+    checkNotClosed()
+    return sources.keys.immutable()
+  }
 
   override fun readClass(type: Type): ByteArray {
+    checkNotClosed()
     val file = filesByTypes.getOrElse(type) { throw IllegalArgumentException("Unable to find a file for ${type.internalName}") }
     val fileSource = sources.getOrElse(file) { throw IllegalArgumentException("Unable to find a source for ${type.internalName}") }
     return fileSource.readFile("${type.internalName}.class")
   }
 
-  override fun findTypesForFile(file: File): Collection<Type> =
-      typesByFiles.getOrElse(file.canonicalFile) { error("File $file is not added to the registry") }.let {
-        Collections.unmodifiableCollection(it)
-      }
+  override fun findTypesForFile(file: File): Collection<Type> {
+    checkNotClosed()
+    return typesByFiles.getOrElse(file.canonicalFile) { error("File $file is not added to the registry") }.let {
+      Collections.unmodifiableCollection(it)
+    }
+  }
 
   override fun close() {
     sources.values.forEach { it.closeQuietly() }
     sources.clear()
     filesByTypes.clear()
+    typesByFiles.clear()
+  }
+
+  private fun checkNotClosed() {
+    check(!sources.isEmpty()) { "FileRegistry was closed" }
   }
 }
