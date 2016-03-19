@@ -11,6 +11,8 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
   override fun add(file: File) = Unit
   override fun isAdded(file: File): Boolean = true
 
+  override fun files(): Collection<File> = listOf(File("/"))
+
   override fun readClass(type: Type): ByteArray {
     val classLoader = classesByType[type]!!.java.classLoader
     return classLoader.getResourceAsStream(type.internalName + ".class").readBytes()

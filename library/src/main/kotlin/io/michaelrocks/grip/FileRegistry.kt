@@ -17,6 +17,7 @@
 package io.michaelrocks.grip
 
 import io.michaelrocks.grip.commons.closeQuietly
+import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.io.FileSource
 import org.objectweb.asm.Type
 import java.io.Closeable
@@ -27,13 +28,14 @@ internal interface FileRegistry : Closeable {
   fun add(files: Iterable<File>)
   fun add(file: File)
   fun isAdded(file: File): Boolean
+  fun files(): Collection<File>
 
   fun readClass(type: Type): ByteArray
   fun findTypesForFile(file: File): Collection<Type>
 }
 
 internal class FileRegistryImpl(private val fileSourceFactory: FileSource.Factory) : FileRegistry {
-  private val sources = HashMap<File, FileSource>()
+  private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type, File>()
   private val typesByFiles = HashMap<File, MutableCollection<Type>>()
 
@@ -58,6 +60,8 @@ internal class FileRegistryImpl(private val fileSourceFactory: FileSource.Factor
   }
 
   override fun isAdded(file: File): Boolean = file.canonicalFile in sources
+
+  override fun files(): Collection<File> = sources.keys.immutable()
 
   override fun readClass(type: Type): ByteArray {
     val file = filesByTypes.getOrElse(type) { throw IllegalArgumentException("Unable to find a file for ${type.internalName}") }
