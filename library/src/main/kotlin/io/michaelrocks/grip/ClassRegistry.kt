@@ -10,6 +10,7 @@ import java.io.File
 import java.util.*
 
 interface ClassRegistry {
+  fun classpath(): Collection<File>
   fun findTypesForFile(file: File): Collection<Type>
   fun getClassMirror(type: Type): ClassMirror
   fun getAnnotationMirror(type: Type): AnnotationMirror
@@ -21,6 +22,9 @@ internal class ClassRegistryImpl(
 ) : ClassRegistry {
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
+
+  override fun classpath(): Collection<File> =
+      fileRegistry.files()
 
   override fun findTypesForFile(file: File): Collection<Type> =
       fileRegistry.findTypesForFile(file)
