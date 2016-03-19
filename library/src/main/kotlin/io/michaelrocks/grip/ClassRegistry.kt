@@ -6,12 +6,9 @@ import io.michaelrocks.grip.mirrors.Reflector
 import io.michaelrocks.grip.mirrors.buildAnnotation
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
-import java.io.File
 import java.util.*
 
 interface ClassRegistry {
-  fun classpath(): Collection<File>
-  fun findTypesForFile(file: File): Collection<Type>
   fun getClassMirror(type: Type): ClassMirror
   fun getAnnotationMirror(type: Type): AnnotationMirror
 }
@@ -22,12 +19,6 @@ internal class ClassRegistryImpl(
 ) : ClassRegistry {
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
-
-  override fun classpath(): Collection<File> =
-      fileRegistry.classpath()
-
-  override fun findTypesForFile(file: File): Collection<Type> =
-      fileRegistry.findTypesForFile(file)
 
   override fun getClassMirror(type: Type): ClassMirror =
       classesByType.getOrPut(type) { readClassMirror(type, false) }
