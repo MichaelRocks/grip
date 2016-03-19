@@ -24,13 +24,13 @@ interface ClassMirrorSource {
 }
 
 internal class FilesClassMirrorSource(
-    private val classRegistry: ClassRegistry,
+    private val grip: Grip,
     private val files: Collection<File>
 ) : ClassMirrorSource {
   override fun getClassMirrors(): Sequence<ClassMirror> {
     return files.asSequence().flatMap { file ->
-      classRegistry.findTypesForFile(file).asSequence().map { type ->
-        classRegistry.getClassMirror(type)
+      grip.fileRegistry.findTypesForFile(file).asSequence().map { type ->
+        grip.classRegistry.getClassMirror(type)
       }
     }
   }

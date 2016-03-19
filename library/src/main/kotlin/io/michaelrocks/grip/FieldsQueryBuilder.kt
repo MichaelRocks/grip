@@ -21,8 +21,8 @@ import io.michaelrocks.grip.mirrors.FieldMirror
 import java.util.*
 
 internal class FieldsQueryBuilder(
-    private val classRegistry: ClassRegistry
-) : AbstractQueryBuilder<FieldMirror, FieldsResult>(classRegistry) {
+    private val grip: Grip
+) : AbstractQueryBuilder<FieldMirror, FieldsResult>(grip) {
 
   override fun execute(source: ClassMirrorSource, matcher: (FieldMirror) -> Boolean): FieldsResult =
       buildFieldsResult {
