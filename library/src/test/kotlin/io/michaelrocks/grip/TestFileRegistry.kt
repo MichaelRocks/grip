@@ -16,5 +16,4 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
   }
 
   override fun findTypesForFile(file: File): Collection<Type> = classesByType.keys
-  override fun close() = Unit
 }

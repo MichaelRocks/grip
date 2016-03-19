@@ -24,7 +24,7 @@ import java.io.Closeable
 import java.io.File
 import java.util.*
 
-interface FileRegistry : Closeable {
+interface FileRegistry {
   operator fun contains(file: File): Boolean
   fun classpath(): Collection<File>
 
@@ -35,7 +35,7 @@ interface FileRegistry : Closeable {
 internal class FileRegistryImpl(
     classpath: Iterable<File>,
     private val fileSourceFactory: FileSource.Factory
-) : FileRegistry {
+) : FileRegistry, Closeable {
   private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type, File>()
   private val typesByFiles = HashMap<File, MutableCollection<Type>>()
