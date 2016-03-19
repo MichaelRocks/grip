@@ -60,8 +60,8 @@ internal class FileRegistryImpl(private val fileSourceFactory: FileSource.Factor
   override fun isAdded(file: File): Boolean = file.canonicalFile in sources
 
   override fun readClass(type: Type): ByteArray {
-    val file = filesByTypes[type]!!
-    val fileSource = sources[file]!!
+    val file = filesByTypes.getOrElse(type) { throw IllegalArgumentException("Unable to find a file for ${type.internalName}") }
+    val fileSource = sources.getOrElse(file) { throw IllegalArgumentException("Unable to find a source for ${type.internalName}") }
     return fileSource.readFile("${type.internalName}.class")
   }
 

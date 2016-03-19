@@ -40,7 +40,10 @@ internal class ClassRegistryImpl(
       }
 
   private fun readClassMirror(type: Type, forAnnotation: Boolean): ClassMirror {
-    val data = fileRegistry.readClass(type)
-    return reflector.reflect(data, this, forAnnotation)
+    return try {
+      reflector.reflect(fileRegistry.readClass(type), this, forAnnotation)
+    } catch (exception: Exception) {
+      throw IllegalArgumentException("Unable to read a ClassMirror for ${type.internalName}", exception)
+    }
   }
 }
