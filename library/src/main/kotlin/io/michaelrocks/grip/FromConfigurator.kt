@@ -25,7 +25,10 @@ interface FromConfigurator<M, R> {
   infix fun from(files: Iterable<File>): QueryConfigurator<M, R>
   infix fun from(query: Query<ClassesResult>): QueryConfigurator<M, R>
   infix fun from(classMirror: ClassMirror): QueryConfigurator<M, R>
+  infix fun from(classpath: Classpath): QueryConfigurator<M, R>
 }
+
+val classpath = Classpath()
 
 fun files(file1: File, file2: File, vararg files: File): List<File> =
     ArrayList<File>(files.size + 2).apply {
@@ -41,3 +44,5 @@ interface QueryConfigurator<M, R> {
 interface Query<R> {
   fun execute(): R
 }
+
+class Classpath internal constructor()

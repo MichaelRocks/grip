@@ -45,6 +45,9 @@ internal abstract class AbstractQueryBuilder<M, R>(
     classMirrorSource = SingletonClassMirrorSource(classMirror)
   }
 
+  override fun from(classpath: Classpath): QueryConfigurator<M, R> =
+      from(classRegistry.classpath())
+
   override fun where(matcher: (M) -> Boolean): Query<R> = apply {
     this.matcher = matcher
   }
