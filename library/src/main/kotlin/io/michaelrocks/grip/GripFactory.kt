@@ -30,8 +30,7 @@ object GripFactory {
   }
 
   fun create(files: Iterable<File>): Grip {
-    val fileRegistry = FileRegistryImpl(IoFactory)
-    fileRegistry.add(files)
+    val fileRegistry = FileRegistryImpl(files, IoFactory)
     val reflector = ReflectorImpl()
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
     return GripImpl(classRegistry)

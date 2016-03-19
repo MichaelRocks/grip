@@ -24,7 +24,7 @@ internal class ClassRegistryImpl(
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
 
   override fun classpath(): Collection<File> =
-      fileRegistry.files()
+      fileRegistry.classpath()
 
   override fun findTypesForFile(file: File): Collection<Type> =
       fileRegistry.findTypesForFile(file)

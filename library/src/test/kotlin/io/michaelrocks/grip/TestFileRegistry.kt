@@ -7,11 +7,8 @@ import kotlin.reflect.KClass
 class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
   private val classesByType = classes.associateBy { Type.getType(it.java) }
 
-  override fun add(files: Iterable<File>) = Unit
-  override fun add(file: File) = Unit
-  override fun isAdded(file: File): Boolean = true
-
-  override fun files(): Collection<File> = listOf(File("/"))
+  override fun contains(file: File): Boolean = true
+  override fun classpath(): Collection<File> = listOf(File("/"))
 
   override fun readClass(type: Type): ByteArray {
     val classLoader = classesByType[type]!!.java.classLoader

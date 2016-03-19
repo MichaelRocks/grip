@@ -24,44 +24,42 @@ import java.io.Closeable
 import java.io.File
 import java.util.*
 
-internal interface FileRegistry : Closeable {
-  fun add(files: Iterable<File>)
-  fun add(file: File)
-  fun isAdded(file: File): Boolean
-  fun files(): Collection<File>
+interface FileRegistry : Closeable {
+  operator fun contains(file: File): Boolean
+  fun classpath(): Collection<File>
 
   fun readClass(type: Type): ByteArray
   fun findTypesForFile(file: File): Collection<Type>
 }
 
-internal class FileRegistryImpl(private val fileSourceFactory: FileSource.Factory) : FileRegistry {
+internal class FileRegistryImpl(
+    classpath: Iterable<File>,
+    private val fileSourceFactory: FileSource.Factory
+) : FileRegistry {
   private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type, File>()
   private val typesByFiles = HashMap<File, MutableCollection<Type>>()
 
-  override fun add(files: Iterable<File>) {
-    require(files.all { it !in sources }) { "Some files already added to registry" }
-    files.forEach { add(it) }
-  }
-
-  override fun add(file: File) {
-    file.canonicalFile.let { file ->
-      require(file !in sources) { "File $file already added to registry" }
-      val fileSource = fileSourceFactory.createFileSource(file)
-      sources.put(file, fileSource)
-      fileSource.listFiles { path, fileType ->
-        if (fileType == FileSource.EntryType.CLASS) {
-          val type = Type.getObjectType(path.substringBeforeLast(".class"))
-          filesByTypes.put(type, file)
-          typesByFiles.getOrPut(file) { ArrayList() } += type
+  init {
+    classpath.forEach {
+      it.canonicalFile.let { file ->
+        require(file !in sources) { "File $file already added to registry" }
+        val fileSource = fileSourceFactory.createFileSource(file)
+        sources.put(file, fileSource)
+        fileSource.listFiles { path, fileType ->
+          if (fileType == FileSource.EntryType.CLASS) {
+            val type = Type.getObjectType(path.substringBeforeLast(".class"))
+            filesByTypes.put(type, file)
+            typesByFiles.getOrPut(file) { ArrayList() } += type
+          }
         }
       }
     }
   }
 
-  override fun isAdded(file: File): Boolean = file.canonicalFile in sources
+  override fun contains(file: File): Boolean = file.canonicalFile in sources
 
-  override fun files(): Collection<File> = sources.keys.immutable()
+  override fun classpath(): Collection<File> = sources.keys.immutable()
 
   override fun readClass(type: Type): ByteArray {
     val file = filesByTypes.getOrElse(type) { throw IllegalArgumentException("Unable to find a file for ${type.internalName}") }
