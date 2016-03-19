@@ -21,8 +21,8 @@ import io.michaelrocks.grip.mirrors.MethodMirror
 import java.util.*
 
 internal class MethodsQueryBuilder(
-    private val classRegistry: ClassRegistry
-) : AbstractQueryBuilder<MethodMirror, MethodsResult>(classRegistry) {
+    private val grip: Grip
+) : AbstractQueryBuilder<MethodMirror, MethodsResult>(grip) {
 
   override fun execute(source: ClassMirrorSource, matcher: (MethodMirror) -> Boolean): MethodsResult =
       buildMethodsResult {

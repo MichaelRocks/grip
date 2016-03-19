@@ -19,8 +19,8 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.mirrors.ClassMirror
 
 internal class ClassesQueryBuilder(
-    classRegistry: ClassRegistry
-) : AbstractQueryBuilder<ClassMirror, ClassesResult>(classRegistry) {
+    grip: Grip
+) : AbstractQueryBuilder<ClassMirror, ClassesResult>(grip) {
 
   override fun execute(source: ClassMirrorSource, matcher: (ClassMirror) -> Boolean): ClassesResult =
       buildClassesResult {

@@ -22,6 +22,7 @@ import io.michaelrocks.grip.mirrors.ReflectorImpl
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.io.Closeable
 import java.io.File
 
 class GripTest {
@@ -38,7 +39,7 @@ class GripTest {
     )
     val reflector = ReflectorImpl()
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
-    grip = GripImpl(classRegistry)
+    grip = GripImpl(fileRegistry, classRegistry, Closeable {})
   }
 
   @Test

@@ -22,7 +22,7 @@ import java.util.*
 import kotlin.properties.Delegates
 
 internal abstract class AbstractQueryBuilder<M, R>(
-    private val classRegistry: ClassRegistry
+    private val grip: Grip
 ) : FromConfigurator<M ,R>, QueryConfigurator<M, R>, Query<R> {
 
   private var classMirrorSource by Delegates.notNull<ClassMirrorSource>()
@@ -34,7 +34,7 @@ internal abstract class AbstractQueryBuilder<M, R>(
       from(Collections.singletonList(file))
 
   override fun from(files: Iterable<File>): QueryConfigurator<M, R> = apply {
-    classMirrorSource = FilesClassMirrorSource(classRegistry, files.toList())
+    classMirrorSource = FilesClassMirrorSource(grip, files.toList())
   }
 
   override fun from(query: Query<ClassesResult>): QueryConfigurator<M, R> = apply {
@@ -46,7 +46,7 @@ internal abstract class AbstractQueryBuilder<M, R>(
   }
 
   override fun from(classpath: Classpath): QueryConfigurator<M, R> =
-      from(classRegistry.classpath())
+      from(grip.fileRegistry.classpath())
 
   override fun where(matcher: (M) -> Boolean): Query<R> = apply {
     this.matcher = matcher
