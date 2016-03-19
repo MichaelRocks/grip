@@ -55,6 +55,8 @@ internal class FileRegistryImpl(
         }
       }
     }
+
+    check(!sources.isEmpty()) { "Classpath is empty" }
   }
 
   override fun contains(file: File): Boolean = file.canonicalFile in sources
