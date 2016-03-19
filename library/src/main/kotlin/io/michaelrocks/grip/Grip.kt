@@ -17,14 +17,16 @@
 package io.michaelrocks.grip
 
 interface Grip {
+  val fileRegistry: FileRegistry
   val classRegistry: ClassRegistry
 
   infix fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R>
 }
 
 internal class GripImpl(
+    override val fileRegistry: FileRegistry,
     override val classRegistry: ClassRegistry
 ) : Grip {
   override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> =
-      projection.configurator(classRegistry)
+      projection.configurator(this)
 }

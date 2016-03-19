@@ -38,7 +38,7 @@ class GripTest {
     )
     val reflector = ReflectorImpl()
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
-    grip = GripImpl(classRegistry)
+    grip = GripImpl(fileRegistry, classRegistry)
   }
 
   @Test
