@@ -78,8 +78,12 @@ internal class FileRegistryImpl(
 
   override fun readClass(type: Type): ByteArray {
     checkNotClosed()
-    val file = filesByTypes.getOrElse(type) { throw IllegalArgumentException("Unable to find a file for ${type.internalName}") }
-    val fileSource = sources.getOrElse(file) { throw IllegalArgumentException("Unable to find a source for ${type.internalName}") }
+    val file = filesByTypes.getOrElse(type) {
+      throw IllegalArgumentException("Unable to find a file for ${type.internalName}")
+    }
+    val fileSource = sources.getOrElse(file) {
+      throw IllegalArgumentException("Unable to find a source for ${type.internalName}")
+    }
     return fileSource.readFile("${type.internalName}.class")
   }
 
