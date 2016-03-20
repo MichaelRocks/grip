@@ -25,7 +25,7 @@ internal class ClassRegistryImpl(
 
   override fun getAnnotationMirror(type: Type): AnnotationMirror =
       annotationsByType.getOrPut(type) {
-        val classMirror = classesByType[type] ?: classesByType[type] ?: readClassMirror(type, true)
+        val classMirror = readClassMirror(type, true)
         buildAnnotation(type) {
           check(classMirror.access or Opcodes.ACC_ANNOTATION != 0)
           for (method in classMirror.methods) {
