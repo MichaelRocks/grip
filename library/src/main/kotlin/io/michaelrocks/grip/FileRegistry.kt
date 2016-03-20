@@ -26,6 +26,8 @@ import java.util.*
 
 interface FileRegistry {
   operator fun contains(file: File): Boolean
+  operator fun contains(type: Type): Boolean
+
   fun classpath(): Collection<File>
 
   fun readClass(type: Type): ByteArray
@@ -62,6 +64,11 @@ internal class FileRegistryImpl(
   override fun contains(file: File): Boolean {
     checkNotClosed()
     return file.canonicalFile in sources
+  }
+
+  override fun contains(type: Type): Boolean {
+    checkNotClosed()
+    return type in filesByTypes
   }
 
   override fun classpath(): Collection<File> {
