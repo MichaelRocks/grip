@@ -16,7 +16,50 @@
 
 package io.michaelrocks.grip.mirrors
 
+import org.objectweb.asm.Opcodes
+
 interface Element : Typed {
   val access: Int
   val name: String
 }
+
+val Element.isPublic: Boolean
+  get() = (access and Opcodes.ACC_PUBLIC) != 0
+val Element.isPrivate: Boolean
+  get() = (access and Opcodes.ACC_PRIVATE) != 0
+val Element.isProtected: Boolean
+  get() = (access and Opcodes.ACC_PROTECTED) != 0
+val Element.isPackage: Boolean
+  get() = (access and (Opcodes.ACC_PUBLIC or Opcodes.ACC_PROTECTED or Opcodes.ACC_PRIVATE)) == 0
+val Element.isStatic: Boolean
+  get() = (access and Opcodes.ACC_STATIC) != 0
+val Element.isFinal: Boolean
+  get() = (access and Opcodes.ACC_FINAL) != 0
+val Element.isSuper: Boolean
+  get() = (access and Opcodes.ACC_SUPER) != 0
+val Element.isSynchronized: Boolean
+  get() = (access and Opcodes.ACC_SYNCHRONIZED) != 0
+val Element.isVolatile: Boolean
+  get() = (access and Opcodes.ACC_VOLATILE) != 0
+val Element.isBridge: Boolean
+  get() = (access and Opcodes.ACC_BRIDGE) != 0
+val Element.isVarargs: Boolean
+  get() = (access and Opcodes.ACC_VARARGS) != 0
+val Element.isTransient: Boolean
+  get() = (access and Opcodes.ACC_TRANSIENT) != 0
+val Element.isNative: Boolean
+  get() = (access and Opcodes.ACC_NATIVE) != 0
+val Element.isInterface: Boolean
+  get() = (access and Opcodes.ACC_INTERFACE) != 0
+val Element.isAbstract: Boolean
+  get() = (access and Opcodes.ACC_ABSTRACT) != 0
+val Element.isStrict: Boolean
+  get() = (access and Opcodes.ACC_STRICT) != 0
+val Element.isSynthetic: Boolean
+  get() = (access and Opcodes.ACC_SYNTHETIC) != 0
+val Element.isAnnotation: Boolean
+  get() = (access and Opcodes.ACC_ANNOTATION) != 0
+val Element.isEnum: Boolean
+  get() = (access and Opcodes.ACC_ENUM) != 0
+val Element.isMandated: Boolean
+  get() = (access and Opcodes.ACC_MANDATED) != 0
