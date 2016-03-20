@@ -238,6 +238,9 @@ class ClassRegistryToAnnotationTest {
 
   private fun createFileRegistry(vararg entries: Pair<Type, ByteArray>): FileRegistry =
       mock<FileRegistry>().apply {
+        given(contains(notNull<Type>())).thenAnswer { invocation ->
+          entries.any { it.first == invocation.arguments[0] }
+        }
         given(findTypesForFile(notNull())).thenReturn(entries.map { it.first })
         for ((type, data) in entries) {
           given(readClass(type)).thenReturn(data)

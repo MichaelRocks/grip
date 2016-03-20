@@ -45,4 +45,7 @@ fun getAnnotationType(annotationName: String): Type =
 private class SimpleAnnotationMirror(
     override val type: Type,
     override val values: Map<String, Any>
-) : AbstractAnnotationMirror()
+) : AbstractAnnotationMirror() {
+  override val resolved: Boolean
+    get() = false
+}

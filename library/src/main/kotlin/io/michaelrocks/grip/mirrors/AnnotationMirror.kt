@@ -22,6 +22,7 @@ import java.util.*
 
 interface AnnotationMirror : Typed {
   val values: Map<String, Any>
+  val resolved: Boolean
 
   class Builder {
     private var type: Type? = null
@@ -46,6 +47,8 @@ interface AnnotationMirror : Typed {
     private class ImmutableAnnotationMirror(builder: Builder) : AbstractAnnotationMirror() {
       override val type = builder.type!!
       override val values = builder.values.immutableCopy()
+      override val resolved: Boolean
+        get() = true
     }
   }
 }
@@ -59,7 +62,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
     }
 
     val that = other as? AnnotationMirror ?: return false
-    if (type != that.type || values.size != that.values.size) {
+    if (type != that.type || values.size != that.values.size || resolved != that.resolved) {
       return false
     }
 
@@ -91,6 +94,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
     var hashCode = 37;
     hashCode = hashCode * 17 + type.hashCode()
     hashCode = hashCode * 17 + valuesHashCode
+    hashCode = hashCode * 17 + resolved.hashCode()
     return hashCode
   }
 
@@ -113,6 +117,17 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
       value.hashCode()
     }
   }
+}
+
+internal class UnresolvedAnnotationMirror(
+    override val type: Type
+) : AbstractAnnotationMirror() {
+  override val values: Map<String, Any>
+    get() = emptyMap()
+  override val resolved: Boolean
+    get() = false
+
+  override fun toString(): String = "UnresolvedAnnotationMirror{type = $type}"
 }
 
 fun buildAnnotation(type: Type): AnnotationMirror =

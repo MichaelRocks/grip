@@ -1,9 +1,6 @@
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.AnnotationMirror
-import io.michaelrocks.grip.mirrors.ClassMirror
-import io.michaelrocks.grip.mirrors.Reflector
-import io.michaelrocks.grip.mirrors.buildAnnotation
+import io.michaelrocks.grip.mirrors.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import java.util.*
@@ -25,11 +22,15 @@ internal class ClassRegistryImpl(
 
   override fun getAnnotationMirror(type: Type): AnnotationMirror =
       annotationsByType.getOrPut(type) {
-        val classMirror = readClassMirror(type, true)
-        buildAnnotation(type) {
-          check(classMirror.access or Opcodes.ACC_ANNOTATION != 0)
-          for (method in classMirror.methods) {
-            method.defaultValue?.let { addValue(method.name, it) }
+        if (type !in fileRegistry) {
+          return UnresolvedAnnotationMirror(type)
+        } else {
+          val classMirror = readClassMirror(type, true)
+          buildAnnotation(type) {
+            check(classMirror.access or Opcodes.ACC_ANNOTATION != 0)
+            for (method in classMirror.methods) {
+              method.defaultValue?.let { addValue(method.name, it) }
+            }
           }
         }
       }
