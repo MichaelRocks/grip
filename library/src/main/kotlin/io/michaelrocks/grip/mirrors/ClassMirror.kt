@@ -128,7 +128,7 @@ internal class LazyClassMirror(
   override val access = classReader.access
   override val name: String = classReader.className.substringAfterLast('/')
   override val type: Type = Type.getObjectType(classReader.className)
-  override val superType = Type.getObjectType(classReader.superName)
+  override val superType = classReader.superName?.let { Type.getObjectType(it) }
   override val signature: ClassSignatureMirror
     get() = delegate.signature
   override val interfaces = classReader.interfaces.map { Type.getObjectType(it) }.immutable()
