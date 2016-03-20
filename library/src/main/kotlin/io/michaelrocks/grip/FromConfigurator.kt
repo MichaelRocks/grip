@@ -38,7 +38,9 @@ fun files(file1: File, file2: File, vararg files: File): List<File> =
     }
 
 interface QueryConfigurator<M, R> {
-  infix fun where(matcher: (M) -> Boolean): Query<R>
+  infix fun where(matcher: (M) -> Boolean): Query<R> =
+      where(wrap(matcher))
+  infix fun where(matcher: (Grip, M) -> Boolean): Query<R>
 }
 
 interface Query<R> {

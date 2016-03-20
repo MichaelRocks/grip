@@ -139,3 +139,6 @@ fun existsInMethods(query: Query<MethodsResult>) =
         it.methods.any { it.name == mirror.name && it.type == mirror.type }
       }
     }
+
+inline fun <T> wrap(crossinline matcher: (T) -> Boolean): (Grip, T) -> Boolean =
+    { grip: Grip, value: T -> matcher(value) }

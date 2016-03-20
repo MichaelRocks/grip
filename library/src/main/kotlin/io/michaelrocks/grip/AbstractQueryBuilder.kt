@@ -22,11 +22,11 @@ import java.util.*
 import kotlin.properties.Delegates
 
 internal abstract class AbstractQueryBuilder<M, R>(
-    private val grip: Grip
+    val grip: Grip
 ) : FromConfigurator<M ,R>, QueryConfigurator<M, R>, Query<R> {
 
   private var classMirrorSource by Delegates.notNull<ClassMirrorSource>()
-  private var matcher by Delegates.notNull<(M) -> Boolean>()
+  private var matcher by Delegates.notNull<(Grip, M) -> Boolean>()
 
   private var result = lazy(LazyThreadSafetyMode.NONE) { execute(classMirrorSource, matcher) }
 
@@ -48,11 +48,11 @@ internal abstract class AbstractQueryBuilder<M, R>(
   override fun from(classpath: Classpath): QueryConfigurator<M, R> =
       from(grip.fileRegistry.classpath())
 
-  override fun where(matcher: (M) -> Boolean): Query<R> = apply {
+  override fun where(matcher: (Grip, M) -> Boolean): Query<R> = apply {
     this.matcher = matcher
   }
 
   final override fun execute(): R = result.value
 
-  protected abstract fun execute(source: ClassMirrorSource, matcher: (M) -> Boolean): R
+  protected abstract fun execute(source: ClassMirrorSource, matcher: (Grip, M) -> Boolean): R
 }
