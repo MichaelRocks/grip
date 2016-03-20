@@ -26,11 +26,9 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.Type
 
 private val OBJECT_TYPE = getType<Any>()
-private val OBJECT_INTERNAL_NAME = OBJECT_TYPE.internalName
 
 interface ClassMirror : Element, Annotated {
   val version: Int
-  val superName: String?
   val superType: Type?
   val signature: ClassSignatureMirror
   val interfaces: List<Type>
@@ -44,7 +42,6 @@ interface ClassMirror : Element, Annotated {
     private var access: Int = 0
     private var name: String? = null
     private var type: Type? = null
-    private var superName: String = OBJECT_INTERNAL_NAME
     private var superType: Type = OBJECT_TYPE
     private var signature: String? = null
     private val interfaces = LazyList<Type>()
@@ -68,7 +65,6 @@ interface ClassMirror : Element, Annotated {
     }
 
     fun superName(superName: String?) = apply {
-      this.superName = superName ?: OBJECT_INTERNAL_NAME
       this.superType = superName?.let { Type.getObjectType(it) } ?: OBJECT_TYPE
     }
 
@@ -109,7 +105,6 @@ interface ClassMirror : Element, Annotated {
       override val access = builder.access
       override val name = builder.name!!.substringAfterLast('/')
       override val type = Type.getObjectType(builder.name)
-      override val superName = builder.superName
       override val superType = builder.superType
       override val signature = builder.buildSignature()
       override val interfaces = builder.interfaces.detachImmutableCopy()
@@ -131,9 +126,8 @@ internal class LazyClassMirror(
 
   override val version = getClassVersion()
   override val access = classReader.access
-  override val name = classReader.className.substringAfterLast('/')
-  override val type = Type.getObjectType(classReader.className)
-  override val superName = classReader.superName
+  override val name: String = classReader.className.substringAfterLast('/')
+  override val type: Type = Type.getObjectType(classReader.className)
   override val superType = Type.getObjectType(classReader.superName)
   override val signature: ClassSignatureMirror
     get() = delegate.signature

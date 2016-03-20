@@ -96,10 +96,10 @@ fun versionIsGreaterOrEqual(otherVersion: Int) = version { grip, version -> vers
 fun versionIsLower(otherVersion: Int) = version { grip, version -> version < otherVersion }
 fun versionIsLowerOrEqual(otherVersion: Int) = version { grip, version -> version <= otherVersion }
 
-inline fun superName(crossinline predicate: (Grip, String) -> Boolean) =
-    { grip: Grip, mirror: ClassMirror -> mirror.superName?.let { predicate(grip, it) } ?: false }
-fun hasSuperName() =
-    { grip: Grip, mirror: ClassMirror -> !mirror.superName.isNullOrEmpty() }
+inline fun superType(crossinline predicate: (Grip, Type) -> Boolean) =
+    { grip: Grip, mirror: ClassMirror -> mirror.superType?.let { predicate(grip, it) } ?: false }
+fun hasSuperType() =
+    { grip: Grip, mirror: ClassMirror -> mirror.superType != null }
 
 inline fun interfaces(crossinline predicate: (Grip, List<Type>) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> predicate(grip, mirror.interfaces) }
