@@ -21,15 +21,15 @@ import io.michaelrocks.grip.mirrors.FieldMirror
 import java.util.*
 
 internal class FieldsQueryBuilder(
-    private val classRegistry: ClassRegistry
-) : AbstractQueryBuilder<FieldMirror, FieldsResult>(classRegistry) {
+    grip: Grip
+) : AbstractQueryBuilder<FieldMirror, FieldsResult>(grip) {
 
-  override fun execute(source: ClassMirrorSource, matcher: (FieldMirror) -> Boolean): FieldsResult =
+  override fun execute(source: ClassMirrorSource, matcher: (Grip, FieldMirror) -> Boolean): FieldsResult =
       buildFieldsResult {
         val fieldMirrors = ResettableLazy { ArrayList<FieldMirror>() }
         for (classMirror in source.getClassMirrors()) {
           for (fieldMirror in classMirror.fields) {
-            if (matcher(fieldMirror)) {
+            if (matcher(grip, fieldMirror)) {
               fieldMirrors.value.add(fieldMirror)
             }
           }

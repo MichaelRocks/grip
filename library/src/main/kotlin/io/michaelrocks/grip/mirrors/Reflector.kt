@@ -29,6 +29,14 @@ internal interface Reflector {
 internal class ReflectorImpl : Reflector {
   override fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror {
     val reader = ClassReader(data)
+    if (forAnnotation) {
+      return readClassMirror(reader, classRegistry, true)
+    } else {
+      return LazyClassMirror(reader) { readClassMirror(reader, classRegistry, false) }
+    }
+  }
+
+  private fun readClassMirror(reader: ClassReader, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror {
     val visitor = ReflectorClassVisitor(classRegistry, forAnnotation)
     reader.accept(visitor, ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES)
     return visitor.toClassMirror()

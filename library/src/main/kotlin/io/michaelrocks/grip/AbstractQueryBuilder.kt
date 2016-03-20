@@ -22,19 +22,19 @@ import java.util.*
 import kotlin.properties.Delegates
 
 internal abstract class AbstractQueryBuilder<M, R>(
-    private val classRegistry: ClassRegistry
+    val grip: Grip
 ) : FromConfigurator<M ,R>, QueryConfigurator<M, R>, Query<R> {
 
   private var classMirrorSource by Delegates.notNull<ClassMirrorSource>()
-  private var matcher by Delegates.notNull<(M) -> Boolean>()
+  private var matcher by Delegates.notNull<(Grip, M) -> Boolean>()
 
   private var result = lazy(LazyThreadSafetyMode.NONE) { execute(classMirrorSource, matcher) }
 
   override fun from(file: File): QueryConfigurator<M, R> =
       from(Collections.singletonList(file))
 
-  override fun from(files: List<File>): QueryConfigurator<M, R> = apply {
-    classMirrorSource = FilesClassMirrorSource(classRegistry, ArrayList(files))
+  override fun from(files: Iterable<File>): QueryConfigurator<M, R> = apply {
+    classMirrorSource = FilesClassMirrorSource(grip, files.toList())
   }
 
   override fun from(query: Query<ClassesResult>): QueryConfigurator<M, R> = apply {
@@ -45,11 +45,14 @@ internal abstract class AbstractQueryBuilder<M, R>(
     classMirrorSource = SingletonClassMirrorSource(classMirror)
   }
 
-  override fun where(matcher: (M) -> Boolean): Query<R> = apply {
+  override fun from(classpath: Classpath): QueryConfigurator<M, R> =
+      from(grip.fileRegistry.classpath())
+
+  override fun where(matcher: (Grip, M) -> Boolean): Query<R> = apply {
     this.matcher = matcher
   }
 
   final override fun execute(): R = result.value
 
-  protected abstract fun execute(source: ClassMirrorSource, matcher: (M) -> Boolean): R
+  protected abstract fun execute(source: ClassMirrorSource, matcher: (Grip, M) -> Boolean): R
 }

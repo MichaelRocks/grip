@@ -20,8 +20,41 @@ import io.michaelrocks.grip.commons.LazyMap
 import org.objectweb.asm.Type
 import java.util.*
 
-abstract class AnnotationMirror : Typed {
-  abstract val values: Map<String, Any>
+interface AnnotationMirror : Typed {
+  val values: Map<String, Any>
+  val resolved: Boolean
+
+  class Builder {
+    private var type: Type? = null
+    private val values = LazyMap<String, Any>()
+
+    fun type(type: Type) = apply {
+      this.type = type
+    }
+
+    fun addValue(value: Any) = addValue("value", value)
+
+    fun addValue(name: String, value: Any) = apply {
+      this.values.put(name, value)
+    }
+
+    fun addValues(mirror: AnnotationMirror) = apply {
+      this.values.putAll(mirror.values)
+    }
+
+    fun build(): AnnotationMirror = ImmutableAnnotationMirror(this)
+
+    private class ImmutableAnnotationMirror(builder: Builder) : AbstractAnnotationMirror() {
+      override val type = builder.type!!
+      override val values = builder.values.immutableCopy()
+      override val resolved: Boolean
+        get() = true
+    }
+  }
+}
+
+internal abstract class AbstractAnnotationMirror : AnnotationMirror {
+  override fun toString(): String = "AnnotationMirror{type = $type, values = $values}"
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -29,7 +62,7 @@ abstract class AnnotationMirror : Typed {
     }
 
     val that = other as? AnnotationMirror ?: return false
-    if (type != that.type || values.size != that.values.size) {
+    if (type != that.type || values.size != that.values.size || resolved != that.resolved) {
       return false
     }
 
@@ -61,6 +94,7 @@ abstract class AnnotationMirror : Typed {
     var hashCode = 37;
     hashCode = hashCode * 17 + type.hashCode()
     hashCode = hashCode * 17 + valuesHashCode
+    hashCode = hashCode * 17 + resolved.hashCode()
     return hashCode
   }
 
@@ -83,34 +117,17 @@ abstract class AnnotationMirror : Typed {
       value.hashCode()
     }
   }
+}
 
-  class Builder {
-    private var type: Type? = null
-    private val values = LazyMap<String, Any>()
+internal class UnresolvedAnnotationMirror(
+    override val type: Type
+) : AbstractAnnotationMirror() {
+  override val values: Map<String, Any>
+    get() = emptyMap()
+  override val resolved: Boolean
+    get() = false
 
-    fun type(type: Type) = apply {
-      this.type = type
-    }
-
-    fun addValue(value: Any) = addValue("value", value)
-
-    fun addValue(name: String, value: Any) = apply {
-      this.values.put(name, value)
-    }
-
-    fun addValues(mirror: AnnotationMirror) = apply {
-      this.values.putAll(mirror.values)
-    }
-
-    fun build(): AnnotationMirror = ImmutableAnnotationMirror(this)
-
-    private class ImmutableAnnotationMirror(builder: Builder) : AnnotationMirror() {
-      override val type = builder.type!!
-      override val values = builder.values.immutableCopy()
-
-      override fun toString(): String = "AnnotationMirror{type = $type, values = $values}"
-    }
-  }
+  override fun toString(): String = "UnresolvedAnnotationMirror{type = $type}"
 }
 
 fun buildAnnotation(type: Type): AnnotationMirror =

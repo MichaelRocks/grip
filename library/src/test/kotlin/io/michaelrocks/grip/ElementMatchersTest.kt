@@ -73,9 +73,9 @@ class ElementMatchersTest {
   @Test fun testIsEnumTrue() = enum.testAccess(true) { isEnum() }
   @Test fun testIsEnumFalse() = annotation.testAccess(false) { isEnum() }
 
-  @Test fun testNameTrue() = finalClass.assertAndVerify(true, { name { true } }, { name })
-  @Test fun testNameFalse() = finalClass.assertAndVerify(false, { name { false } }, { name })
+  @Test fun testNameTrue() = finalClass.assertAndVerify(true, { name { grip, name -> true } }, { name })
+  @Test fun testNameFalse() = finalClass.assertAndVerify(false, { name { grip, name -> false } }, { name })
 
-  private inline fun Element.testAccess(condition: Boolean, body: () -> ((Element) -> Boolean)) =
+  private inline fun Element.testAccess(condition: Boolean, body: () -> ((Grip, Element) -> Boolean)) =
       assertAndVerify(condition, body) { access }
 }

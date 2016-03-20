@@ -27,9 +27,9 @@ class TypedMatchersTest {
     given(type).thenReturn(Type.VOID_TYPE)
   }
 
-  @Test fun testTypeTrue() = typed.testType(true) { type { true } }
-  @Test fun testTypeFalse() = typed.testType(false) { type { false } }
+  @Test fun testTypeTrue() = typed.testType(true) { type { grip, type -> true } }
+  @Test fun testTypeFalse() = typed.testType(false) { type { grip, type -> false } }
 
-  private inline fun Typed.testType(condition: Boolean, body: () -> ((Typed) -> Boolean)) =
+  private inline fun Typed.testType(condition: Boolean, body: () -> ((Grip, Typed) -> Boolean)) =
       assertAndVerify(condition, body) { type }
 }

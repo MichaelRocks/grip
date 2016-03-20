@@ -16,20 +16,23 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.mockito.mock
 import io.michaelrocks.mockito.only
 import io.michaelrocks.mockito.verify
 import io.michaelrocks.mockito.verifyNoMoreInteractions
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 
-inline fun <T> T.assertMatcher(condition: Boolean, matcher: (T) -> Boolean) =
-    if (condition) assertTrue(matcher(this)) else assertFalse(matcher(this))
+val mockGrip = mock<Grip>()
 
-inline fun <T : Any> T.assert(condition: Boolean, body: () -> ((T) -> Boolean)) =
-    assertTrue(body()(this) == condition)
+inline fun <T> T.assertMatcher(condition: Boolean, matcher: (Grip, T) -> Boolean) =
+    if (condition) assertTrue(matcher(mockGrip, this)) else assertFalse(matcher(mockGrip, this))
 
-inline fun <T : Any> T.assertAndVerify(condition: Boolean, body: () -> ((T) -> Boolean), verifier: T.() -> Unit) {
-  assertTrue(body()(this) == condition)
+inline fun <T : Any> T.assert(condition: Boolean, body: () -> ((Grip, T) -> Boolean)) =
+    assertTrue(body()(mockGrip, this) == condition)
+
+inline fun <T : Any> T.assertAndVerify(condition: Boolean, body: () -> ((Grip, T) -> Boolean), verifier: T.() -> Unit) {
+  assertTrue(body()(mockGrip, this) == condition)
   verify(this, only()).verifier()
   verifyNoMoreInteractions(this)
 }

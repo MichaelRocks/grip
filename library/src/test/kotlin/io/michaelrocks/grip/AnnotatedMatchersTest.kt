@@ -40,20 +40,24 @@ class AnnotatedMatchersTest {
     annotatedWith(Type.getObjectType("io/michaelrocks/mocks/AnotherAnnotation"))
   }
   @Test fun testAnnotatedWithByPredicateTrue() = annotated.testAnnotations(true) {
-    annotatedWith { it.values.isEmpty() }
+    annotatedWith { grip, annotation -> annotation.values.isEmpty() }
   }
   @Test fun testAnnotatedWithByPredicateFalse() = annotated.testAnnotations(false) {
-    annotatedWith { it.values.isNotEmpty() }
+    annotatedWith { grip, annotation -> annotation.values.isNotEmpty() }
   }
 
   // TODO: Uncomment when a crash in Kotlin compiler is fixed.
   // @Test fun testAnnotatedWithByTypeAndPredicateTrue() = annotated.testAnnotations(true) {
-  //   annotatedWith(Type.getObjectType("io/michaelrocks/mocks/Annotation")) { it.values.isEmpty() }
+  //   annotatedWith(Type.getObjectType("io/michaelrocks/mocks/Annotation")) { grip, annotation ->
+  //     annotation.values.isEmpty()
+  //   }
   // }
   // @Test fun testAnnotatedWithByTypeAndPredicateFalse() = annotated.testAnnotations(false) {
-  //   annotatedWith(Type.getObjectType("io/michaelrocks/mocks/AnotherAnnotation")) { it.values.isNotEmpty() }
+  //   annotatedWith(Type.getObjectType("io/michaelrocks/mocks/AnotherAnnotation")) { grip, annotation ->
+  //     annotation.values.isNotEmpty()
+  //   }
   // }
 
-  private inline fun Annotated.testAnnotations(condition: Boolean, body: () -> ((Annotated) -> Boolean)) =
+  private inline fun Annotated.testAnnotations(condition: Boolean, body: () -> ((Grip, Annotated) -> Boolean)) =
       assertAndVerify(condition, body) { annotations }
 }

@@ -22,10 +22,13 @@ import java.util.*
 
 interface FromConfigurator<M, R> {
   infix fun from(file: File): QueryConfigurator<M, R>
-  infix fun from(files: List<File>): QueryConfigurator<M, R>
+  infix fun from(files: Iterable<File>): QueryConfigurator<M, R>
   infix fun from(query: Query<ClassesResult>): QueryConfigurator<M, R>
   infix fun from(classMirror: ClassMirror): QueryConfigurator<M, R>
+  infix fun from(classpath: Classpath): QueryConfigurator<M, R>
 }
+
+val classpath = Classpath()
 
 fun files(file1: File, file2: File, vararg files: File): List<File> =
     ArrayList<File>(files.size + 2).apply {
@@ -35,9 +38,13 @@ fun files(file1: File, file2: File, vararg files: File): List<File> =
     }
 
 interface QueryConfigurator<M, R> {
-  infix fun where(matcher: (M) -> Boolean): Query<R>
+  infix fun where(matcher: (M) -> Boolean): Query<R> =
+      where(wrap(matcher))
+  infix fun where(matcher: (Grip, M) -> Boolean): Query<R>
 }
 
 interface Query<R> {
   fun execute(): R
 }
+
+class Classpath internal constructor()
