@@ -16,6 +16,7 @@
 
 package io.michaelrocks.grip.annotations
 
+import io.michaelrocks.grip.mirrors.AbstractAnnotationMirror
 import io.michaelrocks.grip.mirrors.AnnotationMirror
 import io.michaelrocks.grip.mirrors.buildAnnotation
 import org.objectweb.asm.Type
@@ -44,4 +45,4 @@ fun getAnnotationType(annotationName: String): Type =
 private class SimpleAnnotationMirror(
     override val type: Type,
     override val values: Map<String, Any>
-) : AnnotationMirror()
+) : AbstractAnnotationMirror()
