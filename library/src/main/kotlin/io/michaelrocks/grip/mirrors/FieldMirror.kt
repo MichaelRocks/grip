@@ -17,12 +17,13 @@
 package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.LazyList
-import io.michaelrocks.grip.mirrors.signature.GenericType
-import io.michaelrocks.grip.mirrors.signature.readGenericType
+import io.michaelrocks.grip.mirrors.signature.EmptyFieldSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.FieldSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.LazyFieldSignatureMirror
 import org.objectweb.asm.Type
 
 interface FieldMirror : Element, Annotated {
-  val genericType: GenericType
+  val signature: FieldSignatureMirror
   val value: Any?
 
   class Builder {
@@ -61,15 +62,15 @@ interface FieldMirror : Element, Annotated {
 
     fun build(): FieldMirror = ImmutableFieldMirror(this)
 
+    private fun buildSignature(): FieldSignatureMirror =
+        signature?.let { LazyFieldSignatureMirror(it) } ?: EmptyFieldSignatureMirror(type!!)
+
+
     private class ImmutableFieldMirror(builder: Builder) : FieldMirror {
       override val access = builder.access
       override val name = builder.name!!
       override val type = builder.type!!
-      override val genericType: GenericType by builder.signature.let { signature ->
-        lazy(LazyThreadSafetyMode.PUBLICATION) {
-          if (signature == null) GenericType.RawType(type) else readGenericType(signature)
-        }
-      }
+      override val signature = builder.buildSignature()
       override val value = builder.value
       override val annotations = ImmutableAnnotationCollection(builder.annotations)
 
