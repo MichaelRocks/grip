@@ -28,6 +28,8 @@ interface MethodSignatureMirror {
   val returnType: GenericType
   val exceptionTypes: List<GenericType>
 
+  fun toJvmSignature(): String
+
   class Builder() {
     private val typeParameters = LazyList<TypeParameter.Builder>()
     private val parameterTypes = LazyList<GenericType>()
@@ -57,11 +59,13 @@ interface MethodSignatureMirror {
       override val parameterTypes: List<GenericType> = builder.parameterTypes.detachImmutableCopy()
       override val returnType: GenericType = builder.returnType!!
       override val exceptionTypes: List<GenericType> = builder.exceptionTypes.detachImmutableCopy()
+
+      override fun toJvmSignature() = throw UnsupportedOperationException()
     }
   }
 }
 
-internal class LazyMethodSignatureMirror(signature: String) : MethodSignatureMirror {
+internal class LazyMethodSignatureMirror(private val signature: String) : MethodSignatureMirror {
   private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readMethodSignature(signature) }
 
   override val typeParameters: List<TypeParameter>
@@ -72,6 +76,8 @@ internal class LazyMethodSignatureMirror(signature: String) : MethodSignatureMir
     get() = delegate.returnType
   override val exceptionTypes: List<GenericType>
     get() = delegate.exceptionTypes
+
+  override fun toJvmSignature() = signature
 }
 
 internal class EmptyMethodSignatureMirror(type: Type, exceptions: List<Type>) : MethodSignatureMirror {
@@ -86,6 +92,8 @@ internal class EmptyMethodSignatureMirror(type: Type, exceptions: List<Type>) : 
       GenericType.RawType(type.returnType)
   override val exceptionTypes: List<GenericType> =
       if (exceptions.isEmpty()) emptyList() else GenericTypeListWrapper(exceptions)
+
+  override fun toJvmSignature() = ""
 }
 
 internal fun readMethodSignature(signature: String): MethodSignatureMirror =
