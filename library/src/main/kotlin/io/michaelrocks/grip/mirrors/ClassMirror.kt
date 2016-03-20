@@ -42,7 +42,7 @@ interface ClassMirror : Element, Annotated {
     private var access: Int = 0
     private var name: String? = null
     private var type: Type? = null
-    private var superType: Type = OBJECT_TYPE
+    private var superType: Type? = null
     private var signature: String? = null
     private val interfaces = LazyList<Type>()
 
@@ -65,7 +65,7 @@ interface ClassMirror : Element, Annotated {
     }
 
     fun superName(superName: String?) = apply {
-      this.superType = superName?.let { Type.getObjectType(it) } ?: OBJECT_TYPE
+      this.superType = superName?.let { Type.getObjectType(it) }
     }
 
     fun signature(signature: String?) = apply {
@@ -98,7 +98,8 @@ interface ClassMirror : Element, Annotated {
     fun build(): ClassMirror = ImmutableClassMirror(this)
 
     private fun buildSignature(): ClassSignatureMirror =
-        signature?.let { LazyClassSignatureMirror(it) } ?: EmptyClassSignatureMirror(superType, interfaces)
+        signature?.let { LazyClassSignatureMirror(it) } ?:
+            EmptyClassSignatureMirror(superType ?: OBJECT_TYPE, interfaces)
 
     private class ImmutableClassMirror(builder: Builder) : ClassMirror {
       override val version = builder.version
@@ -128,7 +129,7 @@ internal class LazyClassMirror(
   override val access = classReader.access
   override val name: String = classReader.className.substringAfterLast('/')
   override val type: Type = Type.getObjectType(classReader.className)
-  override val superType = Type.getObjectType(classReader.superName)
+  override val superType = classReader.superName?.let { Type.getObjectType(it) }
   override val signature: ClassSignatureMirror
     get() = delegate.signature
   override val interfaces = classReader.interfaces.map { Type.getObjectType(it) }.immutable()
