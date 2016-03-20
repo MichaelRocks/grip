@@ -28,6 +28,8 @@ interface ClassSignatureMirror {
   val superType: GenericType
   val interfaces: List<GenericType>
 
+  fun toJvmSignature(): String
+
   class Builder() {
     private val typeParameters = LazyList<TypeParameter.Builder>()
     private var superType: GenericType = OBJECT_RAW_TYPE
@@ -52,11 +54,13 @@ interface ClassSignatureMirror {
           builder.typeParameters.map { it.build() }.immutable()
       override val superType: GenericType = builder.superType
       override val interfaces: List<GenericType> = builder.interfaces.detachImmutableCopy()
+
+      override fun toJvmSignature() = throw UnsupportedOperationException()
     }
   }
 }
 
-internal class LazyClassSignatureMirror(signature: String) : ClassSignatureMirror {
+internal class LazyClassSignatureMirror(private val signature: String) : ClassSignatureMirror {
   private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readClassSignature(signature) }
 
   override val typeParameters: List<TypeParameter>
@@ -65,6 +69,8 @@ internal class LazyClassSignatureMirror(signature: String) : ClassSignatureMirro
     get() = delegate.superType
   override val interfaces: List<GenericType>
     get() = delegate.interfaces
+
+  override fun toJvmSignature() = signature
 }
 
 internal class EmptyClassSignatureMirror(superType: Type, interfaces: List<Type>) : ClassSignatureMirror {
@@ -74,6 +80,8 @@ internal class EmptyClassSignatureMirror(superType: Type, interfaces: List<Type>
       GenericType.RawType(superType)
   override val interfaces: List<GenericType> =
       if (interfaces.isEmpty()) emptyList() else GenericTypeListWrapper(interfaces)
+
+  override fun toJvmSignature() = ""
 }
 
 internal fun readClassSignature(signature: String): ClassSignatureMirror =
