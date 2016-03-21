@@ -88,10 +88,8 @@ internal class FileRegistryImpl(
   }
 
   override fun findTypesForFile(file: File): Collection<Type> {
-    checkNotClosed()
-    return typesByFiles.getOrElse(file.canonicalFile) { error("File $file is not added to the registry") }.let {
-      Collections.unmodifiableCollection(it)
-    }
+    require(contains(file)) { "File $file is not added to the registry" }
+    return typesByFiles[file.canonicalFile]?.immutable() ?: emptyList()
   }
 
   override fun close() {
