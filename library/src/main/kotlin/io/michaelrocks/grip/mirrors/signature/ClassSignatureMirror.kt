@@ -77,7 +77,7 @@ internal class EmptyClassSignatureMirror(superType: Type, interfaces: List<Type>
   override val typeParameters: List<TypeParameter>
     get() = Collections.emptyList()
   override val superType =
-      GenericType.RawType(superType)
+      GenericType.Raw(superType)
   override val interfaces: List<GenericType> =
       if (interfaces.isEmpty()) emptyList() else GenericTypeListWrapper(interfaces)
 

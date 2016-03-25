@@ -22,7 +22,7 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 
-private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBoundedType(OBJECT_RAW_TYPE)
+private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
     private val callback: (GenericType) -> Unit
@@ -33,7 +33,7 @@ internal class GenericTypeReader(
   private var arrayDimensions = 0
 
   override fun visitBaseType(descriptor: Char) {
-    genericType = GenericType.RawType(Type.getType(descriptor.toString()))
+    genericType = GenericType.Raw(Type.getType(descriptor.toString()))
     visitEnd()
   }
 
@@ -66,8 +66,8 @@ internal class GenericTypeReader(
     return GenericTypeReader {
       typeArguments.add(
           when (name) {
-            SignatureVisitor.EXTENDS -> GenericType.UpperBoundedType(it)
-            SignatureVisitor.SUPER -> GenericType.LowerBoundedType(it)
+            SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
+            SignatureVisitor.SUPER -> GenericType.LowerBounded(it)
             SignatureVisitor.INSTANCEOF -> it
             else -> error("Unknown wildcard type: $name")
           }
@@ -84,15 +84,15 @@ internal class GenericTypeReader(
     if (classType != null) {
       val innerType =
           if (typeArguments.isEmpty()) {
-            GenericType.RawType(classType!!)
+            GenericType.Raw(classType!!)
           } else {
-            GenericType.ParameterizedType(classType!!, typeArguments.toList())
+            GenericType.Parameterized(classType!!, typeArguments.toList())
           }
-      genericType = genericType?.let { GenericType.InnerType(innerType, it) } ?: innerType
+      genericType = genericType?.let { GenericType.Inner(innerType, it) } ?: innerType
     }
 
     while (arrayDimensions > 0) {
-      genericType = GenericType.GenericArrayType(genericType!!)
+      genericType = GenericType.Array(genericType!!)
       --arrayDimensions
     }
   }

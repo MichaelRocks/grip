@@ -89,7 +89,7 @@ internal class EmptyMethodSignatureMirror(type: Type, exceptions: List<Type>) : 
         else GenericTypeListWrapper(toList())
       }
   override val returnType: GenericType =
-      GenericType.RawType(type.returnType)
+      GenericType.Raw(type.returnType)
   override val exceptionTypes: List<GenericType> =
       if (exceptions.isEmpty()) emptyList() else GenericTypeListWrapper(exceptions)
 
