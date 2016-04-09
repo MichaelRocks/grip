@@ -45,25 +45,8 @@ class BintrayPlugin implements Plugin<Project> {
   private void configureBintrayPublishing() {
     final boolean hasCredentials = project.hasProperty('bintrayUser') && project.hasProperty('bintrayKey')
     if (hasCredentials) {
-      addBintrayRepository()
       configureBintray()
       configureArtifacts()
-    }
-  }
-
-  private void addBintrayRepository() {
-    project.publishing {
-      repositories {
-        maven {
-          final String user = project.property('bintrayUser')
-          final String key = project.property('bintrayKey')
-          url "https://dl.bintray.com/$user/${getRepositoryName()}"
-          credentials {
-            username user
-            password key
-          }
-        }
-      }
     }
   }
 
