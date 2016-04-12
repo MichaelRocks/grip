@@ -30,17 +30,17 @@ val methods: Projection<MethodMirror, MethodsResult>
 sealed class Projection<M, R> {
   internal abstract fun configurator(grip: Grip): FromConfigurator<M, R>
 
-  internal object Classes : Projection<ClassMirror, ClassesResult>() {
+  object Classes : Projection<ClassMirror, ClassesResult>() {
     override fun configurator(grip: Grip) =
         ClassesQueryBuilder(grip)
   }
 
-  internal object Fields : Projection<FieldMirror, FieldsResult>() {
+  object Fields : Projection<FieldMirror, FieldsResult>() {
     override fun configurator(grip: Grip) =
         FieldsQueryBuilder(grip)
   }
 
-  internal object Methods : Projection<MethodMirror, MethodsResult>() {
+  object Methods : Projection<MethodMirror, MethodsResult>() {
     override fun configurator(grip: Grip) =
         MethodsQueryBuilder(grip)
   }
