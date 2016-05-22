@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-  compile 'io.michaelrocks:grip:0.3.0-alpha'
+  compile 'io.michaelrocks:grip:0.3.0-beta'
 }
 ```
 
@@ -41,7 +41,7 @@ execution **results are cached**.
 ```kotlin
 val classes = query.execute()
 ```
-The `classes` variable contains a map from [`Type`][1] to `ClassMirror`. `ClassMirror` is an
+The `classes` variable contains a map from `Type` to `ClassMirror`. `ClassMirror` is an
 object representation of class metadata. It provides functionality similar to `java.lang.Class`.
 There're other *mirror* classes such as `MethodMirror`, `FieldMirror`, `AnnotationMirror` and more.
 
@@ -50,12 +50,12 @@ conditions with `and`, `or,` `xor` and `not`. That's how you can query all non-`
 that implement `java.util.List`.
 ```kotlin
 val query = grip select classes from file where
-    (not(isFinal()) and interfacesContain(Type.getType(List::class.java)))
+    (not(isFinal()) and interfacesContain(getType<List<*>>()))
 ```
 Moreover, you can query methods or fields that satisfy some conditions. Here's how you can find
 all deprecated methods from all classes.
 ```kotlin
-val query = grip select methods from file where annotatedWith(Type.getType(Deprecated::class.java))
+val query = grip select methods from file where annotatedWith(getType<Deprecated>())
 ```
 And finally, subqueries are supported. For example, you can queries `public` non-`final` fields
 from `public` classes.
@@ -64,7 +64,7 @@ val subquery = grip select classes from file where isPublic()
 val query = grip select fields from subquery where (isPublic() and not(isFinal()))
 ```
 
-There're more conditions available, which you can find [here][2]. But if you need a condition
+There're more conditions available, which you can find [here][1]. But if you need a condition
 that's not present in the project you can add a new condition to your own project easily and use
 it in queries.
 
@@ -84,5 +84,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [1]: http://asm.ow2.org/asm50/javadoc/user/org/objectweb/asm/Type.html
- [2]: https://github.com/MichaelRocks/grip/blob/master/library/src/main/kotlin/io/michaelrocks/grip/Matchers.kt
+ [1]: https://github.com/MichaelRocks/grip/blob/master/library/src/main/kotlin/io/michaelrocks/grip/Matchers.kt
