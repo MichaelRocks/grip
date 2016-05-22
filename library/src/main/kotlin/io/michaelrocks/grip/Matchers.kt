@@ -114,11 +114,11 @@ inline fun withConstructor(crossinline predicate: (Grip, MethodMirror) -> Boolea
 inline fun withMethod(crossinline predicate: (Grip, MethodMirror) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> mirror.methods.any { predicate(grip, it) } }
 fun isConstructor() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isConstructor() }
+    { grip: Grip, mirror: MethodMirror -> mirror.isConstructor }
 fun isDefaultConstructor() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isDefaultConstructor() }
+    { grip: Grip, mirror: MethodMirror -> mirror.isDefaultConstructor }
 fun isStaticInitializer() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isStaticInitializer() }
+    { grip: Grip, mirror: MethodMirror -> mirror.isStaticInitializer }
 
 inline fun withParameter(crossinline predicate: (Grip, MethodParameterMirror) -> Boolean) =
     { grip: Grip, mirror: MethodMirror -> mirror.parameters.any { predicate(grip, it) } }

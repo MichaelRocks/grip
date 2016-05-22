@@ -86,12 +86,12 @@ interface ClassMirror : Element, Annotated {
     }
 
     fun addConstructor(mirror: MethodMirror) = apply {
-      check(mirror.isConstructor()) { "Method $mirror is not a constructor" }
+      check(mirror.isConstructor) { "Method $mirror is not a constructor" }
       this.constructors += mirror
     }
 
     fun addMethod(mirror: MethodMirror) = apply {
-      check(!mirror.isConstructor()) { "Method $mirror is a constructor" }
+      check(!mirror.isConstructor) { "Method $mirror is a constructor" }
       this.methods += mirror
     }
 

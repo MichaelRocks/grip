@@ -110,6 +110,10 @@ fun isDefaultConstructor(methodName: String, methodType: Type): Boolean =
 fun isStaticInitializer(methodName: String): Boolean =
     methodName == STATIC_INITIALIZER_NAME
 
-fun MethodMirror.isConstructor() = isConstructor(name)
-fun MethodMirror.isDefaultConstructor() = isDefaultConstructor(name, type)
-fun MethodMirror.isStaticInitializer() = isStaticInitializer(name)
+val MethodMirror.isConstructor: Boolean
+  get() = isConstructor(name)
+val MethodMirror.isDefaultConstructor: Boolean
+  get() = isDefaultConstructor(name, type)
+val MethodMirror.isStaticInitializer: Boolean
+  get() = isStaticInitializer(name)
+
