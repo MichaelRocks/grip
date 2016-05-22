@@ -29,7 +29,7 @@ val Element.isPrivate: Boolean
   get() = (access and Opcodes.ACC_PRIVATE) != 0
 val Element.isProtected: Boolean
   get() = (access and Opcodes.ACC_PROTECTED) != 0
-val Element.isPackage: Boolean
+val Element.isPackagePrivate: Boolean
   get() = (access and (Opcodes.ACC_PUBLIC or Opcodes.ACC_PROTECTED or Opcodes.ACC_PRIVATE)) == 0
 val Element.isStatic: Boolean
   get() = (access and Opcodes.ACC_STATIC) != 0
