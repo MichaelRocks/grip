@@ -18,9 +18,11 @@ package io.michaelrocks.grip.mirrors.annotation
 
 import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.mirrors.EnumMirror
+import io.michaelrocks.grip.mirrors.getObjectType
+import io.michaelrocks.grip.mirrors.toType
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
+import org.objectweb.asm.Type as AsmType
 
 internal abstract class AbstractAnnotationReader<T> protected constructor(
     private val classRegistry: ClassRegistry,
@@ -28,29 +30,37 @@ internal abstract class AbstractAnnotationReader<T> protected constructor(
 ) : AnnotationVisitor(Opcodes.ASM5) {
 
   override fun visit(name: String?, value: Any) {
-    addValue(name, value)
+    addNormalizedValue(this, name, value)
   }
 
   override fun visitEnum(name: String?, desc: String, value: String) {
-    addValue(name, EnumMirror(desc, value))
+    addNormalizedValue(this, name, EnumMirror(desc, value))
   }
 
   override fun visitAnnotation(name: String?, desc: String): AnnotationVisitor {
     val parent = this
-    return AnnotationInstanceReader(Type.getType(desc), classRegistry) {
-      parent.addValue(name, it)
+    return AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+      addNormalizedValue(parent, name, it)
     }
   }
 
   override fun visitArray(name: String?): AnnotationVisitor {
     val parent = this
     return AnnotationArrayReader(classRegistry) {
-      parent.addValue(name, it)
+      addNormalizedValue(parent, name, it)
     }
   }
 
   override fun visitEnd() {
     callback(buildResult())
+  }
+
+  private fun addNormalizedValue(reader: AbstractAnnotationReader<*>, name: String?, value: Any) {
+    if (value is AsmType) {
+      reader.addValue(name, value.toType())
+    } else {
+      reader.addValue(name, value)
+    }
   }
 
   protected abstract fun addValue(name: String?, value: Any)

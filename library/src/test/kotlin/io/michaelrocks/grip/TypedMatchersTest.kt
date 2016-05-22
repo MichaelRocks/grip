@@ -16,20 +16,20 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.Typed
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class TypedMatchersTest {
-  val typed = mock<Typed>().apply {
-    given(type).thenReturn(Type.VOID_TYPE)
+  val typed = mock<Typed<*>>().apply {
+    given(type).thenReturn(Type.Primitive.Void)
   }
 
   @Test fun testTypeTrue() = typed.testType(true) { type { grip, type -> true } }
   @Test fun testTypeFalse() = typed.testType(false) { type { grip, type -> false } }
 
-  private inline fun Typed.testType(condition: Boolean, body: () -> ((Grip, Typed) -> Boolean)) =
+  private inline fun Typed<*>.testType(condition: Boolean, body: () -> ((Grip, Typed<*>) -> Boolean)) =
       assertAndVerify(condition, body) { type }
 }

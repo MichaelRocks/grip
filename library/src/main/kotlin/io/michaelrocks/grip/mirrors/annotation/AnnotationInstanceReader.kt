@@ -18,10 +18,10 @@ package io.michaelrocks.grip.mirrors.annotation
 
 import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.mirrors.AnnotationMirror
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
 internal class AnnotationInstanceReader(
-    annotationType: Type,
+    annotationType: Type.Object,
     classRegistry: ClassRegistry,
     callback: (AnnotationMirror) -> Unit
 ) : AbstractAnnotationReader<AnnotationMirror>(classRegistry, callback) {

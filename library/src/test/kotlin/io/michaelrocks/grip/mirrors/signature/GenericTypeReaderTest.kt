@@ -1,18 +1,23 @@
 package io.michaelrocks.grip.mirrors.signature
 
-import io.michaelrocks.grip.commons.getType
-import io.michaelrocks.grip.mirrors.signature.GenericType.*
+import io.michaelrocks.grip.mirrors.getObjectType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.grip.mirrors.signature.GenericType.Array
+import io.michaelrocks.grip.mirrors.signature.GenericType.Inner
+import io.michaelrocks.grip.mirrors.signature.GenericType.LowerBounded
+import io.michaelrocks.grip.mirrors.signature.GenericType.Parameterized
+import io.michaelrocks.grip.mirrors.signature.GenericType.Raw
+import io.michaelrocks.grip.mirrors.signature.GenericType.TypeVariable
+import io.michaelrocks.grip.mirrors.signature.GenericType.UpperBounded
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class GenericTypeReaderTest {
   @Test
   fun testRawType() {
     assertParsedSignatureEquals(
         "Ljava/lang/Boolean;",
-        Raw(getType<Boolean>())
+        Raw(getObjectType<Boolean>())
     )
   }
 
@@ -36,7 +41,7 @@ class GenericTypeReaderTest {
   fun testParameterizedType() {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>;",
-        Parameterized(getType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
     )
   }
 
@@ -45,8 +50,8 @@ class GenericTypeReaderTest {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>.Entry<TK;TV;>;",
         Inner(
-            Parameterized(Type.getObjectType("Entry"), TypeVariable("K"), TypeVariable("V")),
-            Parameterized(getType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+            Parameterized(getObjectTypeByInternalName("Entry"), TypeVariable("K"), TypeVariable("V")),
+            Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
         )
     )
   }
@@ -56,7 +61,7 @@ class GenericTypeReaderTest {
     assertParsedSignatureEquals(
         "Ljava/util/List<+TT;>;",
         Parameterized(
-            getType<List<*>>(),
+            getObjectType<List<*>>(),
             UpperBounded(TypeVariable("T"))
         )
     )
@@ -67,7 +72,7 @@ class GenericTypeReaderTest {
     assertParsedSignatureEquals(
         "Ljava/util/List<-TT;>;",
         Parameterized(
-            getType<List<*>>(),
+            getObjectType<List<*>>(),
             LowerBounded(TypeVariable("T"))
         )
     )
@@ -80,7 +85,7 @@ class GenericTypeReaderTest {
         Array(
             Array(
                 Array(
-                    Parameterized(getType<List<*>>(), TypeVariable("T"))
+                    Parameterized(getObjectType<List<*>>(), TypeVariable("T"))
                 )
             )
         )
@@ -91,7 +96,7 @@ class GenericTypeReaderTest {
   fun testParameterizedTypeWithArray() {
     assertParsedSignatureEquals(
         "Ljava/util/List<[TT;>;",
-        Parameterized(getType<List<*>>(), Array(TypeVariable("T")))
+        Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T")))
     )
   }
 
@@ -99,8 +104,8 @@ class GenericTypeReaderTest {
   fun testNestedParameterizedType() {
     assertParsedSignatureEquals(
         "Ljava/util/List<Ljava/util/List<Ljava/lang/Boolean;>;>;",
-        Parameterized(getType<List<*>>(),
-            Parameterized(getType<List<*>>(), Raw(getType<Boolean>()))
+        Parameterized(getObjectType<List<*>>(),
+            Parameterized(getObjectType<List<*>>(), Raw(getObjectType<Boolean>()))
         )
     )
   }

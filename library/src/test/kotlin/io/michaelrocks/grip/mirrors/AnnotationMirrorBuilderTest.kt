@@ -16,9 +16,11 @@
 
 package io.michaelrocks.grip.mirrors
 
-import org.junit.Assert.*
+import io.michaelrocks.grip.arrayOf
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class AnnotationMirrorBuilderTest {
   @Test
@@ -103,7 +105,7 @@ class AnnotationMirrorBuilderTest {
   }
 
   private fun newAnnotationBuilder(annotationName: String): AnnotationMirror.Builder {
-    val type = Type.getObjectType(annotationName)
+    val type = getObjectTypeByInternalName(annotationName)
     return AnnotationMirror.Builder().type(type)
   }
 }

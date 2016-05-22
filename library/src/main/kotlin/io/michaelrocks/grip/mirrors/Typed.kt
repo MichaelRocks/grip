@@ -16,8 +16,6 @@
 
 package io.michaelrocks.grip.mirrors
 
-import org.objectweb.asm.Type
-
-interface Typed {
-  val type: Type
+interface Typed<T : Type> {
+  val type: T
 }

@@ -21,21 +21,20 @@ import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.EmptyMethodSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.LazyMethodSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.MethodSignatureMirror
-import org.objectweb.asm.Type
 
-interface MethodMirror : Element, Annotated {
+interface MethodMirror : Element<Type.Method>, Annotated {
   val signature: MethodSignatureMirror
   val defaultValue: Any?
-  val exceptions: List<Type>
+  val exceptions: List<Type.Object>
   val parameters: List<MethodParameterMirror>
 
   class Builder {
     private var access: Int = 0
     private var name: String? = null
-    private var type: Type? = null
+    private var type: Type.Method? = null
     private var signature: String? = null
     private var defaultValue: Any? = null
-    private val exceptions = LazyList<Type>()
+    private val exceptions = LazyList<Type.Object>()
     private val parameters = LazyList<MethodParameterMirror.Builder>()
 
     private val annotations = LazyList<AnnotationMirror>()
@@ -48,7 +47,7 @@ interface MethodMirror : Element, Annotated {
       this.name = name
     }
 
-    fun type(type: Type) = apply {
+    fun type(type: Type.Method) = apply {
       this.type = type
       type.argumentTypes.forEach { parameters += MethodParameterMirror.Builder(parameters.size, it) }
     }
@@ -63,7 +62,7 @@ interface MethodMirror : Element, Annotated {
 
     fun exceptions(exceptions: Array<out String>?) = apply {
       this.exceptions.clear()
-      exceptions?.mapTo(this.exceptions) { Type.getObjectType(it) }
+      exceptions?.mapTo(this.exceptions) { getObjectTypeByInternalName(it) }
     }
 
     fun addParameterAnnotation(index: Int, annotation: AnnotationMirror) = apply {
@@ -98,8 +97,8 @@ interface MethodMirror : Element, Annotated {
 
 const val CONSTRUCTOR_NAME = "<init>"
 const val STATIC_INITIALIZER_NAME = "<clinit>"
-val DEFAULT_CONSTRUCTOR_TYPE = Type.getMethodType(Type.VOID_TYPE)
-val STATIC_INITIALIZER_TYPE = Type.getMethodType(Type.VOID_TYPE)
+val DEFAULT_CONSTRUCTOR_TYPE = getMethodType(Type.Primitive.Void)
+val STATIC_INITIALIZER_TYPE = getMethodType(Type.Primitive.Void)
 
 fun isConstructor(methodName: String): Boolean =
     CONSTRUCTOR_NAME == methodName

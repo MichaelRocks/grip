@@ -18,9 +18,8 @@ package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.GenericType
-import org.objectweb.asm.Type
 
-internal class GenericTypeListWrapper(private val types: List<Type>) : List<GenericType> {
+internal class GenericTypeListWrapper<T : Type>(private val types: List<T>) : List<GenericType> {
   private val genericTypes by lazy(LazyThreadSafetyMode.NONE) {
     types.map { GenericType.Raw(it) }.immutable()
   }

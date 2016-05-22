@@ -17,8 +17,10 @@
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.commons.LazyList
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.getType
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 
@@ -28,12 +30,12 @@ internal class GenericTypeReader(
     private val callback: (GenericType) -> Unit
 ) : SignatureVisitor(Opcodes.ASM5) {
   private var genericType: GenericType? = null
-  private var classType: Type? = null
+  private var classType: Type.Object? = null
   private val typeArguments = LazyList<GenericType>()
   private var arrayDimensions = 0
 
   override fun visitBaseType(descriptor: Char) {
-    genericType = GenericType.Raw(Type.getType(descriptor.toString()))
+    genericType = GenericType.Raw(getType(descriptor.toString()))
     visitEnd()
   }
 
@@ -48,13 +50,13 @@ internal class GenericTypeReader(
   }
 
   override fun visitClassType(name: String) {
-    classType = Type.getObjectType(name)
+    classType = getObjectTypeByInternalName(name)
     typeArguments.clear()
   }
 
   override fun visitInnerClassType(name: String) {
     buildGenericType()
-    classType = Type.getObjectType(name)
+    classType = getObjectTypeByInternalName(name)
     typeArguments.clear()
   }
 

@@ -16,12 +16,18 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.*
+import io.michaelrocks.grip.mirrors.CONSTRUCTOR_NAME
+import io.michaelrocks.grip.mirrors.DEFAULT_CONSTRUCTOR_TYPE
+import io.michaelrocks.grip.mirrors.MethodMirror
+import io.michaelrocks.grip.mirrors.MethodParameterMirror
+import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_NAME
+import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_TYPE
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getMethodType
 import io.michaelrocks.mockito.RETURNS_SMART_NULLS
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class MethodMatchersTest {
   private val defaultConstructor = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {
@@ -31,8 +37,8 @@ class MethodMatchersTest {
 
   private val constructor = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {
     given(name).thenReturn(CONSTRUCTOR_NAME)
-    given(type).thenReturn(Type.getMethodType(Type.VOID_TYPE, Type.INT_TYPE))
-    given(parameters).thenReturn(listOf(MethodParameterMirror.Builder(0, Type.INT_TYPE).build()))
+    given(type).thenReturn(getMethodType(Type.Primitive.Void, Type.Primitive.Int))
+    given(parameters).thenReturn(listOf(MethodParameterMirror.Builder(0, Type.Primitive.Int).build()))
   }
 
   private val staticInitializer = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {

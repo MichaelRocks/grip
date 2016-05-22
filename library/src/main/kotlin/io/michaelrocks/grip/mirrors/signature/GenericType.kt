@@ -16,8 +16,8 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
-import io.michaelrocks.grip.commons.getType
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getType
 
 sealed class GenericType {
   class Raw(val type: Type) : GenericType() {
@@ -38,10 +38,10 @@ sealed class GenericType {
     override fun hashCode(): Int = 31 + 17 * elementType.hashCode()
   }
 
-  class Parameterized(val type: Type, val typeArguments: List<GenericType>) : GenericType() {
+  class Parameterized(val type: Type.Object, val typeArguments: List<GenericType>) : GenericType() {
 
     constructor(
-        type: Type,
+        type: Type.Object,
         typeArgument: GenericType,
         vararg typeArguments: GenericType
     ) : this(type, listOf(typeArgument) + typeArguments.asList())

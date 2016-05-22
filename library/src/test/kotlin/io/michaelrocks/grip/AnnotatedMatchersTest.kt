@@ -19,25 +19,25 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.mirrors.Annotated
 import io.michaelrocks.grip.mirrors.ImmutableAnnotationCollection
 import io.michaelrocks.grip.mirrors.buildAnnotation
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class AnnotatedMatchersTest {
   val annotated = mock<Annotated>().apply {
     given(annotations).thenReturn(
         ImmutableAnnotationCollection(
-            buildAnnotation(Type.getObjectType("io/michaelrocks/mocks/Annotation"))
+            buildAnnotation(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"))
         )
     )
   }
 
   @Test fun testAnnotatedWithByTypeTrue() = annotated.testAnnotations(true) {
-    annotatedWith(Type.getObjectType("io/michaelrocks/mocks/Annotation"))
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"))
   }
   @Test fun testAnnotatedWithByTypeFalse() = annotated.testAnnotations(false) {
-    annotatedWith(Type.getObjectType("io/michaelrocks/mocks/AnotherAnnotation"))
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation"))
   }
   @Test fun testAnnotatedWithByPredicateTrue() = annotated.testAnnotations(true) {
     annotatedWith { grip, annotation -> annotation.values.isEmpty() }
@@ -47,12 +47,12 @@ class AnnotatedMatchersTest {
   }
 
   @Test fun testAnnotatedWithByTypeAndPredicateTrue() = annotated.testAnnotations(true) {
-    annotatedWith(Type.getObjectType("io/michaelrocks/mocks/Annotation")) { grip, annotation ->
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation")) { grip, annotation ->
       annotation.values.isEmpty()
     }
   }
   @Test fun testAnnotatedWithByTypeAndPredicateFalse() = annotated.testAnnotations(false) {
-    annotatedWith(Type.getObjectType("io/michaelrocks/mocks/AnotherAnnotation")) { grip, annotation ->
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation")) { grip, annotation ->
       annotation.values.isNotEmpty()
     }
   }

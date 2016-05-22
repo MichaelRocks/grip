@@ -16,20 +16,20 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.commons.getType
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getMethodType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.getType
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class TypeMatchersTest {
-  private val void = Type.VOID_TYPE
+  private val void = Type.Primitive.Void
   private val string = getType<String>()
-  private val array = Type.getType("[I")
-  private val method = Type.getMethodType(Type.INT_TYPE, getType<Any>())
+  private val array = getType("[I")
+  private val method = getMethodType(Type.Primitive.Int, getType<Any>())
 
-  @Test fun testTypeEqualsTrue() = string.assertMatcher(true, equalsTo(Type.getObjectType("java/lang/String")))
-  @Test fun testTypeEqualsFalse() = string.assertMatcher(false, equalsTo(Type.getObjectType("java/lang/Object")))
-  @Test fun testTypeSortEqualsTrue() = string.assertMatcher(true, sortEqualsTo(Type.OBJECT))
-  @Test fun testTypeSortEqualsFalse() = string.assertMatcher(false, sortEqualsTo(Type.VOID))
+  @Test fun testTypeEqualsTrue() = string.assertMatcher(true, equalsTo(getObjectTypeByInternalName("java/lang/String")))
+  @Test fun testTypeEqualsFalse() = string.assertMatcher(false, equalsTo(getObjectTypeByInternalName("java/lang/Object")))
   @Test fun testIsPrimitiveTrue() = void.assertMatcher(true, isPrimitive())
   @Test fun testIsPrimitiveFalse() = string.assertMatcher(false, isPrimitive())
   @Test fun testIsArrayTrue() = array.assertMatcher(true, isArray())
@@ -38,6 +38,6 @@ class TypeMatchersTest {
   @Test fun testIsObjectFalse() = void.assertMatcher(false, isObject())
   @Test fun testIsVoidTrue() = void.assertMatcher(true, isVoid())
   @Test fun testIsVoidFalse() = array.assertMatcher(false, isVoid())
-  @Test fun testReturnsTrue() = method.assertMatcher(true, returns(Type.INT_TYPE))
-  @Test fun testReturnsFalse() = method.assertMatcher(false, returns(Type.VOID_TYPE))
+  @Test fun testReturnsTrue() = method.assertMatcher(true, returns(Type.Primitive.Int))
+  @Test fun testReturnsFalse() = method.assertMatcher(false, returns(Type.Primitive.Void))
 }

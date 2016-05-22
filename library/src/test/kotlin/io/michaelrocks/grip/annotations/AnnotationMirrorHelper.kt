@@ -18,9 +18,10 @@ package io.michaelrocks.grip.annotations
 
 import io.michaelrocks.grip.mirrors.AbstractAnnotationMirror
 import io.michaelrocks.grip.mirrors.AnnotationMirror
+import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.buildAnnotation
-import org.objectweb.asm.Type
-import java.util.*
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import java.util.Collections
 
 fun createAnnotationMirror(annotationName: String): AnnotationMirror =
     createAnnotationMirror(annotationName, emptyMap<String, Any>())
@@ -39,11 +40,11 @@ fun createAnnotationMirror(annotationName: String, values: Map<String, Any>): An
       addValues(SimpleAnnotationMirror(getAnnotationType(annotationName), values))
     }
 
-fun getAnnotationType(annotationName: String): Type =
-    Type.getObjectType(annotationName)
+fun getAnnotationType(annotationName: String): Type.Object =
+    getObjectTypeByInternalName(annotationName)
 
 private class SimpleAnnotationMirror(
-    override val type: Type,
+    override val type: Type.Object,
     override val values: Map<String, Any>
 ) : AbstractAnnotationMirror() {
   override val resolved: Boolean

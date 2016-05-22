@@ -16,17 +16,23 @@
 
 package io.michaelrocks.grip.annotations
 
-import io.michaelrocks.grip.commons.getType
+import io.michaelrocks.grip.arrayOf
 import io.michaelrocks.grip.mirrors.AnnotationMirror
 import io.michaelrocks.grip.mirrors.EnumMirror
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getMethodType
+import io.michaelrocks.grip.mirrors.getType
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.Type
+import org.objectweb.asm.Opcodes.ACC_ABSTRACT
+import org.objectweb.asm.Opcodes.ACC_ANNOTATION
+import org.objectweb.asm.Opcodes.ACC_INTERFACE
+import org.objectweb.asm.Opcodes.ACC_PUBLIC
+import org.objectweb.asm.Opcodes.V1_6
 
 class AnnotationGenerator private constructor(private val classVisitor: ClassVisitor) {
   companion object {
-    fun create(classVisitor: ClassVisitor, annotationType: Type): AnnotationGenerator {
+    fun create(classVisitor: ClassVisitor, annotationType: Type.Object): AnnotationGenerator {
       val generator = AnnotationGenerator(classVisitor)
       classVisitor.visit(
           V1_6,
@@ -48,7 +54,7 @@ class AnnotationGenerator private constructor(private val classVisitor: ClassVis
     val methodVisitor = classVisitor.visitMethod(
         ACC_PUBLIC or ACC_ABSTRACT,
         name,
-        Type.getMethodDescriptor(type),
+        getMethodType(type).descriptor,
         null,
         null)
     if (defaultValue != null) {

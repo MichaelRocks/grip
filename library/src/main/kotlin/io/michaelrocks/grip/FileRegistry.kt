@@ -19,19 +19,22 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.commons.closeQuietly
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.io.FileSource
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import java.io.Closeable
 import java.io.File
-import java.util.*
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.LinkedHashMap
 
 interface FileRegistry {
   operator fun contains(file: File): Boolean
-  operator fun contains(type: Type): Boolean
+  operator fun contains(type: Type.Object): Boolean
 
   fun classpath(): Collection<File>
 
-  fun readClass(type: Type): ByteArray
-  fun findTypesForFile(file: File): Collection<Type>
+  fun readClass(type: Type.Object): ByteArray
+  fun findTypesForFile(file: File): Collection<Type.Object>
 }
 
 internal class FileRegistryImpl(
@@ -39,8 +42,8 @@ internal class FileRegistryImpl(
     private val fileSourceFactory: FileSource.Factory
 ) : FileRegistry, Closeable {
   private val sources = LinkedHashMap<File, FileSource>()
-  private val filesByTypes = HashMap<Type, File>()
-  private val typesByFiles = HashMap<File, MutableCollection<Type>>()
+  private val filesByTypes = HashMap<Type.Object, File>()
+  private val typesByFiles = HashMap<File, MutableCollection<Type.Object>>()
 
   init {
     classpath.forEach {
@@ -50,7 +53,7 @@ internal class FileRegistryImpl(
         sources.put(file, fileSource)
         fileSource.listFiles { path, fileType ->
           if (fileType == FileSource.EntryType.CLASS) {
-            val type = Type.getObjectType(path.substringBeforeLast(".class"))
+            val type = getObjectTypeByInternalName(path.substringBeforeLast(".class"))
             filesByTypes.put(type, file)
             typesByFiles.getOrPut(file) { ArrayList() } += type
           }
@@ -66,7 +69,7 @@ internal class FileRegistryImpl(
     return file.canonicalFile in sources
   }
 
-  override fun contains(type: Type): Boolean {
+  override fun contains(type: Type.Object): Boolean {
     checkNotClosed()
     return type in filesByTypes
   }
@@ -76,7 +79,7 @@ internal class FileRegistryImpl(
     return sources.keys.immutable()
   }
 
-  override fun readClass(type: Type): ByteArray {
+  override fun readClass(type: Type.Object): ByteArray {
     checkNotClosed()
     val file = filesByTypes.getOrElse(type) {
       throw IllegalArgumentException("Unable to find a file for ${type.internalName}")
@@ -87,7 +90,7 @@ internal class FileRegistryImpl(
     return fileSource.readFile("${type.internalName}.class")
   }
 
-  override fun findTypesForFile(file: File): Collection<Type> {
+  override fun findTypesForFile(file: File): Collection<Type.Object> {
     require(contains(file)) { "File $file is not added to the registry" }
     return typesByFiles[file.canonicalFile]?.immutable() ?: emptyList()
   }

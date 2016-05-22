@@ -16,7 +16,7 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
 interface FieldSignatureMirror {
   val type: GenericType

@@ -19,17 +19,17 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.commons.LazyMap
 import io.michaelrocks.grip.mirrors.ClassMirror
 import io.michaelrocks.grip.mirrors.MethodMirror
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
-interface MethodsResult : Map<Type, List<MethodMirror>> {
-  val types: Set<Type>
+interface MethodsResult : Map<Type.Object, List<MethodMirror>> {
+  val types: Set<Type.Object>
     get() = keys
 
-  fun containsType(type: Type) =
+  fun containsType(type: Type.Object) =
       containsKey(type)
 
   class Builder {
-    private val methods = LazyMap<Type, List<MethodMirror>>()
+    private val methods = LazyMap<Type.Object, List<MethodMirror>>()
 
     fun addMethods(classMirror: ClassMirror, methodMirrors: Iterable<MethodMirror>) = apply {
       val oldMethods = methods.put(classMirror.type, methodMirrors.toList())
@@ -40,7 +40,7 @@ interface MethodsResult : Map<Type, List<MethodMirror>> {
 
     private class ImmutableMethodsResult(
         builder: Builder
-    ) : MethodsResult, Map<Type, List<MethodMirror>> by builder.methods.detachImmutableCopy()
+    ) : MethodsResult, Map<Type.Object, List<MethodMirror>> by builder.methods.detachImmutableCopy()
   }
 }
 
@@ -50,7 +50,7 @@ internal inline fun buildMethodsResult(body: MethodsResult.Builder.() -> Unit) =
       build()
     }
 
-val Map.Entry<Type, List<MethodMirror>>.type: Type
+val Map.Entry<Type.Object, List<MethodMirror>>.type: Type.Object
   get() = key
-val Map.Entry<Type, List<MethodMirror>>.methods: List<MethodMirror>
+val Map.Entry<Type.Object, List<MethodMirror>>.methods: List<MethodMirror>
   get() = value

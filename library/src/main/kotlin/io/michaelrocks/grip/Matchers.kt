@@ -16,9 +16,22 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.*
+import io.michaelrocks.grip.mirrors.Annotated
+import io.michaelrocks.grip.mirrors.AnnotationMirror
+import io.michaelrocks.grip.mirrors.ClassMirror
+import io.michaelrocks.grip.mirrors.Element
+import io.michaelrocks.grip.mirrors.FieldMirror
+import io.michaelrocks.grip.mirrors.MethodMirror
+import io.michaelrocks.grip.mirrors.MethodParameterMirror
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.Typed
+import io.michaelrocks.grip.mirrors.isArray
+import io.michaelrocks.grip.mirrors.isConstructor
+import io.michaelrocks.grip.mirrors.isDefaultConstructor
+import io.michaelrocks.grip.mirrors.isObject
+import io.michaelrocks.grip.mirrors.isPrimitive
+import io.michaelrocks.grip.mirrors.isStaticInitializer
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 
 fun <T> not(matcher: (Grip, T) -> Boolean) =
     { grip: Grip, value: T -> !matcher(grip, value) }
@@ -35,19 +48,15 @@ inline infix fun <reified R, reified T1 : R, reified T2 : R> ((Grip, T1) -> Bool
 inline fun typeMatcher(crossinline predicate: (Grip, Type) -> Boolean) =
     { grip: Grip, type: Type -> predicate(grip, type) }
 fun equalsTo(otherType: Type) = typeMatcher { grip, type -> type == otherType }
-fun sortEqualsTo(sort: Int) = typeMatcher { grip, type -> type.sort == sort }
-fun isPrimitive() = typeMatcher { grip, type ->
-  when (type.sort) {
-    Type.OBJECT, Type.ARRAY, Type.METHOD -> false
-    else -> true
-  }
-}
-fun isArray() = sortEqualsTo(Type.ARRAY)
-fun isObject() = sortEqualsTo(Type.OBJECT)
-fun isVoid() = sortEqualsTo(Type.VOID)
+fun isPrimitive() = typeMatcher { grip, type -> type.isPrimitive }
+fun isArray() = typeMatcher { grip, type -> type.isArray }
+fun isObject() = typeMatcher { grip, type -> type.isObject }
+fun isVoid() = typeMatcher { grip, type -> type is Type.Primitive.Void }
 
+inline fun methodTypeMatcher(crossinline predicate: (Grip, Type.Method) -> Boolean) =
+    { grip: Grip, type: Type.Method -> predicate(grip, type) }
 inline fun returns(crossinline predicate: (Grip, Type) -> Boolean) =
-    typeMatcher { grip, type -> predicate(grip, type.returnType) }
+    methodTypeMatcher { grip, type -> predicate(grip, type.returnType) }
 fun returns(otherType: Type) = returns { grip, type -> type == otherType }
 
 inline fun stringMatcher(crossinline predicate: (Grip, String) -> Boolean) =
@@ -59,10 +68,18 @@ fun endsWith(suffix: String) = stringMatcher { grip, string -> string.endsWith(s
 fun contains(otherString: String) = stringMatcher { grip, string -> string.contains(otherString) }
 
 inline fun type(crossinline predicate: (Grip, Type) -> Boolean) =
-    { grip: Grip, mirror: Typed -> predicate(grip, mirror.type) }
+    { grip: Grip, mirror: Typed<*> -> predicate(grip, mirror.type) }
+inline fun primitiveType(crossinline predicate: (Grip, Type.Primitive) -> Boolean) =
+    { grip: Grip, mirror: Typed<Type.Primitive> -> predicate(grip, mirror.type) }
+inline fun arrayType(crossinline predicate: (Grip, Type.Array) -> Boolean) =
+    { grip: Grip, mirror: Typed<Type.Array> -> predicate(grip, mirror.type) }
+inline fun objectType(crossinline predicate: (Grip, Type.Object) -> Boolean) =
+    { grip: Grip, mirror: Typed<Type.Object> -> predicate(grip, mirror.type) }
+inline fun methodType(crossinline predicate: (Grip, Type.Method) -> Boolean) =
+    { grip: Grip, mirror: Typed<Type.Method> -> predicate(grip, mirror.type) }
 
 inline fun access(crossinline predicate: (Grip, Int) -> Boolean) =
-    { grip: Grip, mirror: Element -> predicate(grip, mirror.access) }
+    { grip: Grip, mirror: Element<*> -> predicate(grip, mirror.access) }
 fun access(otherAccess: Int) = access { grip, access -> access == otherAccess }
 fun accessHasAllOf(mask: Int) = access { grip, access -> access and mask == mask }
 fun accessHasAnyOf(mask: Int) = access { grip, access -> access and mask != 0 }
@@ -79,7 +96,7 @@ fun isAnnotation() = accessHasAllOf(Opcodes.ACC_ANNOTATION)
 fun isEnum() = accessHasAllOf(Opcodes.ACC_ENUM)
 
 inline fun name(crossinline predicate: (Grip, String) -> Boolean) =
-    { grip: Grip, mirror: Element -> predicate(grip, mirror.name) }
+    { grip: Grip, mirror: Element<*> -> predicate(grip, mirror.name) }
 
 inline fun annotatedWith(crossinline predicate: (Grip, AnnotationMirror) -> Boolean) =
     { grip: Grip, mirror: Annotated -> mirror.annotations.any { predicate(grip, it) } }

@@ -1,13 +1,18 @@
 package io.michaelrocks.grip
 
 import io.michaelrocks.grip.io.FileSource
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getObjectType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.mockito.RETURNS_DEEP_STUBS
 import io.michaelrocks.mockito.any
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.objectweb.asm.Type
 import java.io.File
 
 class FileRegistryImplTest {
@@ -34,8 +39,8 @@ class FileRegistryImplTest {
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file.canonicalFile)).thenReturn(source)
     val registry = FileRegistryImpl(listOf(file), factory)
-    assertTrue(registry.contains(Type.getObjectType("Type1")))
-    assertFalse(registry.contains(Type.getObjectType("Type2")))
+    assertTrue(registry.contains(getObjectTypeByInternalName("Type1")))
+    assertFalse(registry.contains(getObjectTypeByInternalName("Type2")))
   }
 
   @Test
@@ -60,8 +65,8 @@ class FileRegistryImplTest {
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file.canonicalFile)).thenReturn(source)
     val registry = FileRegistryImpl(listOf(file), factory)
-    assertSame(data, registry.readClass(Type.getObjectType("Type1")))
-    assertThrows<IllegalArgumentException> { registry.readClass(Type.getObjectType("Type2")) }
+    assertSame(data, registry.readClass(getObjectTypeByInternalName("Type1")))
+    assertThrows<IllegalArgumentException> { registry.readClass(getObjectTypeByInternalName("Type2")) }
   }
 
   @Test
@@ -79,8 +84,8 @@ class FileRegistryImplTest {
     given(factory.createFileSource(file1.canonicalFile)).thenReturn(source1)
     given(factory.createFileSource(file2.canonicalFile)).thenReturn(source2)
     val registry = FileRegistryImpl(listOf(file1, file2), factory)
-    assertEquals(listOf(Type.getObjectType("Type1")), registry.findTypesForFile(file1).toList())
-    assertEquals(listOf<Type>(), registry.findTypesForFile(file2).toList())
+    assertEquals(listOf(getObjectTypeByInternalName("Type1")), registry.findTypesForFile(file1).toList())
+    assertEquals(listOf<Type.Object>(), registry.findTypesForFile(file2).toList())
     assertThrows<IllegalArgumentException> { registry.findTypesForFile(File("file3")) }
   }
 
@@ -91,9 +96,9 @@ class FileRegistryImplTest {
     registry.close()
 
     assertThrows<IllegalStateException> { registry.contains(File("source")) }
-    assertThrows<IllegalStateException> { registry.contains(Type.BOOLEAN_TYPE) }
+    assertThrows<IllegalStateException> { registry.contains(getObjectType<Any>()) }
     assertThrows<IllegalStateException> { registry.classpath() }
-    assertThrows<IllegalStateException> { registry.readClass(Type.BOOLEAN_TYPE) }
+    assertThrows<IllegalStateException> { registry.readClass(getObjectType<Any>()) }
     assertThrows<IllegalStateException> { registry.findTypesForFile(File("source")) }
     registry.close()
   }

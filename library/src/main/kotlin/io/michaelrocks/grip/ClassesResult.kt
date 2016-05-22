@@ -18,21 +18,21 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.commons.LazyMap
 import io.michaelrocks.grip.mirrors.ClassMirror
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
-interface ClassesResult : Map<Type, ClassMirror> {
-  val types: Set<Type>
+interface ClassesResult : Map<Type.Object, ClassMirror> {
+  val types: Set<Type.Object>
     get() = keys
   val classes: Collection<ClassMirror>
     get() = values
 
-  fun containsType(type: Type) =
+  fun containsType(type: Type.Object) =
     containsKey(type)
   fun containsClass(classMirror: ClassMirror) =
     containsValue(classMirror)
 
   class Builder {
-    private val classes = LazyMap<Type, ClassMirror>()
+    private val classes = LazyMap<Type.Object, ClassMirror>()
 
     fun addClass(mirror: ClassMirror) = apply {
       val oldMirror = classes.put(mirror.type, mirror)
@@ -44,7 +44,7 @@ interface ClassesResult : Map<Type, ClassMirror> {
 
     private class ImmutableClassesResult(
         builder: Builder
-    ) : ClassesResult, Map<Type, ClassMirror> by builder.classes.detachImmutableCopy()
+    ) : ClassesResult, Map<Type.Object, ClassMirror> by builder.classes.detachImmutableCopy()
   }
 }
 
@@ -54,7 +54,7 @@ internal inline fun buildClassesResult(body: ClassesResult.Builder.() -> Unit) =
       build()
     }
 
-val Map.Entry<Type, ClassMirror>.type: Type
+val Map.Entry<Type.Object, ClassMirror>.type: Type.Object
   get() = key
-val Map.Entry<Type, ClassMirror>.classMirror: ClassMirror
+val Map.Entry<Type.Object, ClassMirror>.classMirror: ClassMirror
   get() = value

@@ -16,8 +16,6 @@
 
 package io.michaelrocks.grip.mirrors
 
-import org.objectweb.asm.Type
+fun EnumMirror(desc: String, value: String): EnumMirror = EnumMirror(getObjectType(desc), value)
 
-fun EnumMirror(desc: String, value: String): EnumMirror = EnumMirror(Type.getType(desc), value)
-
-data class EnumMirror(val type: Type, val value: String)
+data class EnumMirror(val type: Type.Object, val value: String)

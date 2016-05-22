@@ -17,18 +17,17 @@
 package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.LazyMap
-import org.objectweb.asm.Type
-import java.util.*
+import java.util.Arrays
 
-interface AnnotationMirror : Typed {
+interface AnnotationMirror : Typed<Type.Object> {
   val values: Map<String, Any>
   val resolved: Boolean
 
   class Builder {
-    private var type: Type? = null
+    private var type: Type.Object? = null
     private val values = LazyMap<String, Any>()
 
-    fun type(type: Type) = apply {
+    fun type(type: Type.Object) = apply {
       this.type = type
     }
 
@@ -120,7 +119,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
 }
 
 internal class UnresolvedAnnotationMirror(
-    override val type: Type
+    override val type: Type.Object
 ) : AbstractAnnotationMirror() {
   override val values: Map<String, Any>
     get() = emptyMap()
@@ -130,10 +129,10 @@ internal class UnresolvedAnnotationMirror(
   override fun toString(): String = "UnresolvedAnnotationMirror{type = $type}"
 }
 
-fun buildAnnotation(type: Type): AnnotationMirror =
+fun buildAnnotation(type: Type.Object): AnnotationMirror =
     AnnotationMirror.Builder().type(type).build()
 
-inline fun buildAnnotation(type: Type, body: AnnotationMirror.Builder.() -> Unit): AnnotationMirror =
+inline fun buildAnnotation(type: Type.Object, body: AnnotationMirror.Builder.() -> Unit): AnnotationMirror =
     AnnotationMirror.Builder().run {
       type(type)
       body()

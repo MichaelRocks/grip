@@ -19,9 +19,9 @@ package io.michaelrocks.grip.mirrors.signature
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.GenericTypeListWrapper
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.signature.SignatureReader
-import java.util.*
+import java.util.Collections
 
 interface ClassSignatureMirror {
   val typeParameters: List<TypeParameter>

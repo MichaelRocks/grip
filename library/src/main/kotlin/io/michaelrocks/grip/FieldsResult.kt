@@ -19,17 +19,17 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.commons.LazyMap
 import io.michaelrocks.grip.mirrors.ClassMirror
 import io.michaelrocks.grip.mirrors.FieldMirror
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
-interface FieldsResult : Map<Type, List<FieldMirror>> {
-  val types: Set<Type>
+interface FieldsResult : Map<Type.Object, List<FieldMirror>> {
+  val types: Set<Type.Object>
     get() = keys
 
-  fun containsType(type: Type) =
+  fun containsType(type: Type.Object) =
       containsKey(type)
 
   class Builder {
-    private val fields = LazyMap<Type, List<FieldMirror>>()
+    private val fields = LazyMap<Type.Object, List<FieldMirror>>()
 
     fun addFields(classMirror: ClassMirror, fieldMirrors: Iterable<FieldMirror>) = apply {
       val oldFields = fields.put(classMirror.type, fieldMirrors.toList())
@@ -40,7 +40,7 @@ interface FieldsResult : Map<Type, List<FieldMirror>> {
 
     private class ImmutableFieldsResult(
         builder: Builder
-    ) : FieldsResult, Map<Type, List<FieldMirror>> by builder.fields.detachImmutableCopy()
+    ) : FieldsResult, Map<Type.Object, List<FieldMirror>> by builder.fields.detachImmutableCopy()
   }
 }
 
@@ -50,7 +50,7 @@ internal inline fun buildFieldsResult(body: FieldsResult.Builder.() -> Unit) =
       build()
     }
 
-val Map.Entry<Type, List<FieldMirror>>.type: Type
+val Map.Entry<Type.Object, List<FieldMirror>>.type: Type.Object
   get() = key
-val Map.Entry<Type, List<FieldMirror>>.fields: List<FieldMirror>
+val Map.Entry<Type.Object, List<FieldMirror>>.fields: List<FieldMirror>
   get() = value

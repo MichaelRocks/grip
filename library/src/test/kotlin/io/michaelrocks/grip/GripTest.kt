@@ -16,10 +16,16 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.classes.*
-import io.michaelrocks.grip.commons.getType
+import io.michaelrocks.grip.classes.Annotation1
+import io.michaelrocks.grip.classes.Annotation2
+import io.michaelrocks.grip.classes.Class1
+import io.michaelrocks.grip.classes.Class2
+import io.michaelrocks.grip.classes.Enum1
 import io.michaelrocks.grip.mirrors.ReflectorImpl
-import org.junit.Assert.*
+import io.michaelrocks.grip.mirrors.getObjectType
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.Closeable
@@ -55,10 +61,10 @@ class GripTest {
         grip select classes from file where (not(name(endsWith("Class1") or startsWith("Class1"))) and not(isPackagePrivate()))
     )
     assertClassesResultContains<Class1>(
-        grip select classes from file where (annotatedWith(getType<Annotation1>()))
+        grip select classes from file where (annotatedWith(getObjectType<Annotation1>()))
     )
     assertClassesResultNotContains<Class1>(
-        grip select classes from file where (annotatedWith(getType<Retention>()))
+        grip select classes from file where (annotatedWith(getObjectType<Retention>()))
     )
   }
 
@@ -67,19 +73,19 @@ class GripTest {
     val file = File("")
     val classes = grip select classes from file where name(contains("Class"))
     val methods = grip select methods from classes where (not(isStatic()) and not(isConstructor()))
-    assertEquals(1, methods.execute()[getType<Class1>()]!!.size)
-    assertEquals(1, methods.execute()[getType<Class2>()]!!.size)
+    assertEquals(1, methods.execute()[getObjectType<Class1>()]!!.size)
+    assertEquals(1, methods.execute()[getObjectType<Class2>()]!!.size)
   }
 
   private inline fun <reified T : Any> assertClassesResultContains(query: Query<ClassesResult>) {
     val result = query.execute()
-    val type = getType<T>()
+    val type = getObjectType<T>()
     assert(result.classes.any { it.type == type })
   }
 
   private inline fun <reified T : Any> assertClassesResultNotContains(query: Query<ClassesResult>) {
     val result = query.execute()
-    val type = getType<T>()
+    val type = getObjectType<T>()
     assert(!result.classes.any { it.type == type })
   }
 

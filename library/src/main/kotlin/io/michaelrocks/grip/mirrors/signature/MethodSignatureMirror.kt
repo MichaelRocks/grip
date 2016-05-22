@@ -19,7 +19,7 @@ package io.michaelrocks.grip.mirrors.signature
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.GenericTypeListWrapper
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.signature.SignatureReader
 
 interface MethodSignatureMirror {
@@ -80,7 +80,7 @@ internal class LazyMethodSignatureMirror(private val signature: String) : Method
   override fun toJvmSignature() = signature
 }
 
-internal class EmptyMethodSignatureMirror(type: Type, exceptions: List<Type>) : MethodSignatureMirror {
+internal class EmptyMethodSignatureMirror(type: Type.Method, exceptions: List<Type.Object>) : MethodSignatureMirror {
   override val typeParameters: List<TypeParameter>
     get() = emptyList()
   override val parameterTypes: List<GenericType> =
