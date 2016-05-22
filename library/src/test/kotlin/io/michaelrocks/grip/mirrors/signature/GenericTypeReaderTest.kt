@@ -1,17 +1,23 @@
 package io.michaelrocks.grip.mirrors.signature
 
-import io.michaelrocks.grip.commons.getType
-import io.michaelrocks.grip.mirrors.signature.GenericType.*
+import io.michaelrocks.grip.mirrors.getObjectType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.signature.GenericType.Array
+import io.michaelrocks.grip.mirrors.signature.GenericType.Inner
+import io.michaelrocks.grip.mirrors.signature.GenericType.LowerBounded
+import io.michaelrocks.grip.mirrors.signature.GenericType.Parameterized
+import io.michaelrocks.grip.mirrors.signature.GenericType.Raw
+import io.michaelrocks.grip.mirrors.signature.GenericType.TypeVariable
+import io.michaelrocks.grip.mirrors.signature.GenericType.UpperBounded
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class GenericTypeReaderTest {
   @Test
   fun testRawType() {
     assertParsedSignatureEquals(
         "Ljava/lang/Boolean;",
-        RawType(getType<Boolean>())
+        Raw(getObjectType<Boolean>())
     )
   }
 
@@ -27,7 +33,7 @@ class GenericTypeReaderTest {
   fun testGenericArray() {
     assertParsedSignatureEquals(
         "[TT;",
-        GenericArrayType(TypeVariable("T"))
+        Array(TypeVariable("T"))
     )
   }
 
@@ -35,7 +41,7 @@ class GenericTypeReaderTest {
   fun testParameterizedType() {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>;",
-        ParameterizedType(getType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
     )
   }
 
@@ -43,9 +49,9 @@ class GenericTypeReaderTest {
   fun testInnerType() {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>.Entry<TK;TV;>;",
-        InnerType(
-            ParameterizedType(Type.getObjectType("Entry"), TypeVariable("K"), TypeVariable("V")),
-            ParameterizedType(getType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+        Inner(
+            Parameterized(getObjectTypeByInternalName("Entry"), TypeVariable("K"), TypeVariable("V")),
+            Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
         )
     )
   }
@@ -54,9 +60,9 @@ class GenericTypeReaderTest {
   fun testUpperBoundedType() {
     assertParsedSignatureEquals(
         "Ljava/util/List<+TT;>;",
-        ParameterizedType(
-            getType<List<*>>(),
-            UpperBoundedType(TypeVariable("T"))
+        Parameterized(
+            getObjectType<List<*>>(),
+            UpperBounded(TypeVariable("T"))
         )
     )
   }
@@ -65,9 +71,9 @@ class GenericTypeReaderTest {
   fun testLowerBoundedType() {
     assertParsedSignatureEquals(
         "Ljava/util/List<-TT;>;",
-        ParameterizedType(
-            getType<List<*>>(),
-            LowerBoundedType(TypeVariable("T"))
+        Parameterized(
+            getObjectType<List<*>>(),
+            LowerBounded(TypeVariable("T"))
         )
     )
   }
@@ -76,10 +82,10 @@ class GenericTypeReaderTest {
   fun testMultiDimensionalArray() {
     assertParsedSignatureEquals(
         "[[[Ljava/util/List<TT;>;",
-        GenericArrayType(
-            GenericArrayType(
-                GenericArrayType(
-                    ParameterizedType(getType<List<*>>(), TypeVariable("T"))
+        Array(
+            Array(
+                Array(
+                    Parameterized(getObjectType<List<*>>(), TypeVariable("T"))
                 )
             )
         )
@@ -90,7 +96,7 @@ class GenericTypeReaderTest {
   fun testParameterizedTypeWithArray() {
     assertParsedSignatureEquals(
         "Ljava/util/List<[TT;>;",
-        ParameterizedType(getType<List<*>>(), GenericArrayType(TypeVariable("T")))
+        Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T")))
     )
   }
 
@@ -98,8 +104,8 @@ class GenericTypeReaderTest {
   fun testNestedParameterizedType() {
     assertParsedSignatureEquals(
         "Ljava/util/List<Ljava/util/List<Ljava/lang/Boolean;>;>;",
-        ParameterizedType(getType<List<*>>(),
-            ParameterizedType(getType<List<*>>(), RawType(getType<Boolean>()))
+        Parameterized(getObjectType<List<*>>(),
+            Parameterized(getObjectType<List<*>>(), Raw(getObjectType<Boolean>()))
         )
     )
   }

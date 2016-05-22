@@ -17,23 +17,25 @@
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.commons.LazyList
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.getType
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 
-private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBoundedType(OBJECT_RAW_TYPE)
+private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
     private val callback: (GenericType) -> Unit
 ) : SignatureVisitor(Opcodes.ASM5) {
   private var genericType: GenericType? = null
-  private var classType: Type? = null
+  private var classType: Type.Object? = null
   private val typeArguments = LazyList<GenericType>()
   private var arrayDimensions = 0
 
   override fun visitBaseType(descriptor: Char) {
-    genericType = GenericType.RawType(Type.getType(descriptor.toString()))
+    genericType = GenericType.Raw(getType(descriptor.toString()))
     visitEnd()
   }
 
@@ -48,13 +50,13 @@ internal class GenericTypeReader(
   }
 
   override fun visitClassType(name: String) {
-    classType = Type.getObjectType(name)
+    classType = getObjectTypeByInternalName(name)
     typeArguments.clear()
   }
 
   override fun visitInnerClassType(name: String) {
     buildGenericType()
-    classType = Type.getObjectType(name)
+    classType = getObjectTypeByInternalName(name)
     typeArguments.clear()
   }
 
@@ -66,8 +68,8 @@ internal class GenericTypeReader(
     return GenericTypeReader {
       typeArguments.add(
           when (name) {
-            SignatureVisitor.EXTENDS -> GenericType.UpperBoundedType(it)
-            SignatureVisitor.SUPER -> GenericType.LowerBoundedType(it)
+            SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
+            SignatureVisitor.SUPER -> GenericType.LowerBounded(it)
             SignatureVisitor.INSTANCEOF -> it
             else -> error("Unknown wildcard type: $name")
           }
@@ -84,15 +86,15 @@ internal class GenericTypeReader(
     if (classType != null) {
       val innerType =
           if (typeArguments.isEmpty()) {
-            GenericType.RawType(classType!!)
+            GenericType.Raw(classType!!)
           } else {
-            GenericType.ParameterizedType(classType!!, typeArguments.toList())
+            GenericType.Parameterized(classType!!, typeArguments.toList())
           }
-      genericType = genericType?.let { GenericType.InnerType(innerType, it) } ?: innerType
+      genericType = genericType?.let { GenericType.Inner(innerType, it) } ?: innerType
     }
 
     while (arrayDimensions > 0) {
-      genericType = GenericType.GenericArrayType(genericType!!)
+      genericType = GenericType.Array(genericType!!)
       --arrayDimensions
     }
   }

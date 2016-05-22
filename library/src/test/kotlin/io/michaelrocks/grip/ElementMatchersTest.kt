@@ -21,25 +21,34 @@ import io.michaelrocks.mockito.RETURNS_MOCKS
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
-import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Opcodes.ACC_ABSTRACT
+import org.objectweb.asm.Opcodes.ACC_ANNOTATION
+import org.objectweb.asm.Opcodes.ACC_ENUM
+import org.objectweb.asm.Opcodes.ACC_FINAL
+import org.objectweb.asm.Opcodes.ACC_INTERFACE
+import org.objectweb.asm.Opcodes.ACC_PRIVATE
+import org.objectweb.asm.Opcodes.ACC_PROTECTED
+import org.objectweb.asm.Opcodes.ACC_PUBLIC
+import org.objectweb.asm.Opcodes.ACC_STATIC
+import org.objectweb.asm.Opcodes.ACC_SUPER
 
 class ElementMatchersTest {
-  private val finalClass = mock<Element>(RETURNS_MOCKS).apply {
+  private val finalClass = mock<Element<*>>(RETURNS_MOCKS).apply {
     given(access).thenReturn(ACC_PRIVATE or ACC_STATIC or ACC_FINAL or ACC_SUPER)
     given(name).thenReturn("FinalClass")
   }
 
-  private val abstractClass = mock<Element>(RETURNS_MOCKS).apply {
+  private val abstractClass = mock<Element<*>>(RETURNS_MOCKS).apply {
     given(access).thenReturn(ACC_ABSTRACT or ACC_SUPER)
     given(name).thenReturn("AbstractClass")
   }
 
-  private val enum = mock<Element>(RETURNS_MOCKS).apply {
+  private val enum = mock<Element<*>>(RETURNS_MOCKS).apply {
     given(access).thenReturn(ACC_PROTECTED or ACC_FINAL or ACC_ENUM or ACC_SUPER)
     given(name).thenReturn("Enum")
   }
 
-  private val annotation = mock<Element>(RETURNS_MOCKS).apply {
+  private val annotation = mock<Element<*>>(RETURNS_MOCKS).apply {
     given(access).thenReturn(ACC_PUBLIC or ACC_ANNOTATION or ACC_INTERFACE)
     given(name).thenReturn("Annotation")
   }
@@ -76,6 +85,6 @@ class ElementMatchersTest {
   @Test fun testNameTrue() = finalClass.assertAndVerify(true, { name { grip, name -> true } }, { name })
   @Test fun testNameFalse() = finalClass.assertAndVerify(false, { name { grip, name -> false } }, { name })
 
-  private inline fun Element.testAccess(condition: Boolean, body: () -> ((Grip, Element) -> Boolean)) =
+  private inline fun Element<*>.testAccess(condition: Boolean, body: () -> ((Grip, Element<*>) -> Boolean)) =
       assertAndVerify(condition, body) { access }
 }

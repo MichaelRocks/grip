@@ -19,21 +19,25 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.annotations.AnnotationGenerator
 import io.michaelrocks.grip.annotations.createAnnotationMirror
 import io.michaelrocks.grip.annotations.getAnnotationType
-import io.michaelrocks.grip.commons.getType
 import io.michaelrocks.grip.mirrors.EnumMirror
 import io.michaelrocks.grip.mirrors.ReflectorImpl
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getArrayType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.getType
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import io.michaelrocks.mockito.notNull
-import org.junit.Assert.*
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Type
 
 class ClassRegistryToAnnotationTest {
   @Test
   fun testEmptyAnnotation() {
-    val annotationType = Type.getObjectType("EmptyAnnotation")
+    val annotationType = getObjectTypeByInternalName("EmptyAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType)
     )
@@ -44,7 +48,7 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testExplicitValueAnnotation() {
-    val annotationType = Type.getObjectType("ExplicitValueAnnotation")
+    val annotationType = getObjectTypeByInternalName("ExplicitValueAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("explicitValue", getType<String>())
@@ -57,7 +61,7 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testImplicitValueAnnotation() {
-    val annotationType = Type.getObjectType("ImplicitValueAnnotation")
+    val annotationType = getObjectTypeByInternalName("ImplicitValueAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("implicitValue", getType<String>(), "defaultImplicitValue")
@@ -71,7 +75,7 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testExplicitAndImplicitValuesAnnotation() {
-    val annotationType = Type.getObjectType("ExplicitAndImplicitValuesAnnotation")
+    val annotationType = getObjectTypeByInternalName("ExplicitAndImplicitValuesAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("explicitValue", getType<String>())
@@ -86,17 +90,17 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testSimpleValuesAnnotation() {
-    val annotationType = Type.getObjectType("PrimitiveValuesAnnotation")
+    val annotationType = getObjectTypeByInternalName("PrimitiveValuesAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
-          addMethod("booleanValue", Type.BOOLEAN_TYPE, true)
-          addMethod("byteValue", Type.BYTE_TYPE, 42.toByte())
-          addMethod("charValue", Type.CHAR_TYPE, 'x')
-          addMethod("floatValue", Type.FLOAT_TYPE, Math.E.toFloat())
-          addMethod("doubleValue", Type.DOUBLE_TYPE, Math.PI)
-          addMethod("intValue", Type.INT_TYPE, 42)
-          addMethod("longValue", Type.LONG_TYPE, 42L)
-          addMethod("shortValue", Type.SHORT_TYPE, 42.toShort())
+          addMethod("booleanValue", Type.Primitive.Boolean, true)
+          addMethod("byteValue", Type.Primitive.Byte, 42.toByte())
+          addMethod("charValue", Type.Primitive.Char, 'x')
+          addMethod("floatValue", Type.Primitive.Float, Math.E.toFloat())
+          addMethod("doubleValue", Type.Primitive.Double, Math.PI)
+          addMethod("intValue", Type.Primitive.Int, 42)
+          addMethod("longValue", Type.Primitive.Long, 42L)
+          addMethod("shortValue", Type.Primitive.Short, 42.toShort())
           addMethod("stringValue", getType<String>(), "x")
         }
     )
@@ -116,7 +120,7 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testArrayValuesAnnotation() {
-    val annotationType = Type.getObjectType("ArrayValuesAnnotation")
+    val annotationType = getObjectTypeByInternalName("ArrayValuesAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("booleanArrayValue", getType<BooleanArray>(), booleanArrayOf(true, false, true))
@@ -147,9 +151,9 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testEnumAnnotation() {
-    val enumType = Type.getObjectType("TestEnum")
+    val enumType = getObjectTypeByInternalName("TestEnum")
     val enumValue = EnumMirror(enumType, "TEST")
-    val annotationType = Type.getObjectType("EnumAnnotation")
+    val annotationType = getObjectTypeByInternalName("EnumAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("enumValue", enumType, enumValue)
@@ -163,14 +167,14 @@ class ClassRegistryToAnnotationTest {
 
   @Test
   fun testEnumArrayAnnotation() {
-    val enumType = Type.getObjectType("TestEnum")
-    val enumArrayType = Type.getType("[${enumType.descriptor}")
+    val enumType = getObjectTypeByInternalName("TestEnum")
+    val enumArrayType = getArrayType("[${enumType.descriptor}")
     val enumValues = arrayOf(
         EnumMirror(enumType, "TEST1"),
         EnumMirror(enumType, "TEST2"),
         EnumMirror(enumType, "TEST3")
     )
-    val annotationType = Type.getObjectType("testEnumArrayAnnotation")
+    val annotationType = getObjectTypeByInternalName("testEnumArrayAnnotation")
     val classRegistry = createClassRegistry(
         annotationType to generateAnnotation(annotationType) {
           addMethod("enumArrayValue", enumArrayType, enumValues)
@@ -186,7 +190,7 @@ class ClassRegistryToAnnotationTest {
   fun testNestedAnnotationAnnotation() {
     val nestedAnnotationType = getAnnotationType("NestedAnnotation")
     val nestedAnnotation = createAnnotationMirror("NestedAnnotation", "Nested")
-    val annotationType = Type.getObjectType("NestedAnnotationAnnotation")
+    val annotationType = getObjectTypeByInternalName("NestedAnnotationAnnotation")
     val classRegistry = createClassRegistry(
         nestedAnnotationType to generateAnnotation(nestedAnnotationType),
         annotationType to generateAnnotation(annotationType) {
@@ -207,8 +211,8 @@ class ClassRegistryToAnnotationTest {
         createAnnotationMirror("NestedAnnotation", "Nested2"),
         createAnnotationMirror("NestedAnnotation", "Nested3")
     )
-    val annotationArrayType = Type.getType("[${nestedAnnotations[0].type.descriptor}")
-    val annotationType = Type.getObjectType("NestedAnnotationArrayAnnotation")
+    val annotationArrayType = getArrayType("[${nestedAnnotations[0].type.descriptor}")
+    val annotationType = getObjectTypeByInternalName("NestedAnnotationArrayAnnotation")
     val classRegistry = createClassRegistry(
         nestedAnnotationType to generateAnnotation(nestedAnnotationType),
         annotationType to generateAnnotation(annotationType) {
@@ -221,10 +225,10 @@ class ClassRegistryToAnnotationTest {
     assertEquals(1, actualAnnotation.values.size.toLong())
   }
 
-  private fun generateAnnotation(type: Type): ByteArray =
+  private fun generateAnnotation(type: Type.Object): ByteArray =
       generateAnnotation(type) {}
 
-  private inline fun generateAnnotation(type: Type, builder: AnnotationGenerator.() -> Unit): ByteArray =
+  private inline fun generateAnnotation(type: Type.Object, builder: AnnotationGenerator.() -> Unit): ByteArray =
       ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS).let { writer ->
         AnnotationGenerator
             .create(writer, type)
@@ -233,12 +237,12 @@ class ClassRegistryToAnnotationTest {
         writer.toByteArray()
       }
 
-  private fun createClassRegistry(vararg entries: Pair<Type, ByteArray>): ClassRegistry =
+  private fun createClassRegistry(vararg entries: Pair<Type.Object, ByteArray>): ClassRegistry =
       ClassRegistryImpl(createFileRegistry(*entries), ReflectorImpl())
 
-  private fun createFileRegistry(vararg entries: Pair<Type, ByteArray>): FileRegistry =
+  private fun createFileRegistry(vararg entries: Pair<Type.Object, ByteArray>): FileRegistry =
       mock<FileRegistry>().apply {
-        given(contains(notNull<Type>())).thenAnswer { invocation ->
+        given(contains(notNull<Type.Object>())).thenAnswer { invocation ->
           entries.any { it.first == invocation.arguments[0] }
         }
         given(findTypesForFile(notNull())).thenReturn(entries.map { it.first })

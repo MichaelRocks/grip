@@ -20,9 +20,8 @@ import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.mirrors.signature.EmptyFieldSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.FieldSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.LazyFieldSignatureMirror
-import org.objectweb.asm.Type
 
-interface FieldMirror : Element, Annotated {
+interface FieldMirror : Element<Type>, Annotated {
   val signature: FieldSignatureMirror
   val value: Any?
 
@@ -41,7 +40,7 @@ interface FieldMirror : Element, Annotated {
 
     fun name(name: String) = apply {
       this.name = name
-      this.type = Type.getObjectType(name)
+      this.type = getTypeFromInternalName(name)
     }
 
     fun type(type: Type) = apply {

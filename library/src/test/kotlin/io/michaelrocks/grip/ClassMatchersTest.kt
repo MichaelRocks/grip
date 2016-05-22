@@ -16,19 +16,27 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.*
+import io.michaelrocks.grip.mirrors.CONSTRUCTOR_NAME
+import io.michaelrocks.grip.mirrors.ClassMirror
+import io.michaelrocks.grip.mirrors.DEFAULT_CONSTRUCTOR_TYPE
+import io.michaelrocks.grip.mirrors.FieldMirror
+import io.michaelrocks.grip.mirrors.MethodMirror
+import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_NAME
+import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_TYPE
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.getObjectType
+import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.mockito.RETURNS_SMART_NULLS
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
-import org.objectweb.asm.Type
 
 class ClassMatchersTest {
   private val classMirror = mock<ClassMirror>(RETURNS_SMART_NULLS).apply {
     given(version).thenReturn(51)
-    given(superType).thenReturn(Type.getType("LSuper;"))
-    given(interfaces).thenReturn(listOf(Type.getType("Lio/michaelrocks/Interface;")))
-    given(fields).thenReturn(listOf(FieldMirror.Builder().name("field").type(Type.INT_TYPE).build()))
+    given(superType).thenReturn(getObjectType("LSuper;"))
+    given(interfaces).thenReturn(listOf(getObjectType("Lio/michaelrocks/Interface;")))
+    given(fields).thenReturn(listOf(FieldMirror.Builder().name("field").type(Type.Primitive.Int).build()))
     given(constructors).thenReturn(
         listOf(MethodMirror.Builder().name(CONSTRUCTOR_NAME).type(DEFAULT_CONSTRUCTOR_TYPE).build())
     )
@@ -59,10 +67,10 @@ class ClassMatchersTest {
   @Test fun testHasSuperNameFalse() = interfaceMirror.testSuperName(false) { hasSuperType() }
 
   @Test fun testInterfacesContainTrue() = classMirror.testInterfaces(true) {
-    interfacesContain(Type.getObjectType("io/michaelrocks/Interface"))
+    interfacesContain(getObjectTypeByInternalName("io/michaelrocks/Interface"))
   }
   @Test fun testInterfacesContainFalse() = classMirror.testInterfaces(false) {
-    interfacesContain(Type.getObjectType("io/michaelrocks/AnotherInterface"))
+    interfacesContain(getObjectTypeByInternalName("io/michaelrocks/AnotherInterface"))
   }
   @Test fun testInterfacesAreEmptyTrue() = interfaceMirror.testInterfaces(true) { interfacesAreEmpty() }
   @Test fun testInterfacesAreEmptyFalse() = classMirror.testInterfaces(false) { interfacesAreEmpty() }

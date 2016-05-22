@@ -18,18 +18,17 @@ package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.GenericType
-import org.objectweb.asm.Type
 
-internal class GenericTypeListWrapper(private val types: List<Type>) : List<GenericType> {
+internal class GenericTypeListWrapper<T : Type>(private val types: List<T>) : List<GenericType> {
   private val genericTypes by lazy(LazyThreadSafetyMode.NONE) {
-    types.map { GenericType.RawType(it) }.immutable()
+    types.map { GenericType.Raw(it) }.immutable()
   }
 
   override val size: Int
     get() = types.size
 
   override fun contains(element: GenericType): Boolean =
-      element is GenericType.RawType && types.contains(element.type)
+      element is GenericType.Raw && types.contains(element.type)
 
   override fun containsAll(elements: Collection<GenericType>): Boolean {
     for (element in elements) {
@@ -44,7 +43,7 @@ internal class GenericTypeListWrapper(private val types: List<Type>) : List<Gene
       genericTypes[index]
 
   override fun indexOf(element: GenericType): Int =
-      if (element is GenericType.RawType) types.indexOf(element.type) else -1
+      if (element is GenericType.Raw) types.indexOf(element.type) else -1
 
   override fun isEmpty(): Boolean =
       types.isEmpty()
@@ -53,7 +52,7 @@ internal class GenericTypeListWrapper(private val types: List<Type>) : List<Gene
       genericTypes.iterator()
 
   override fun lastIndexOf(element: GenericType): Int =
-      if (element is GenericType.RawType) types.lastIndexOf(element.type) else -1
+      if (element is GenericType.Raw) types.lastIndexOf(element.type) else -1
 
   override fun listIterator(): ListIterator<GenericType> =
       genericTypes.listIterator()

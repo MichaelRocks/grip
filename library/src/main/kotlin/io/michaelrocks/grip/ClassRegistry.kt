@@ -1,13 +1,17 @@
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.*
+import io.michaelrocks.grip.mirrors.AnnotationMirror
+import io.michaelrocks.grip.mirrors.ClassMirror
+import io.michaelrocks.grip.mirrors.Reflector
+import io.michaelrocks.grip.mirrors.Type
+import io.michaelrocks.grip.mirrors.UnresolvedAnnotationMirror
+import io.michaelrocks.grip.mirrors.buildAnnotation
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
-import java.util.*
+import java.util.HashMap
 
 interface ClassRegistry {
-  fun getClassMirror(type: Type): ClassMirror
-  fun getAnnotationMirror(type: Type): AnnotationMirror
+  fun getClassMirror(type: Type.Object): ClassMirror
+  fun getAnnotationMirror(type: Type.Object): AnnotationMirror
 }
 
 internal class ClassRegistryImpl(
@@ -17,10 +21,10 @@ internal class ClassRegistryImpl(
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
 
-  override fun getClassMirror(type: Type): ClassMirror =
+  override fun getClassMirror(type: Type.Object): ClassMirror =
       classesByType.getOrPut(type) { readClassMirror(type, false) }
 
-  override fun getAnnotationMirror(type: Type): AnnotationMirror =
+  override fun getAnnotationMirror(type: Type.Object): AnnotationMirror =
       annotationsByType.getOrPut(type) {
         if (type !in fileRegistry) {
           return UnresolvedAnnotationMirror(type)
@@ -35,7 +39,7 @@ internal class ClassRegistryImpl(
         }
       }
 
-  private fun readClassMirror(type: Type, forAnnotation: Boolean): ClassMirror {
+  private fun readClassMirror(type: Type.Object, forAnnotation: Boolean): ClassMirror {
     return try {
       reflector.reflect(fileRegistry.readClass(type), this, forAnnotation)
     } catch (exception: Exception) {

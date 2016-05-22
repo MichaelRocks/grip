@@ -16,7 +16,7 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 
 interface FieldSignatureMirror {
   val type: GenericType
@@ -50,7 +50,7 @@ internal class LazyFieldSignatureMirror(private val signature: String) : FieldSi
 }
 
 internal class EmptyFieldSignatureMirror(type: Type) : FieldSignatureMirror {
-  override val type: GenericType = GenericType.RawType(type)
+  override val type: GenericType = GenericType.Raw(type)
 
   override fun toJvmSignature() = ""
 }

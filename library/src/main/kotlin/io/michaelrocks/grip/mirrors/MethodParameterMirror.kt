@@ -17,7 +17,6 @@
 package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.LazyList
-import org.objectweb.asm.Type
 
 interface MethodParameterMirror : Annotated {
   val index: Int

@@ -16,15 +16,13 @@
 
 package io.michaelrocks.grip.mirrors
 
-import org.objectweb.asm.Type
-
 interface AnnotationCollection : Collection<AnnotationMirror> {
-  operator fun contains(type: Type): Boolean
-  operator fun get(type: Type): AnnotationMirror?
+  operator fun contains(type: Type.Object): Boolean
+  operator fun get(type: Type.Object): AnnotationMirror?
 }
 
 internal class ImmutableAnnotationCollection(collection: Collection<AnnotationMirror>) : AnnotationCollection {
-  private val annotationsByType: Map<Type, AnnotationMirror> =
+  private val annotationsByType: Map<Type.Object, AnnotationMirror> =
       if (collection.isEmpty()) emptyMap()
       else collection.associateBy { it.type }
 
@@ -45,9 +43,9 @@ internal class ImmutableAnnotationCollection(collection: Collection<AnnotationMi
   override fun iterator(): Iterator<AnnotationMirror> =
       annotationsByType.values.iterator()
 
-  override fun contains(type: Type): Boolean =
+  override fun contains(type: Type.Object): Boolean =
       annotationsByType.containsKey(type)
 
-  override fun get(type: Type): AnnotationMirror? =
+  override fun get(type: Type.Object): AnnotationMirror? =
       annotationsByType[type]
 }

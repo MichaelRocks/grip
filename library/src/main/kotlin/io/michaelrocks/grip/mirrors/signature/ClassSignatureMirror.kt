@@ -19,9 +19,9 @@ package io.michaelrocks.grip.mirrors.signature
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.GenericTypeListWrapper
-import org.objectweb.asm.Type
+import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.signature.SignatureReader
-import java.util.*
+import java.util.Collections
 
 interface ClassSignatureMirror {
   val typeParameters: List<TypeParameter>
@@ -77,7 +77,7 @@ internal class EmptyClassSignatureMirror(superType: Type, interfaces: List<Type>
   override val typeParameters: List<TypeParameter>
     get() = Collections.emptyList()
   override val superType =
-      GenericType.RawType(superType)
+      GenericType.Raw(superType)
   override val interfaces: List<GenericType> =
       if (interfaces.isEmpty()) emptyList() else GenericTypeListWrapper(interfaces)
 

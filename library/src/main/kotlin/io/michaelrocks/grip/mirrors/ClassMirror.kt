@@ -17,21 +17,19 @@
 package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.LazyList
-import io.michaelrocks.grip.commons.getType
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.ClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.EmptyClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
 import org.objectweb.asm.ClassReader
-import org.objectweb.asm.Type
 
 private val OBJECT_TYPE = getType<Any>()
 
-interface ClassMirror : Element, Annotated {
+interface ClassMirror : Element<Type.Object>, Annotated {
   val version: Int
-  val superType: Type?
+  val superType: Type.Object?
   val signature: ClassSignatureMirror
-  val interfaces: List<Type>
+  val interfaces: List<Type.Object>
 
   val fields: Collection<FieldMirror>
   val constructors: Collection<MethodMirror>
@@ -41,10 +39,10 @@ interface ClassMirror : Element, Annotated {
     private var version: Int = 0
     private var access: Int = 0
     private var name: String? = null
-    private var type: Type? = null
-    private var superType: Type? = null
+    private var type: Type.Object? = null
+    private var superType: Type.Object? = null
     private var signature: String? = null
-    private val interfaces = LazyList<Type>()
+    private val interfaces = LazyList<Type.Object>()
 
     private val annotations = LazyList<AnnotationMirror>()
     private val fields = LazyList<FieldMirror>()
@@ -61,11 +59,11 @@ interface ClassMirror : Element, Annotated {
 
     fun name(name: String) = apply {
       this.name = name
-      this.type = Type.getObjectType(name)
+      this.type = getTypeFromInternalName(name) as Type.Object
     }
 
     fun superName(superName: String?) = apply {
-      this.superType = superName?.let { Type.getObjectType(it) }
+      this.superType = superName?.let { getTypeFromInternalName(it) as Type.Object }
     }
 
     fun signature(signature: String?) = apply {
@@ -74,7 +72,7 @@ interface ClassMirror : Element, Annotated {
 
     fun interfaces(interfaces: Array<out String>?) = apply {
       this.interfaces.clear()
-      interfaces?.mapTo(this.interfaces) { Type.getObjectType(it) }
+      interfaces?.mapTo(this.interfaces) { getTypeFromInternalName(it) as Type.Object }
     }
 
     fun addAnnotation(mirror: AnnotationMirror) = apply {
@@ -86,12 +84,12 @@ interface ClassMirror : Element, Annotated {
     }
 
     fun addConstructor(mirror: MethodMirror) = apply {
-      check(mirror.isConstructor()) { "Method $mirror is not a constructor" }
+      check(mirror.isConstructor) { "Method $mirror is not a constructor" }
       this.constructors += mirror
     }
 
     fun addMethod(mirror: MethodMirror) = apply {
-      check(!mirror.isConstructor()) { "Method $mirror is a constructor" }
+      check(!mirror.isConstructor) { "Method $mirror is a constructor" }
       this.methods += mirror
     }
 
@@ -105,7 +103,7 @@ interface ClassMirror : Element, Annotated {
       override val version = builder.version
       override val access = builder.access
       override val name = builder.name!!.substringAfterLast('/')
-      override val type = Type.getObjectType(builder.name)
+      override val type = getObjectTypeByInternalName(builder.name!!)
       override val superType = builder.superType
       override val signature = builder.buildSignature()
       override val interfaces = builder.interfaces.detachImmutableCopy()
@@ -128,11 +126,11 @@ internal class LazyClassMirror(
   override val version = getClassVersion()
   override val access = classReader.access
   override val name: String = classReader.className.substringAfterLast('/')
-  override val type: Type = Type.getObjectType(classReader.className)
-  override val superType = classReader.superName?.let { Type.getObjectType(it) }
+  override val type: Type.Object = getObjectTypeByInternalName(classReader.className)
+  override val superType = classReader.superName?.let { getObjectTypeByInternalName(it) }
   override val signature: ClassSignatureMirror
     get() = delegate.signature
-  override val interfaces = classReader.interfaces.map { Type.getObjectType(it) }.immutable()
+  override val interfaces = classReader.interfaces.map { getObjectTypeByInternalName(it) }.immutable()
   override val annotations: AnnotationCollection
     get() = delegate.annotations
   override val fields: Collection<FieldMirror>

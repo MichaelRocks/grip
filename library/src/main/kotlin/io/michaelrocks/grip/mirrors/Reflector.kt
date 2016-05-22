@@ -20,7 +20,12 @@ import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.commons.given
 import io.michaelrocks.grip.mirrors.annotation.AnnotationInstanceReader
 import io.michaelrocks.grip.mirrors.annotation.AnnotationValueReader
-import org.objectweb.asm.*
+import org.objectweb.asm.AnnotationVisitor
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 
 internal interface Reflector {
   fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror
@@ -65,7 +70,7 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
         given(!forAnnotation) {
-          AnnotationInstanceReader(Type.getType(desc), classRegistry) {
+          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
             builder.addAnnotation(it)
           }
         }
@@ -80,7 +85,7 @@ internal class ReflectorImpl : Reflector {
     override fun visitMethod(access: Int, name: String, desc: String, signature: String?,
         exceptions: Array<out String>?): MethodVisitor {
       return ReflectorMethodVisitor(classRegistry, forAnnotation, access, name, desc, signature, exceptions) {
-        if (it.isConstructor()) {
+        if (it.isConstructor) {
           builder.addConstructor(it)
         } else {
           builder.addMethod(it)
@@ -106,13 +111,13 @@ internal class ReflectorImpl : Reflector {
     private val builder = FieldMirror.Builder().apply {
       access(access)
       name(name)
-      type(Type.getType(desc))
+      type(getType(desc))
       signature(signature)
       value(value)
     }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor =
-        AnnotationInstanceReader(Type.getType(desc), classRegistry) {
+        AnnotationInstanceReader(getObjectType(desc), classRegistry) {
           builder.addAnnotation(it)
         }
 
@@ -131,7 +136,7 @@ internal class ReflectorImpl : Reflector {
   ) : MethodVisitor(Opcodes.ASM5) {
 
     private val builder = MethodMirror.Builder().apply {
-      val type = Type.getType(desc)
+      val type = getMethodType(desc)
       access(access)
       name(name)
       type(type)
@@ -141,14 +146,14 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitParameterAnnotation(parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? =
         given(visible && !forAnnotation) {
-          AnnotationInstanceReader(Type.getType(desc), classRegistry) {
+          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
             builder.addParameterAnnotation(parameter, it)
           }
         }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
         given(visible && !forAnnotation) {
-          AnnotationInstanceReader(Type.getType(desc), classRegistry) {
+          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
             builder.addAnnotation(it)
           }
         }

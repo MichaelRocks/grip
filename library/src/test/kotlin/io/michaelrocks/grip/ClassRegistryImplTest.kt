@@ -2,9 +2,9 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.classes.Annotation1
 import io.michaelrocks.grip.classes.Annotation2
-import io.michaelrocks.grip.commons.getType
 import io.michaelrocks.grip.mirrors.EnumMirror
 import io.michaelrocks.grip.mirrors.ReflectorImpl
+import io.michaelrocks.grip.mirrors.getObjectType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -25,23 +25,23 @@ class ClassRegistryImplTest {
 
   @Test
   fun testIntAnnotation() {
-    val mirror = classRegistry.getClassMirror(getType<Annotation1>())
+    val mirror = classRegistry.getClassMirror(getObjectType<Annotation1>())
     assertEquals(1, mirror.annotations.size)
-    assertTrue(getType<Annotation1>() in mirror.annotations)
-    val annotation = mirror.annotations[getType<Annotation1>()]!!
+    assertTrue(getObjectType<Annotation1>() in mirror.annotations)
+    val annotation = mirror.annotations[getObjectType<Annotation1>()]!!
     assertEquals(1, annotation.values.size)
     assertEquals(42, annotation.values["value"])
   }
 
   @Test
   fun testEnumAnnotation() {
-    val mirror = classRegistry.getClassMirror(getType<Annotation2>())
+    val mirror = classRegistry.getClassMirror(getObjectType<Annotation2>())
     assertEquals(1, mirror.annotations.size)
-    assertTrue(getType<Annotation2>() in mirror.annotations)
-    val annotation = mirror.annotations[getType<Annotation2>()]!!
+    assertTrue(getObjectType<Annotation2>() in mirror.annotations)
+    val annotation = mirror.annotations[getObjectType<Annotation2>()]!!
     assertEquals(1, annotation.values.size)
     assertEquals(
-        EnumMirror(getType<AnnotationRetention>(), AnnotationRetention.RUNTIME.toString()),
+        EnumMirror(getObjectType<AnnotationRetention>(), AnnotationRetention.RUNTIME.toString()),
         annotation.values["value"]
     )
   }
