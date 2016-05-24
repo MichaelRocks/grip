@@ -17,7 +17,6 @@
 package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.annotations.createAnnotationMirror
-import io.michaelrocks.grip.arrayOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals

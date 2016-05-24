@@ -16,7 +16,6 @@
 
 package io.michaelrocks.grip.mirrors
 
-import io.michaelrocks.grip.arrayOf
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
