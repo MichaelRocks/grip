@@ -23,6 +23,14 @@ interface ClassMirrorSource {
   fun getClassMirrors(): Sequence<ClassMirror>
 }
 
+class FunctionClassMirrorSource(
+    private val classMirrorsProvider: () -> Sequence<ClassMirror>
+) : ClassMirrorSource {
+  override fun getClassMirrors(): Sequence<ClassMirror> {
+    return classMirrorsProvider()
+  }
+}
+
 internal class FilesClassMirrorSource(
     private val grip: Grip,
     private val files: Collection<File>
@@ -34,14 +42,4 @@ internal class FilesClassMirrorSource(
       }
     }
   }
-}
-
-internal class QueryClassMirrorSource(private val query: Query<ClassesResult>) : ClassMirrorSource {
-  override fun getClassMirrors(): Sequence<ClassMirror> =
-      query.execute().classes.asSequence()
-}
-
-internal class SingletonClassMirrorSource(private val classMirror: ClassMirror) : ClassMirrorSource {
-  override fun getClassMirrors(): Sequence<ClassMirror> =
-      sequenceOf(classMirror)
 }
