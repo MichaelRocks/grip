@@ -16,7 +16,6 @@
 
 package io.michaelrocks.grip.annotations
 
-import io.michaelrocks.grip.arrayOf
 import io.michaelrocks.grip.mirrors.AnnotationMirror
 import io.michaelrocks.grip.mirrors.EnumMirror
 import io.michaelrocks.grip.mirrors.Type

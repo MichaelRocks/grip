@@ -16,9 +16,7 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.mirrors.ClassMirror
 import java.io.File
-import java.util.*
 import kotlin.properties.Delegates
 
 internal abstract class AbstractQueryBuilder<M, R>(
@@ -30,23 +28,17 @@ internal abstract class AbstractQueryBuilder<M, R>(
 
   private var result = lazy(LazyThreadSafetyMode.NONE) { execute(classMirrorSource, matcher) }
 
-  override fun from(file: File): QueryConfigurator<M, R> =
-      from(Collections.singletonList(file))
+  override fun from(classMirrorSource: ClassMirrorSource): QueryConfigurator<M, R> = apply {
+    this.classMirrorSource = classMirrorSource
+  }
 
   override fun from(files: Iterable<File>): QueryConfigurator<M, R> = apply {
     classMirrorSource = FilesClassMirrorSource(grip, files.toList())
   }
 
-  override fun from(query: Query<ClassesResult>): QueryConfigurator<M, R> = apply {
-    classMirrorSource = QueryClassMirrorSource(query)
+  override fun from(classpath: Classpath): QueryConfigurator<M, R> {
+    return from(grip.fileRegistry.classpath())
   }
-
-  override fun from(classMirror: ClassMirror): QueryConfigurator<M, R> = apply {
-    classMirrorSource = SingletonClassMirrorSource(classMirror)
-  }
-
-  override fun from(classpath: Classpath): QueryConfigurator<M, R> =
-      from(grip.fileRegistry.classpath())
 
   override fun where(matcher: (Grip, M) -> Boolean): Query<R> = apply {
     this.matcher = matcher

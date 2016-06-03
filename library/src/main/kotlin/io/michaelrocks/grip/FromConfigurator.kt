@@ -17,15 +17,46 @@
 package io.michaelrocks.grip
 
 import io.michaelrocks.grip.mirrors.ClassMirror
+import io.michaelrocks.grip.mirrors.Type
 import java.io.File
-import java.util.*
+import java.util.ArrayList
 
 interface FromConfigurator<M, R> {
-  infix fun from(file: File): QueryConfigurator<M, R>
+  infix fun from(classMirrorSource: ClassMirrorSource): QueryConfigurator<M, R>
   infix fun from(files: Iterable<File>): QueryConfigurator<M, R>
-  infix fun from(query: Query<ClassesResult>): QueryConfigurator<M, R>
-  infix fun from(classMirror: ClassMirror): QueryConfigurator<M, R>
   infix fun from(classpath: Classpath): QueryConfigurator<M, R>
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(file: File): QueryConfigurator<M, R> {
+  return from(listOf(file))
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(provider: () -> Sequence<ClassMirror>): QueryConfigurator<M, R> {
+  return from(FunctionClassMirrorSource(provider))
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(query: Query<ClassesResult>): QueryConfigurator<M, R> {
+  return from { query.execute().classes.asSequence() }
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(classMirror: ClassMirror): QueryConfigurator<M, R> {
+  return from { sequenceOf(classMirror) }
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(classMirrors: Iterable<ClassMirror>): QueryConfigurator<M, R> {
+  return from { classMirrors.asSequence() }
+}
+
+infix fun <M, R> FromConfigurator<M, R>.from(classMirrors: Sequence<ClassMirror>): QueryConfigurator<M, R> {
+  return from { classMirrors }
+}
+
+fun Iterable<Type.Object>.asClassMirrors(classRegistry: ClassRegistry): Sequence<ClassMirror> {
+  return asSequence().asClassMirrors(classRegistry)
+}
+
+fun Sequence<Type.Object>.asClassMirrors(classRegistry: ClassRegistry): Sequence<ClassMirror> {
+  return map { classRegistry.getClassMirror(it) }
 }
 
 val classpath = Classpath()
