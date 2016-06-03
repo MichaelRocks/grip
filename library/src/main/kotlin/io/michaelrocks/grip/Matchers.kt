@@ -137,6 +137,13 @@ fun isDefaultConstructor() =
 fun isStaticInitializer() =
     { grip: Grip, mirror: MethodMirror -> mirror.isStaticInitializer }
 
+inline fun withFieldInitializer(crossinline predicate: (Grip, Any?) -> Boolean) =
+    { grip: Grip, mirror: FieldMirror -> predicate(grip, mirror.value) }
+inline fun <reified T : Any> withFieldInitializer() =
+    withFieldInitializer { grip, value -> value is T }
+fun hasFieldInitializer() =
+    withFieldInitializer { grip, value -> value != null }
+
 inline fun withParameter(crossinline predicate: (Grip, MethodParameterMirror) -> Boolean) =
     { grip: Grip, mirror: MethodMirror -> mirror.parameters.any { predicate(grip, it) } }
 
