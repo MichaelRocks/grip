@@ -40,7 +40,7 @@ interface FieldMirror : Element<Type>, Annotated {
 
     fun name(name: String) = apply {
       this.name = name
-      this.type = getTypeFromInternalName(name)
+      this.type = getTypeByInternalName(name)
     }
 
     fun type(type: Type) = apply {
