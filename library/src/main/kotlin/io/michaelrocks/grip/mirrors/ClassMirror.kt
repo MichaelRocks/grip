@@ -59,7 +59,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
 
     fun name(name: String) = apply {
       this.name = name
-      this.type = getTypeFromInternalName(name) as Type.Object
+      this.type = getObjectTypeByInternalName(name)
     }
 
     fun superName(superName: String?) = apply {
