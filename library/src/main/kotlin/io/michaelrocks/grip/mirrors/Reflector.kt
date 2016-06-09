@@ -107,6 +107,11 @@ internal class ReflectorImpl : Reflector {
         builder.enclosure(Enclosure.Method.Anonymous(enclosingType))
       }
     }
+
+    override fun visitSource(source: String?, debug: String?) {
+      builder.source(source)
+      builder.debug(debug)
+    }
   }
 
   private class ReflectorFieldVisitor(

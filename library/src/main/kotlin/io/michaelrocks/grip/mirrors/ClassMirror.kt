@@ -35,6 +35,9 @@ interface ClassMirror : Element<Type.Object>, Annotated {
   val types: Collection<Type.Object>
   val enclosure: Enclosure
 
+  val source: String?
+  val debug: String?
+
   val fields: Collection<FieldMirror>
   val constructors: Collection<MethodMirror>
   val methods: Collection<MethodMirror>
@@ -50,6 +53,9 @@ interface ClassMirror : Element<Type.Object>, Annotated {
 
     private val innerClasses = LazyList<InnerClass>()
     private var enclosure: Enclosure = Enclosure.None
+
+    private var source: String? = null
+    private var debug: String? = null
 
     private val annotations = LazyList<AnnotationMirror>()
     private val fields = LazyList<FieldMirror>()
@@ -88,6 +94,14 @@ interface ClassMirror : Element<Type.Object>, Annotated {
 
     fun enclosure(enclosure: Enclosure) = apply {
       this.enclosure = enclosure
+    }
+
+    fun source(source: String?) = apply {
+      this.source = source
+    }
+
+    fun debug(debug: String?) = apply {
+      this.debug = debug
     }
 
     fun addAnnotation(mirror: AnnotationMirror) = apply {
@@ -161,6 +175,8 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       override val simpleName = builder.buildSimpleName()
       override val types = builder.buildTypes()
       override val enclosure = builder.enclosure
+      override val source = builder.source
+      override val debug = builder.debug
       override val fields = builder.fields.detachImmutableCopy()
       override val constructors = builder.constructors.detachImmutableCopy()
       override val methods = builder.methods.detachImmutableCopy()
@@ -192,6 +208,10 @@ internal class LazyClassMirror(
     get() = delegate.types
   override val enclosure: Enclosure
     get() = delegate.enclosure
+  override val source: String?
+    get() = delegate.source
+  override val debug: String?
+    get() = delegate.debug
   override val fields: Collection<FieldMirror>
     get() = delegate.fields
   override val constructors: Collection<MethodMirror>
