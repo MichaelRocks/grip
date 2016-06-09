@@ -31,6 +31,10 @@ interface ClassMirror : Element<Type.Object>, Annotated {
   val signature: ClassSignatureMirror
   val interfaces: List<Type.Object>
 
+  val simpleName: String
+  val types: Collection<Type.Object>
+  val enclosure: Enclosure
+
   val fields: Collection<FieldMirror>
   val constructors: Collection<MethodMirror>
   val methods: Collection<MethodMirror>
@@ -43,6 +47,9 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private var superType: Type.Object? = null
     private var signature: String? = null
     private val interfaces = LazyList<Type.Object>()
+
+    private val innerClasses = LazyList<InnerClass>()
+    private var enclosure: Enclosure = Enclosure.None
 
     private val annotations = LazyList<AnnotationMirror>()
     private val fields = LazyList<FieldMirror>()
@@ -75,6 +82,14 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       interfaces?.mapTo(this.interfaces) { getTypeByInternalName(it) as Type.Object }
     }
 
+    fun addInnerClass(innerClass: InnerClass) = apply {
+      this.innerClasses += innerClass
+    }
+
+    fun enclosure(enclosure: Enclosure) = apply {
+      this.enclosure = enclosure
+    }
+
     fun addAnnotation(mirror: AnnotationMirror) = apply {
       this.annotations += mirror
     }
@@ -99,15 +114,53 @@ interface ClassMirror : Element<Type.Object>, Annotated {
         signature?.let { LazyClassSignatureMirror(it) } ?:
             EmptyClassSignatureMirror(superType ?: OBJECT_TYPE, interfaces)
 
+    private fun buildName(): String {
+      fun buildName(type: Type, innerClassesByOuterType: Map<Type.Object, InnerClass>): String {
+        val innerClass = innerClassesByOuterType[type] ?: return type.className
+        innerClass.outerType ?: return type.className
+        innerClass.innerName ?: return type.className
+        return "${buildName(innerClass.outerType, innerClassesByOuterType)}.${innerClass.innerName}"
+      }
+
+      if (innerClasses.isEmpty()) {
+        return name!!.replace('/', '.')
+      }
+      val innerClassesByOuterType = innerClasses.associateBy { it.type }
+      return buildName(type!!, innerClassesByOuterType)
+    }
+
+    private fun buildSimpleName(): String {
+      val type = type!!
+      val innerClass = innerClasses.firstOrNull { it.type == type }
+      val enclosure = enclosure as? Enclosure.Method ?:
+          return innerClass?.innerName ?: type.internalName.substringAfterLast('/')
+      return type.internalName
+          .removePrefix(enclosure.enclosingType.internalName)
+          .trimStart { it == '$' || (it >= '0' && it <= '9') }
+    }
+
+    private fun buildTypes(): Collection<Type.Object> {
+      val outerInternalName = type!!.internalName
+      return innerClasses
+          .filter {
+            val internalName = it.type.internalName
+            internalName.length > outerInternalName.length && internalName.startsWith(outerInternalName)
+          }
+          .map { it.type }
+    }
+
     private class ImmutableClassMirror(builder: Builder) : ClassMirror {
       override val version = builder.version
       override val access = builder.access
-      override val name = builder.name!!.substringAfterLast('/')
+      override val name = builder.buildName()
       override val type = getObjectTypeByInternalName(builder.name!!)
       override val superType = builder.superType
       override val signature = builder.buildSignature()
       override val interfaces = builder.interfaces.detachImmutableCopy()
       override val annotations = ImmutableAnnotationCollection(builder.annotations)
+      override val simpleName = builder.buildSimpleName()
+      override val types = builder.buildTypes()
+      override val enclosure = builder.enclosure
       override val fields = builder.fields.detachImmutableCopy()
       override val constructors = builder.constructors.detachImmutableCopy()
       override val methods = builder.methods.detachImmutableCopy()
@@ -133,6 +186,12 @@ internal class LazyClassMirror(
   override val interfaces = classReader.interfaces.map { getObjectTypeByInternalName(it) }.immutable()
   override val annotations: AnnotationCollection
     get() = delegate.annotations
+  override val simpleName: String
+    get() = delegate.simpleName
+  override val types: Collection<Type.Object>
+    get() = delegate.types
+  override val enclosure: Enclosure
+    get() = delegate.enclosure
   override val fields: Collection<FieldMirror>
     get() = delegate.fields
   override val constructors: Collection<MethodMirror>

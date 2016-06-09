@@ -93,8 +93,19 @@ internal class ReflectorImpl : Reflector {
       }
     }
 
-    override fun visitEnd() {
-      super.visitEnd()
+    override fun visitInnerClass(name: String, outerName: String?, innerName: String?, access: Int) {
+      val innerType = getObjectTypeByInternalName(name)
+      val outerType = outerName?.let { getObjectTypeByInternalName(it) }
+      builder.addInnerClass(InnerClass(innerType, outerType, innerName, access))
+    }
+
+    override fun visitOuterClass(owner: String, name: String?, desc: String?) {
+      val enclosingType = getObjectTypeByInternalName(owner)
+      if (name != null && desc != null) {
+        builder.enclosure(Enclosure.Method.Named(enclosingType, name, getMethodType(desc)))
+      } else {
+        builder.enclosure(Enclosure.Method.Anonymous(enclosingType))
+      }
     }
   }
 
