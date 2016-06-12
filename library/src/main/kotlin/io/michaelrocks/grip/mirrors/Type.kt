@@ -117,7 +117,7 @@ inline fun <reified T : Type> getTypeAs(type: KClass<*>): T =
     AsmType.getType(type.java).toType() as T
 inline fun <reified T : Type> getTypeAs(descriptor: String): T =
     AsmType.getType(descriptor).toType() as T
-inline fun <reified T : Type> getTypeFromInternalNameAs(internalName: String): T =
+inline fun <reified T : Type> getTypeByInternalNameAs(internalName: String): T =
     AsmType.getObjectType(internalName).toType() as T
 
 inline fun <reified C : Any> getType(): Type =
@@ -128,8 +128,8 @@ fun getType(type: KClass<*>): Type =
     getTypeAs(type.java)
 fun getType(descriptor: String): Type =
     getTypeAs(descriptor)
-fun getTypeFromInternalName(internalName: String): Type =
-    getTypeFromInternalNameAs(internalName)
+fun getTypeByInternalName(internalName: String): Type =
+    getTypeByInternalNameAs(internalName)
 
 inline fun <reified T : Any> getArrayType(): Type.Array =
     getTypeAs<T, Type.Array>()
@@ -139,8 +139,8 @@ fun getArrayType(type: KClass<*>): Type.Array =
     getTypeAs(type.java)
 fun getArrayType(descriptor: String): Type.Array =
     getTypeAs(descriptor)
-fun getArrayTypeFromInternalName(internalName: String): Type.Array =
-    getTypeFromInternalNameAs(internalName)
+fun getArrayTypeByInternalName(internalName: String): Type.Array =
+    getTypeByInternalNameAs(internalName)
 
 inline fun <reified T : Any> getObjectType(): Type.Object =
     getTypeAs<T, Type.Object>()
@@ -151,7 +151,7 @@ fun getObjectType(type: KClass<*>): Type.Object =
 fun getObjectType(descriptor: String): Type.Object =
     getTypeAs(descriptor)
 fun getObjectTypeByInternalName(internalName: String): Type.Object =
-    getTypeFromInternalNameAs(internalName)
+    getTypeByInternalNameAs(internalName)
 
 fun getMethodType(descriptor: String): Type.Method =
     getTypeAs(descriptor)
