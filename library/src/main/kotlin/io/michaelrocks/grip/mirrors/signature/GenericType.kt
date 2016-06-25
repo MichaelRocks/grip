@@ -64,10 +64,11 @@ sealed class GenericType {
     override fun hashCode(): Int = 17 then type then typeArguments
   }
 
-  class Inner(val type: GenericType, val ownerType: GenericType) : GenericType() {
-    override fun toString(): String = "$ownerType.$type"
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type && ownerType == it.ownerType }
-    override fun hashCode(): Int = 17 then type then ownerType
+  class Inner(val name: String, val type: GenericType, val ownerType: GenericType) : GenericType() {
+    override fun toString(): String = "$ownerType.$name"
+    override fun equals(other: Any?): Boolean =
+        equals(other) { name == it.name && type == it.type && ownerType == it.ownerType }
+    override fun hashCode(): Int = 17 then name then type then ownerType
   }
 
   class UpperBounded(val upperBound: GenericType) : GenericType() {

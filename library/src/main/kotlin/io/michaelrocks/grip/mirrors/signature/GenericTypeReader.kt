@@ -31,6 +31,7 @@ internal class GenericTypeReader(
 ) : SignatureVisitor(Opcodes.ASM5) {
   private var genericType: GenericType? = null
   private var classType: Type.Object? = null
+  private var className: String? = null
   private val typeArguments = LazyList<GenericType>()
   private var arrayDimensions = 0
 
@@ -56,7 +57,8 @@ internal class GenericTypeReader(
 
   override fun visitInnerClassType(name: String) {
     buildGenericType()
-    classType = getObjectTypeByInternalName(name)
+    classType = getObjectTypeByInternalName("${classType!!.internalName}\$$name")
+    className = name
     typeArguments.clear()
   }
 
@@ -90,7 +92,7 @@ internal class GenericTypeReader(
           } else {
             GenericType.Parameterized(classType!!, typeArguments.toList())
           }
-      genericType = genericType?.let { GenericType.Inner(innerType, it) } ?: innerType
+      genericType = genericType?.let { GenericType.Inner(className!!, innerType, it) } ?: innerType
     }
 
     while (arrayDimensions > 0) {
