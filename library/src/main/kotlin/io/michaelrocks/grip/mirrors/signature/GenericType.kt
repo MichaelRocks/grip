@@ -37,10 +37,15 @@ sealed class GenericType {
     override fun hashCode(): Int = 17 then type
   }
 
-  class TypeVariable(val name: String) : GenericType() {
+  class TypeVariable(
+      val name: String,
+      val classBound: GenericType = OBJECT_RAW_TYPE,
+      val interfaceBounds: List<GenericType> = emptyList()
+  ) : GenericType() {
     override fun toString(): String = name
-    override fun equals(other: Any?): Boolean = equals(other) { name == it.name }
-    override fun hashCode(): Int = 17 then name
+    override fun equals(other: Any?): Boolean =
+        equals(other) { name == it.name && classBound == it.classBound && interfaceBounds == it.interfaceBounds }
+    override fun hashCode(): Int = 17 then name then classBound then interfaceBounds
   }
 
   class Array(val elementType: GenericType) : GenericType() {
