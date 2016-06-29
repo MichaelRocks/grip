@@ -76,7 +76,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     }
 
     fun superName(superName: String?) = apply {
-      this.superType = superName?.let { getTypeByInternalName(it) as Type.Object }
+      this.superType = superName?.let { getObjectTypeByInternalName(it) }
     }
 
     fun signature(signature: String?) = apply {
@@ -85,7 +85,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
 
     fun interfaces(interfaces: Array<out String>?) = apply {
       this.interfaces.clear()
-      interfaces?.mapTo(this.interfaces) { getTypeByInternalName(it) as Type.Object }
+      interfaces?.mapTo(this.interfaces) { getObjectTypeByInternalName(it) }
     }
 
     fun addInnerClass(innerClass: InnerClass) = apply {
