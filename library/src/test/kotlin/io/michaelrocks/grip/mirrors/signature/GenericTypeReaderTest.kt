@@ -135,6 +135,21 @@ class GenericTypeReaderTest {
         )
     )
   }
+
+  @Test
+  fun testShadowedTypeVariable() {
+    assertParsedSignatureEquals(
+        "TT;",
+        TypeVariable("T", Raw(getObjectType<List<*>>())),
+        TypeVariable("T"),
+        TypeVariable("T", Raw(getObjectType<List<*>>()))
+    )
+  }
+
+  @Test(expected = IllegalStateException::class)
+  fun testUndefinedTypeVariable() {
+    readGenericType("TT;", EmptyGenericDeclaration)
+  }
 }
 
 private fun assertParsedSignatureEquals(signature: String, expected: GenericType, vararg typeVariables: TypeVariable) {
