@@ -20,10 +20,7 @@ import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.ClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.EmptyClassSignatureMirror
-import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
 import org.objectweb.asm.ClassReader
-
-private val OBJECT_TYPE = getType<Any>()
 
 interface ClassMirror : Element<Type.Object>, Annotated {
   val version: Int
@@ -48,7 +45,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private var name: String? = null
     private var type: Type.Object? = null
     private var superType: Type.Object? = null
-    private var signature: String? = null
+    private var signature: ClassSignatureMirror? = null
     private val interfaces = LazyList<Type.Object>()
 
     private val innerClasses = LazyList<InnerClass>()
@@ -79,7 +76,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       this.superType = superName?.let { getObjectTypeByInternalName(it) }
     }
 
-    fun signature(signature: String?) = apply {
+    fun signature(signature: ClassSignatureMirror?) = apply {
       this.signature = signature
     }
 
@@ -125,8 +122,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     fun build(): ClassMirror = ImmutableClassMirror(this)
 
     private fun buildSignature(): ClassSignatureMirror =
-        signature?.let { LazyClassSignatureMirror(it) } ?:
-            EmptyClassSignatureMirror(superType ?: OBJECT_TYPE, interfaces)
+        signature ?: EmptyClassSignatureMirror(superType, interfaces)
 
     private fun buildName(): String {
       fun buildName(type: Type, innerClassesByOuterType: Map<Type.Object, InnerClass>): String {

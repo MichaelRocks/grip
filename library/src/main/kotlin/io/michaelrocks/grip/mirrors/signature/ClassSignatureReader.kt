@@ -21,33 +21,38 @@ import org.objectweb.asm.signature.SignatureVisitor
 
 internal class ClassSignatureReader : SignatureVisitor(Opcodes.ASM5) {
   private val builder = ClassSignatureMirror.Builder()
-  private var typeParameterBuilder: TypeParameter.Builder? = null
+  private var typeVariableBuilder: TypeVariableBuilder? = null
+  private val genericDeclaration = InheritingGenericDeclaration()
 
   fun toClassSignature(): ClassSignatureMirror = builder.build()
 
   override fun visitFormalTypeParameter(name: String) {
-    typeParameterBuilder = TypeParameter.Builder(name).apply {
-      builder.addTypeParameterBuilder(this)
-    }
+    buildTypeVariable()
+    typeVariableBuilder = TypeVariableBuilder(name)
   }
 
-  override fun visitClassBound(): SignatureVisitor =
-      GenericTypeReader {
-        typeParameterBuilder!!.classBound(it)
-      }
+  override fun visitClassBound(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.classBound(it) }
+  }
 
-  override fun visitInterfaceBound(): SignatureVisitor =
-      GenericTypeReader {
-        typeParameterBuilder!!.addInterfaceBound(it)
-      }
+  override fun visitInterfaceBound(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
+  }
 
-  override fun visitSuperclass(): SignatureVisitor =
-      GenericTypeReader {
-        builder.superType(it)
-      }
+  override fun visitSuperclass(): SignatureVisitor {
+    buildTypeVariable()
+    return GenericTypeReader(genericDeclaration) { builder.superType(it) }
+  }
 
-  override fun visitInterface(): SignatureVisitor =
-      GenericTypeReader {
-        builder.addInterface(it)
-      }
+  override fun visitInterface(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { builder.addInterface(it) }
+  }
+
+  private fun buildTypeVariable() {
+    typeVariableBuilder?.build()?.let {
+      builder.addTypeVariable(it)
+      genericDeclaration.typeVariables += it
+    }
+    typeVariableBuilder = null
+  }
 }

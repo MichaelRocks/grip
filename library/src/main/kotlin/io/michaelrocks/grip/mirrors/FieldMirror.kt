@@ -19,13 +19,16 @@ package io.michaelrocks.grip.mirrors
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.mirrors.signature.EmptyFieldSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.FieldSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.LazyFieldSignatureMirror
 
 interface FieldMirror : Element<Type>, Annotated {
   val signature: FieldSignatureMirror
   val value: Any?
 
-  class Builder {
+  class Builder(
+      private val genericDeclaration: GenericDeclaration
+  ) {
     private var access = 0
     private var name: String? = null
     private var type: Type? = null
@@ -62,7 +65,7 @@ interface FieldMirror : Element<Type>, Annotated {
     fun build(): FieldMirror = ImmutableFieldMirror(this)
 
     private fun buildSignature(): FieldSignatureMirror =
-        signature?.let { LazyFieldSignatureMirror(it) } ?: EmptyFieldSignatureMirror(type!!)
+        signature?.let { LazyFieldSignatureMirror(it, genericDeclaration) } ?: EmptyFieldSignatureMirror(type!!)
 
 
     private class ImmutableFieldMirror(builder: Builder) : FieldMirror {

@@ -19,7 +19,6 @@ package io.michaelrocks.grip.mirrors
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.EmptyMethodSignatureMirror
-import io.michaelrocks.grip.mirrors.signature.LazyMethodSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.MethodSignatureMirror
 
 interface MethodMirror : Element<Type.Method>, Annotated {
@@ -32,7 +31,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
     private var access: Int = 0
     private var name: String? = null
     private var type: Type.Method? = null
-    private var signature: String? = null
+    private var signature: MethodSignatureMirror? = null
     private var defaultValue: Any? = null
     private val exceptions = LazyList<Type.Object>()
     private val parameters = LazyList<MethodParameterMirror.Builder>()
@@ -52,7 +51,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
       type.argumentTypes.forEach { parameters += MethodParameterMirror.Builder(parameters.size, it) }
     }
 
-    fun signature(signature: String?) = apply {
+    fun signature(signature: MethodSignatureMirror?) = apply {
       this.signature = signature
     }
 
@@ -76,7 +75,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
     fun build(): MethodMirror = ImmutableMethodMirror(this)
 
     private fun buildSignature(): MethodSignatureMirror =
-        signature?.let { LazyMethodSignatureMirror(it) } ?: EmptyMethodSignatureMirror(type!!, exceptions)
+        signature ?: EmptyMethodSignatureMirror(type!!, exceptions)
 
     class ImmutableMethodMirror(builder: Builder) : MethodMirror {
       override val access = builder.access

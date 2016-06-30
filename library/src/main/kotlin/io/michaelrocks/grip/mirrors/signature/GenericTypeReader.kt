@@ -27,6 +27,7 @@ import org.objectweb.asm.signature.SignatureVisitor
 private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
+    private val genericDeclaration: GenericDeclaration,
     private val callback: (GenericType) -> Unit
 ) : SignatureVisitor(Opcodes.ASM5) {
   private var genericType: GenericType? = null
@@ -41,7 +42,8 @@ internal class GenericTypeReader(
   }
 
   override fun visitTypeVariable(name: String) {
-    genericType = GenericType.TypeVariable(name)
+    genericType =
+        genericDeclaration.typeVariables.lastOrNull { it.name == name } ?: error("Undeclared type variable $name")
     visitEnd()
   }
 
@@ -67,7 +69,7 @@ internal class GenericTypeReader(
   }
 
   override fun visitTypeArgument(name: Char): SignatureVisitor {
-    return GenericTypeReader {
+    return GenericTypeReader(genericDeclaration) {
       typeArguments.add(
           when (name) {
             SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
@@ -102,10 +104,10 @@ internal class GenericTypeReader(
   }
 }
 
-internal fun readGenericType(signature: String): GenericType {
+internal fun readGenericType(signature: String, genericDeclaration: GenericDeclaration): GenericType {
   var genericType: GenericType? = null
   SignatureReader(signature).acceptType(
-      GenericTypeReader {
+      GenericTypeReader(genericDeclaration) {
         genericType = it
       }
   )

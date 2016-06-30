@@ -20,6 +20,12 @@ import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.commons.given
 import io.michaelrocks.grip.mirrors.annotation.AnnotationInstanceReader
 import io.michaelrocks.grip.mirrors.annotation.AnnotationValueReader
+import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.LazyMethodSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.MethodSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.asLazyGenericDeclaration
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
@@ -53,16 +59,19 @@ internal class ReflectorImpl : Reflector {
   ) : ClassVisitor(Opcodes.ASM5) {
 
     private val builder = ClassMirror.Builder()
+    private lateinit var genericDeclaration: GenericDeclaration
 
     fun toClassMirror(): ClassMirror = builder.build()
 
     override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?,
         interfaces: Array<out String>?) {
+      val signatureMirror = signature?.let { LazyClassSignatureMirror(it) }
+      genericDeclaration = signatureMirror?.asLazyGenericDeclaration() ?: EmptyGenericDeclaration
       builder.apply {
         version(version)
         access(access)
         name(name)
-        signature(signature)
+        signature(signatureMirror)
         superName(superName)
         interfaces(interfaces)
       }
@@ -77,14 +86,15 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitField(access: Int, name: String, desc: String, signature: String?, value: Any?): FieldVisitor? =
         given(!forAnnotation) {
-          ReflectorFieldVisitor(classRegistry, access, name, desc, signature, value) {
+          ReflectorFieldVisitor(classRegistry, genericDeclaration, access, name, desc, signature, value) {
             builder.addField(it)
           }
         }
 
     override fun visitMethod(access: Int, name: String, desc: String, signature: String?,
         exceptions: Array<out String>?): MethodVisitor {
-      return ReflectorMethodVisitor(classRegistry, forAnnotation, access, name, desc, signature, exceptions) {
+      val signatureMirror = signature?.let { LazyMethodSignatureMirror(it, genericDeclaration) }
+      return ReflectorMethodVisitor(classRegistry, forAnnotation, access, name, desc, signatureMirror, exceptions) {
         if (it.isConstructor) {
           builder.addConstructor(it)
         } else {
@@ -116,6 +126,7 @@ internal class ReflectorImpl : Reflector {
 
   private class ReflectorFieldVisitor(
       private val classRegistry: ClassRegistry,
+      private val genericDeclaration: GenericDeclaration,
       access: Int,
       name: String,
       desc: String,
@@ -124,7 +135,7 @@ internal class ReflectorImpl : Reflector {
       private val callback: (FieldMirror) -> Unit
   ) : FieldVisitor(Opcodes.ASM5) {
 
-    private val builder = FieldMirror.Builder().apply {
+    private val builder = FieldMirror.Builder(genericDeclaration).apply {
       access(access)
       name(name)
       type(getType(desc))
@@ -146,7 +157,7 @@ internal class ReflectorImpl : Reflector {
       access: Int,
       name: String,
       desc: String,
-      signature: String?,
+      signature: MethodSignatureMirror?,
       exceptions: Array<out String>?,
       private val callback: (MethodMirror) -> Unit
   ) : MethodVisitor(Opcodes.ASM5) {
