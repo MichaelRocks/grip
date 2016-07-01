@@ -20,7 +20,7 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureVisitor
 
 class MethodSignatureReader(
-    private val classGenericDeclaration: GenericDeclaration
+    classGenericDeclaration: GenericDeclaration
 ) : SignatureVisitor(Opcodes.ASM5) {
 
   private val builder = MethodSignatureMirror.Builder()
