@@ -28,6 +28,16 @@ interface ClassMirror : Element<Type.Object>, Annotated {
   val signature: ClassSignatureMirror
   val interfaces: List<Type.Object>
 
+  val declaringType: Type.Object?
+  val enclosingType: Type.Object?
+    get() {
+      val enclosure = enclosure
+      return when (enclosure) {
+        is Enclosure.Method -> enclosure.enclosingType
+        is Enclosure.None -> declaringType
+      }
+    }
+
   val simpleName: String
   val types: Collection<Type.Object>
   val enclosure: Enclosure
@@ -124,6 +134,11 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private fun buildSignature(): ClassSignatureMirror =
         signature ?: EmptyClassSignatureMirror(superType, interfaces)
 
+    private fun buildDeclaringClass(): Type.Object? {
+      val innerClass = innerClasses.firstOrNull { it.type == type }
+      return innerClass?.outerType
+    }
+
     private fun buildName(): String {
       fun buildName(type: Type, innerClassesByOuterType: Map<Type.Object, InnerClass>): String {
         val innerClass = innerClassesByOuterType[type] ?: return type.className
@@ -168,6 +183,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       override val signature = builder.buildSignature()
       override val interfaces = builder.interfaces.detachImmutableCopy()
       override val annotations = ImmutableAnnotationCollection(builder.annotations)
+      override val declaringType: Type.Object? = builder.buildDeclaringClass()
       override val simpleName = builder.buildSimpleName()
       override val types = builder.buildTypes()
       override val enclosure = builder.enclosure
@@ -198,6 +214,10 @@ internal class LazyClassMirror(
   override val interfaces = classReader.interfaces.map { getObjectTypeByInternalName(it) }.immutable()
   override val annotations: AnnotationCollection
     get() = delegate.annotations
+  override val declaringType: Type.Object?
+    get() = delegate.declaringType
+  override val enclosingType: Type.Object?
+    get() = delegate.enclosingType
   override val simpleName: String
     get() = delegate.simpleName
   override val types: Collection<Type.Object>
