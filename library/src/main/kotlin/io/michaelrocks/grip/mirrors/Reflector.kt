@@ -24,7 +24,6 @@ import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.LazyMethodSignatureMirror
-import io.michaelrocks.grip.mirrors.signature.MethodSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.asLazyGenericDeclaration
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
@@ -77,24 +76,42 @@ internal class ReflectorImpl : Reflector {
       }
     }
 
-    override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
-        given(!forAnnotation) {
-          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
-            builder.addAnnotation(it)
-          }
+    override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
+      return given(!forAnnotation) {
+        AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+          builder.addAnnotation(it)
+        }
+      }
+    }
+
+    override fun visitField(access: Int, name: String, desc: String, signature: String?, value: Any?): FieldVisitor? {
+      return given(!forAnnotation) {
+        val fieldBuilder = FieldMirror.Builder(genericDeclaration).apply {
+          access(access)
+          name(name)
+          type(getType(desc))
+          signature(signature)
+          value(value)
         }
 
-    override fun visitField(access: Int, name: String, desc: String, signature: String?, value: Any?): FieldVisitor? =
-        given(!forAnnotation) {
-          ReflectorFieldVisitor(classRegistry, genericDeclaration, access, name, desc, signature, value) {
-            builder.addField(it)
-          }
+        ReflectorFieldVisitor(classRegistry, fieldBuilder) {
+          builder.addField(it)
         }
+      }
+    }
 
     override fun visitMethod(access: Int, name: String, desc: String, signature: String?,
         exceptions: Array<out String>?): MethodVisitor {
       val signatureMirror = signature?.let { LazyMethodSignatureMirror(it, genericDeclaration) }
-      return ReflectorMethodVisitor(classRegistry, forAnnotation, access, name, desc, signatureMirror, exceptions) {
+      val methodBuilder = MethodMirror.Builder().apply {
+        val type = getMethodType(desc)
+        access(access)
+        name(name)
+        type(type)
+        signature(signatureMirror)
+        exceptions(exceptions)
+      }
+      return ReflectorMethodVisitor(classRegistry, forAnnotation, methodBuilder) {
         if (it.isConstructor) {
           builder.addConstructor(it)
         } else {
@@ -126,22 +143,9 @@ internal class ReflectorImpl : Reflector {
 
   private class ReflectorFieldVisitor(
       private val classRegistry: ClassRegistry,
-      private val genericDeclaration: GenericDeclaration,
-      access: Int,
-      name: String,
-      desc: String,
-      signature: String?,
-      value: Any?,
+      private val builder: FieldMirror.Builder,
       private val callback: (FieldMirror) -> Unit
   ) : FieldVisitor(Opcodes.ASM5) {
-
-    private val builder = FieldMirror.Builder(genericDeclaration).apply {
-      access(access)
-      name(name)
-      type(getType(desc))
-      signature(signature)
-      value(value)
-    }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor =
         AnnotationInstanceReader(getObjectType(desc), classRegistry) {
@@ -154,22 +158,9 @@ internal class ReflectorImpl : Reflector {
   private class ReflectorMethodVisitor(
       private val classRegistry: ClassRegistry,
       private val forAnnotation: Boolean,
-      access: Int,
-      name: String,
-      desc: String,
-      signature: MethodSignatureMirror?,
-      exceptions: Array<out String>?,
+      private val builder: MethodMirror.Builder,
       private val callback: (MethodMirror) -> Unit
   ) : MethodVisitor(Opcodes.ASM5) {
-
-    private val builder = MethodMirror.Builder().apply {
-      val type = getMethodType(desc)
-      access(access)
-      name(name)
-      type(type)
-      signature(signature)
-      exceptions(exceptions)
-    }
 
     override fun visitParameterAnnotation(parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? =
         given(visible && !forAnnotation) {
