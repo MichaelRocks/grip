@@ -27,7 +27,7 @@ interface FieldMirror : Element<Type>, Annotated {
   val value: Any?
 
   class Builder(
-      private val genericDeclaration: GenericDeclaration
+      private val enclosingGenericDeclaration: GenericDeclaration
   ) {
     private var access = 0
     private var name: String? = null
@@ -65,8 +65,8 @@ interface FieldMirror : Element<Type>, Annotated {
     fun build(): FieldMirror = ImmutableFieldMirror(this)
 
     private fun buildSignature(): FieldSignatureMirror =
-        signature?.let { LazyFieldSignatureMirror(it, genericDeclaration) } ?: EmptyFieldSignatureMirror(type!!)
-
+        signature?.let { LazyFieldSignatureMirror(it, enclosingGenericDeclaration) }
+            ?: EmptyFieldSignatureMirror(type!!)
 
     private class ImmutableFieldMirror(builder: Builder) : FieldMirror {
       override val access = builder.access

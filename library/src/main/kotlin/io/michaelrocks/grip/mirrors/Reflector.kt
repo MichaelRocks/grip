@@ -20,11 +20,12 @@ import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.commons.given
 import io.michaelrocks.grip.mirrors.annotation.AnnotationInstanceReader
 import io.michaelrocks.grip.mirrors.annotation.AnnotationValueReader
-import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.LazyMethodSignatureMirror
-import io.michaelrocks.grip.mirrors.signature.asLazyGenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.asGenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.inheritLazily
+import io.michaelrocks.grip.mirrors.signature.resolveGenericDeclarationLazily
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
@@ -58,14 +59,19 @@ internal class ReflectorImpl : Reflector {
   ) : ClassVisitor(Opcodes.ASM5) {
 
     private val builder = ClassMirror.Builder()
-    private lateinit var genericDeclaration: GenericDeclaration
+    private lateinit var classGenericDeclaration: GenericDeclaration
 
     fun toClassMirror(): ClassMirror = builder.build()
 
     override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?,
         interfaces: Array<out String>?) {
-      val signatureMirror = signature?.let { LazyClassSignatureMirror(it) }
-      genericDeclaration = signatureMirror?.asLazyGenericDeclaration() ?: EmptyGenericDeclaration
+      val enclosingGenericDeclaration =
+          classRegistry.resolveGenericDeclarationLazily(getObjectTypeByInternalName(name))
+      val signatureMirror = signature?.let { LazyClassSignatureMirror(it, enclosingGenericDeclaration) }
+      classGenericDeclaration =
+          signatureMirror?.let {
+            enclosingGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
+          } ?: enclosingGenericDeclaration
       builder.apply {
         version(version)
         access(access)
@@ -73,6 +79,7 @@ internal class ReflectorImpl : Reflector {
         signature(signatureMirror)
         superName(superName)
         interfaces(interfaces)
+        genericDeclaration(classGenericDeclaration)
       }
     }
 
@@ -86,14 +93,13 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitField(access: Int, name: String, desc: String, signature: String?, value: Any?): FieldVisitor? {
       return given(!forAnnotation) {
-        val fieldBuilder = FieldMirror.Builder(genericDeclaration).apply {
+        val fieldBuilder = FieldMirror.Builder(classGenericDeclaration).apply {
           access(access)
           name(name)
           type(getType(desc))
           signature(signature)
           value(value)
         }
-
         ReflectorFieldVisitor(classRegistry, fieldBuilder) {
           builder.addField(it)
         }
@@ -102,7 +108,11 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitMethod(access: Int, name: String, desc: String, signature: String?,
         exceptions: Array<out String>?): MethodVisitor {
-      val signatureMirror = signature?.let { LazyMethodSignatureMirror(it, genericDeclaration) }
+      val signatureMirror = signature?.let { LazyMethodSignatureMirror(it, classGenericDeclaration) }
+      val methodGenericDeclaration =
+          signatureMirror?.let {
+            classGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
+          } ?: classGenericDeclaration
       val methodBuilder = MethodMirror.Builder().apply {
         val type = getMethodType(desc)
         access(access)
@@ -110,6 +120,7 @@ internal class ReflectorImpl : Reflector {
         type(type)
         signature(signatureMirror)
         exceptions(exceptions)
+        genericDeclaration(methodGenericDeclaration)
       }
       return ReflectorMethodVisitor(classRegistry, forAnnotation, methodBuilder) {
         if (it.isConstructor) {

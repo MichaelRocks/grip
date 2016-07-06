@@ -66,7 +66,7 @@ interface MethodSignatureMirror {
 
 internal class LazyMethodSignatureMirror(
     private val signature: String,
-    private val classGenericDeclaration: GenericDeclaration
+    classGenericDeclaration: GenericDeclaration
 ) : MethodSignatureMirror {
 
   private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -106,3 +106,11 @@ internal fun readMethodSignature(signature: String, genericDeclaration: GenericD
       SignatureReader(signature).accept(this)
       toMethodSignature()
     }
+
+internal fun MethodSignatureMirror.asGenericDeclaration(): GenericDeclaration {
+  return GenericDeclaration(typeVariables)
+}
+
+internal fun MethodSignatureMirror.asLazyGenericDeclaration(): GenericDeclaration {
+  return LazyGenericDeclaration { asGenericDeclaration() }
+}

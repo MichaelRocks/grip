@@ -20,6 +20,8 @@ import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.ClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.EmptyClassSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import org.objectweb.asm.ClassReader
 
 interface ClassMirror : Element<Type.Object>, Annotated {
@@ -49,6 +51,8 @@ interface ClassMirror : Element<Type.Object>, Annotated {
   val constructors: Collection<MethodMirror>
   val methods: Collection<MethodMirror>
 
+  val genericDeclaration: GenericDeclaration
+
   class Builder {
     private var version: Int = 0
     private var access: Int = 0
@@ -68,6 +72,8 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private val fields = LazyList<FieldMirror>()
     private val constructors = LazyList<MethodMirror>()
     private val methods = LazyList<MethodMirror>()
+
+    private var genericDeclaration: GenericDeclaration = EmptyGenericDeclaration
 
     fun version(version: Int) = apply {
       this.version = version
@@ -127,6 +133,10 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     fun addMethod(mirror: MethodMirror) = apply {
       check(!mirror.isConstructor) { "Method $mirror is a constructor" }
       this.methods += mirror
+    }
+
+    fun genericDeclaration(genericDeclaration: GenericDeclaration) {
+      this.genericDeclaration = genericDeclaration
     }
 
     fun build(): ClassMirror = ImmutableClassMirror(this)
@@ -192,6 +202,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       override val fields = builder.fields.detachImmutableCopy()
       override val constructors = builder.constructors.detachImmutableCopy()
       override val methods = builder.methods.detachImmutableCopy()
+      override val genericDeclaration = builder.genericDeclaration
 
       override fun toString() = "ClassMirror{type = $type}"
     }
@@ -234,6 +245,8 @@ internal class LazyClassMirror(
     get() = delegate.constructors
   override val methods: Collection<MethodMirror>
     get() = delegate.methods
+  override val genericDeclaration: GenericDeclaration
+    get() = delegate.genericDeclaration
 
   private fun getClassVersion(): Int =
       classReader.readInt(classReader.getItem(1) - 7)

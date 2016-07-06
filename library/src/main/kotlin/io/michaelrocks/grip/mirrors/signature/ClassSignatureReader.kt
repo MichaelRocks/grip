@@ -19,10 +19,13 @@ package io.michaelrocks.grip.mirrors.signature
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureVisitor
 
-internal class ClassSignatureReader : SignatureVisitor(Opcodes.ASM5) {
+internal class ClassSignatureReader(
+    enclosingGenericDeclaration: GenericDeclaration
+) : SignatureVisitor(Opcodes.ASM5) {
+
   private val builder = ClassSignatureMirror.Builder()
   private var typeVariableBuilder: TypeVariableBuilder? = null
-  private val genericDeclaration = InheritingGenericDeclaration()
+  private val genericDeclaration = InheritingGenericDeclaration(enclosingGenericDeclaration)
 
   fun toClassSignature(): ClassSignatureMirror = builder.build()
 

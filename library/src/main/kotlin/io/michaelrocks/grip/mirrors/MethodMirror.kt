@@ -18,7 +18,9 @@ package io.michaelrocks.grip.mirrors
 
 import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
+import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.EmptyMethodSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import io.michaelrocks.grip.mirrors.signature.MethodSignatureMirror
 
 interface MethodMirror : Element<Type.Method>, Annotated {
@@ -26,6 +28,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
   val defaultValue: Any?
   val exceptions: List<Type.Object>
   val parameters: List<MethodParameterMirror>
+  val genericDeclaration: GenericDeclaration
 
   class Builder {
     private var access: Int = 0
@@ -35,6 +38,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
     private var defaultValue: Any? = null
     private val exceptions = LazyList<Type.Object>()
     private val parameters = LazyList<MethodParameterMirror.Builder>()
+    private var genericDeclaration: GenericDeclaration = EmptyGenericDeclaration
 
     private val annotations = LazyList<AnnotationMirror>()
 
@@ -68,6 +72,10 @@ interface MethodMirror : Element<Type.Method>, Annotated {
       parameters[index].addAnnotation(annotation)
     }
 
+    fun genericDeclaration(genericDeclaration: GenericDeclaration) = apply {
+      this.genericDeclaration = genericDeclaration
+    }
+
     fun addAnnotation(annotation: AnnotationMirror) = apply {
       annotations += annotation
     }
@@ -88,6 +96,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
       override val parameters =
           if (builder.parameters.isEmpty()) listOf()
           else builder.parameters.map { it.build() }.immutable()
+      override val genericDeclaration = builder.genericDeclaration
 
       override fun toString() = "MethodMirror{name = $name, type = $type}"
     }

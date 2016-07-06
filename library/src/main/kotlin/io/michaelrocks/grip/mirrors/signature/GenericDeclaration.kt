@@ -44,10 +44,24 @@ internal fun GenericDeclaration(typeVariables: List<GenericType.TypeVariable>): 
   }
 }
 
-internal fun ClassSignatureMirror.asLazyGenericDeclaration(): GenericDeclaration {
-  return object : GenericDeclaration {
-    override val typeVariables: List<GenericType.TypeVariable> by lazy {
-      this@asLazyGenericDeclaration.typeVariables
-    }
+internal class LazyGenericDeclaration(
+    builder: () -> GenericDeclaration
+) : GenericDeclaration {
+
+  private val delegate by lazy { builder() }
+
+  override val typeVariables: List<GenericType.TypeVariable>
+    get() = delegate.typeVariables
+}
+
+internal fun GenericDeclaration.inherit(genericDeclaration: GenericDeclaration): GenericDeclaration {
+  return InheritingGenericDeclaration(this).apply {
+    typeVariables.addAll(genericDeclaration.typeVariables)
   }
+}
+
+internal inline fun GenericDeclaration.inheritLazily(
+    crossinline genericDeclaration: () -> GenericDeclaration
+): GenericDeclaration {
+  return LazyGenericDeclaration { inherit(genericDeclaration()) }
 }
