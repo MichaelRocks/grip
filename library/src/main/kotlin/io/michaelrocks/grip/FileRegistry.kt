@@ -53,7 +53,8 @@ internal class FileRegistryImpl(
         sources.put(file, fileSource)
         fileSource.listFiles { path, fileType ->
           if (fileType == FileSource.EntryType.CLASS) {
-            val type = getObjectTypeByInternalName(path.substringBeforeLast(".class"))
+            val name = path.replace('\\', '/').substringBeforeLast(".class")
+            val type = getObjectTypeByInternalName(name)
             filesByTypes.put(type, file)
             typesByFiles.getOrPut(file) { ArrayList() } += type
           }
