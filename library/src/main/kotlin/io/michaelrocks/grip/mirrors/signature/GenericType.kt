@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2017 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,14 +100,14 @@ private inline fun <reified T : Any> T.equals(other: Any?, body: (T) -> Boolean)
   return body(that)
 }
 
-private inline infix fun Int.then(value: Boolean) = combine(this, JavaBoolean.hashCode(value))
-private inline infix fun Int.then(value: Byte) = combine(this, JavaByte.hashCode(value))
-private inline infix fun Int.then(value: Char) = combine(this, JavaChar.hashCode(value))
-private inline infix fun Int.then(value: Double) = combine(this, JavaDouble.hashCode(value))
-private inline infix fun Int.then(value: Float) = combine(this, JavaFloat.hashCode(value))
-private inline infix fun Int.then(value: Int) = combine(this, JavaInt.hashCode(value))
-private inline infix fun Int.then(value: Long) = combine(this, JavaLong.hashCode(value))
-private inline infix fun Int.then(value: Short) = combine(this, JavaShort.hashCode(value))
+private inline infix fun Int.then(value: Boolean) = combine(this, if (value) 1231 else 1237)
+private inline infix fun Int.then(value: Byte) = combine(this, value.toInt())
+private inline infix fun Int.then(value: Char) = combine(this, value.toInt())
+private inline infix fun Int.then(value: Double) = then(JavaDouble.doubleToLongBits(value))
+private inline infix fun Int.then(value: Float) = combine(this, JavaFloat.floatToIntBits(value))
+private inline infix fun Int.then(value: Int) = combine(this, value)
+private inline infix fun Int.then(value: Long) = combine(this, (value xor (value ushr 32)).toInt())
+private inline infix fun Int.then(value: Short) = combine(this, value.toInt())
 private inline infix fun Int.then(value: BooleanArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
 private inline infix fun Int.then(value: ByteArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
 private inline infix fun Int.then(value: CharArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
