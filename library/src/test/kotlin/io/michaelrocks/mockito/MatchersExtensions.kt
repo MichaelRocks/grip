@@ -56,9 +56,6 @@ inline fun <reified T : Any> refEq(value: T, vararg excludeFields: String): T =
 inline fun <reified T : Any> same(value: T): T =
     ArgumentMatchers.same(value).toNotNull()
 
-inline fun <reified T : Any> isNull(): T =
-    ArgumentMatchers.isNull(T::class.java).toNotNull()
-
 inline fun <reified T : Any> notNull(): T =
     ArgumentMatchers.notNull<T>().toNotNull()
 
