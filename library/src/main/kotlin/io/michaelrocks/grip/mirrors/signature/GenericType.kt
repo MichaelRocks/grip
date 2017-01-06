@@ -63,7 +63,7 @@ sealed class GenericType {
     ) : this(type, listOf(typeArgument) + typeArguments.asList())
 
     override fun toString() =
-        StringBuilder("${type.className}").apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
+        StringBuilder(type.className).apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
 
     override fun equals(other: Any?): Boolean = equals(other) { type == it.type && typeArguments == it.typeArguments }
     override fun hashCode(): Int = 17 then type then typeArguments
