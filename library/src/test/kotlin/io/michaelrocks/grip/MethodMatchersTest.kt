@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2017 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,24 +24,23 @@ import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_NAME
 import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_TYPE
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getMethodType
-import io.michaelrocks.mockito.RETURNS_SMART_NULLS
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
 
 class MethodMatchersTest {
-  private val defaultConstructor = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {
+  private val defaultConstructor = mock<MethodMirror>().apply {
     given(name).thenReturn(CONSTRUCTOR_NAME)
     given(type).thenReturn(DEFAULT_CONSTRUCTOR_TYPE)
   }
 
-  private val constructor = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {
+  private val constructor = mock<MethodMirror>().apply {
     given(name).thenReturn(CONSTRUCTOR_NAME)
     given(type).thenReturn(getMethodType(Type.Primitive.Void, Type.Primitive.Int))
     given(parameters).thenReturn(listOf(MethodParameterMirror.Builder(0, Type.Primitive.Int).build()))
   }
 
-  private val staticInitializer = mock<MethodMirror>(RETURNS_SMART_NULLS).apply {
+  private val staticInitializer = mock<MethodMirror>().apply {
     given(name).thenReturn(STATIC_INITIALIZER_NAME)
     given(type).thenReturn(STATIC_INITIALIZER_TYPE)
   }
