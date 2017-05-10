@@ -31,10 +31,10 @@ class FieldInitializerMatchersTest {
   private val nullValueField = mock<FieldMirror>()
 
   @Test fun testWithFieldInitializerTrue() = stringValueField.testFieldInitializer(true) {
-    withFieldInitializer { grip, value -> true }
+    withFieldInitializer { _, _ -> true }
   }
   @Test fun testWithFieldInitializerFalse() = stringValueField.testFieldInitializer(false) {
-    withFieldInitializer { grip, value -> false }
+    withFieldInitializer { _, _ -> false }
   }
 
   @Test fun testWithFieldInitializerStringTrue() = stringValueField.testFieldInitializer(true) {

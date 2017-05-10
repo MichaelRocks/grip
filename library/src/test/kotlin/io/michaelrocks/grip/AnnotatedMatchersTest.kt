@@ -40,19 +40,19 @@ class AnnotatedMatchersTest {
     annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation"))
   }
   @Test fun testAnnotatedWithByPredicateTrue() = annotated.testAnnotations(true) {
-    annotatedWith { grip, annotation -> annotation.values.isEmpty() }
+    annotatedWith { _, annotation -> annotation.values.isEmpty() }
   }
   @Test fun testAnnotatedWithByPredicateFalse() = annotated.testAnnotations(false) {
-    annotatedWith { grip, annotation -> annotation.values.isNotEmpty() }
+    annotatedWith { _, annotation -> annotation.values.isNotEmpty() }
   }
 
   @Test fun testAnnotatedWithByTypeAndPredicateTrue() = annotated.testAnnotations(true) {
-    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation")) { grip, annotation ->
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation")) { _, annotation ->
       annotation.values.isEmpty()
     }
   }
   @Test fun testAnnotatedWithByTypeAndPredicateFalse() = annotated.testAnnotations(false) {
-    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation")) { grip, annotation ->
+    annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation")) { _, annotation ->
       annotation.values.isNotEmpty()
     }
   }

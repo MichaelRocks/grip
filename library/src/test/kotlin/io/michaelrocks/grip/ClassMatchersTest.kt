@@ -60,8 +60,8 @@ class ClassMatchersTest {
   @Test fun testVersionIsLowerOrEqualTrue() = classMirror.testVersion(true) { versionIsLowerOrEqual(51) }
   @Test fun testVersionIsLowerOrEqualFalse() = classMirror.testVersion(false) { versionIsLowerOrEqual(50) }
 
-  @Test fun testSuperNameTrue() = classMirror.testSuperName(true) { superType { grip, type -> true } }
-  @Test fun testSuperNameFalse() = classMirror.testSuperName(false) { superType { grip, type -> false } }
+  @Test fun testSuperNameTrue() = classMirror.testSuperName(true) { superType { _, _ -> true } }
+  @Test fun testSuperNameFalse() = classMirror.testSuperName(false) { superType { _, _ -> false } }
   @Test fun testHasSuperNameTrue() = classMirror.testSuperName(true) { hasSuperType() }
   @Test fun testHasSuperNameFalse() = interfaceMirror.testSuperName(false) { hasSuperType() }
 
@@ -74,23 +74,23 @@ class ClassMatchersTest {
   @Test fun testInterfacesAreEmptyTrue() = interfaceMirror.testInterfaces(true) { interfacesAreEmpty() }
   @Test fun testInterfacesAreEmptyFalse() = classMirror.testInterfaces(false) { interfacesAreEmpty() }
 
-  @Test fun testWithFieldTrue() = classMirror.testFields(true) { withField { grip, field -> true } }
-  @Test fun testWithFieldFalse() = classMirror.testFields(false) { withField { grip, field -> false } }
-  @Test fun testWithFieldEmpty() = interfaceMirror.testFields(false) { withField { grip, field -> true } }
+  @Test fun testWithFieldTrue() = classMirror.testFields(true) { withField { _, _ -> true } }
+  @Test fun testWithFieldFalse() = classMirror.testFields(false) { withField { _, _ -> false } }
+  @Test fun testWithFieldEmpty() = interfaceMirror.testFields(false) { withField { _, _ -> true } }
 
   @Test fun testWithConstructorTrue() = classMirror.testConstructors(true) {
-    withConstructor { grip, method -> true }
+    withConstructor { _, _ -> true }
   }
   @Test fun testWithConstructorFalse() = classMirror.testConstructors(false) {
-    withConstructor { grip, method -> false }
+    withConstructor { _, _ -> false }
   }
   @Test fun testWithConstructorEmpty() = interfaceMirror.testConstructors(false) {
-    withConstructor { grip, method -> true }
+    withConstructor { _, _ -> true }
   }
 
-  @Test fun testWithMethodTrue() = classMirror.testMethods(true) { withMethod { grip, method -> true } }
-  @Test fun testWithMethodFalse() = classMirror.testMethods(false) { withMethod { grip, method -> false } }
-  @Test fun testWithMethodEmpty() = interfaceMirror.testMethods(false) { withMethod { grip, method -> true } }
+  @Test fun testWithMethodTrue() = classMirror.testMethods(true) { withMethod { _, _ -> true } }
+  @Test fun testWithMethodFalse() = classMirror.testMethods(false) { withMethod { _, _ -> false } }
+  @Test fun testWithMethodEmpty() = interfaceMirror.testMethods(false) { withMethod { _, _ -> true } }
 
   private inline fun ClassMirror.testVersion(condition: Boolean, body: () -> ((Grip, ClassMirror) -> Boolean)) =
       assertAndVerify(condition, body) { version }
