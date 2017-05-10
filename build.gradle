@@ -51,5 +51,5 @@ ext {
   asmVersion = '5.2'
 
   junitVersion = '4.12'
-  mockitoVersion = '2.5.4'
+  mockitoVersion = '2.7.22'
 }
