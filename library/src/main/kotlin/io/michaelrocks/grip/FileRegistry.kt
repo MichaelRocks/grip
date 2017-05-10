@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2017 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ interface FileRegistry {
 
   fun readClass(type: Type.Object): ByteArray
   fun findTypesForFile(file: File): Collection<Type.Object>
+  fun findFileForType(type: Type.Object): File?
 }
 
 internal class FileRegistryImpl(
@@ -94,6 +95,10 @@ internal class FileRegistryImpl(
   override fun findTypesForFile(file: File): Collection<Type.Object> {
     require(contains(file)) { "File $file is not added to the registry" }
     return typesByFiles[file.canonicalFile]?.immutable() ?: emptyList()
+  }
+
+  override fun findFileForType(type: Type.Object): File? {
+    return filesByTypes[type]
   }
 
   override fun close() {
