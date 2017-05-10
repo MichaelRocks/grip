@@ -20,26 +20,19 @@ import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getType
 
 sealed class GenericType {
-  class Raw(val type: Type) : GenericType() {
+  data class Raw(val type: Type) : GenericType() {
     override fun toString(): String = type.className
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type }
-    override fun hashCode(): Int = 31 + 17 * type.hashCode()
   }
 
-  class TypeVariable(val name: String) : GenericType() {
+  data class TypeVariable(val name: String) : GenericType() {
     override fun toString(): String = name
-    override fun equals(other: Any?): Boolean = equals(other) { name == it.name }
-    override fun hashCode(): Int = 31 + 17 * name.hashCode()
   }
 
-  class Array(val elementType: GenericType) : GenericType() {
+  data class Array(val elementType: GenericType) : GenericType() {
     override fun toString(): String = "$elementType[]"
-    override fun equals(other: Any?): Boolean = equals(other) { elementType == it.elementType }
-    override fun hashCode(): Int = 31 + 17 * elementType.hashCode()
   }
 
-  class Parameterized(val type: Type.Object, val typeArguments: List<GenericType>) : GenericType() {
-
+  data class Parameterized(val type: Type.Object, val typeArguments: List<GenericType>) : GenericType() {
     constructor(
         type: Type.Object,
         typeArgument: GenericType,
@@ -47,38 +40,20 @@ sealed class GenericType {
     ) : this(type, listOf(typeArgument) + typeArguments.asList())
 
     override fun toString() =
-        StringBuilder("${type.className}").apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
-
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type && typeArguments == it.typeArguments }
-    override fun hashCode(): Int = 17 * (31 + 17 * type.hashCode()) + 17 * typeArguments.hashCode()
+        StringBuilder(type.className).apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
   }
 
-  class Inner(val type: GenericType, val ownerType: GenericType) : GenericType() {
+  data class Inner(val type: GenericType, val ownerType: GenericType) : GenericType() {
     override fun toString(): String = "$ownerType.$type"
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type && ownerType == it.ownerType }
-    override fun hashCode(): Int = 17 * (31 + 17 * type.hashCode()) + 17 * ownerType.hashCode()
   }
 
-  class UpperBounded(val upperBound: GenericType) : GenericType() {
+  data class UpperBounded(val upperBound: GenericType) : GenericType() {
     override fun toString(): String = "? extends $upperBound"
-    override fun equals(other: Any?): Boolean = equals(other) { upperBound == it.upperBound }
-    override fun hashCode(): Int = 31 + 17 * upperBound.hashCode()
   }
 
-  class LowerBounded(val lowerBound: GenericType) : GenericType() {
+  data class LowerBounded(val lowerBound: GenericType) : GenericType() {
     override fun toString(): String = "? super $lowerBound"
-    override fun equals(other: Any?): Boolean = equals(other) { lowerBound == it.lowerBound }
-    override fun hashCode(): Int = 31 + 17 * lowerBound.hashCode()
   }
 }
 
 internal val OBJECT_RAW_TYPE = GenericType.Raw(getType<Any>())
-
-private inline fun <reified T : Any> T.equals(other: Any?, body: (T) -> Boolean): Boolean {
-  if (this === other) {
-    return true
-  }
-
-  val that = other as? T ?: return false
-  return body(that)
-}

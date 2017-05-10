@@ -47,25 +47,25 @@ inline infix fun <reified R, reified T1 : R, reified T2 : R> ((Grip, T1) -> Bool
 
 inline fun typeMatcher(crossinline predicate: (Grip, Type) -> Boolean) =
     { grip: Grip, type: Type -> predicate(grip, type) }
-fun equalsTo(otherType: Type) = typeMatcher { grip, type -> type == otherType }
-fun isPrimitive() = typeMatcher { grip, type -> type.isPrimitive }
-fun isArray() = typeMatcher { grip, type -> type.isArray }
-fun isObject() = typeMatcher { grip, type -> type.isObject }
-fun isVoid() = typeMatcher { grip, type -> type is Type.Primitive.Void }
+fun equalsTo(otherType: Type) = typeMatcher { _, type -> type == otherType }
+fun isPrimitive() = typeMatcher { _, type -> type.isPrimitive }
+fun isArray() = typeMatcher { _, type -> type.isArray }
+fun isObject() = typeMatcher { _, type -> type.isObject }
+fun isVoid() = typeMatcher { _, type -> type is Type.Primitive.Void }
 
 inline fun methodTypeMatcher(crossinline predicate: (Grip, Type.Method) -> Boolean) =
     { grip: Grip, type: Type.Method -> predicate(grip, type) }
 inline fun returns(crossinline predicate: (Grip, Type) -> Boolean) =
     methodTypeMatcher { grip, type -> predicate(grip, type.returnType) }
-fun returns(otherType: Type) = returns { grip, type -> type == otherType }
+fun returns(otherType: Type) = returns { _, type -> type == otherType }
 
 inline fun stringMatcher(crossinline predicate: (Grip, String) -> Boolean) =
     { grip: Grip, string: String -> predicate(grip, string) }
-fun equalsTo(otherString: String) = stringMatcher { grip, string -> string == otherString }
-fun matches(regex: Regex) = stringMatcher { grip, string -> regex.matches(string) }
-fun startsWith(prefix: String) = stringMatcher { grip, string -> string.startsWith(prefix) }
-fun endsWith(suffix: String) = stringMatcher { grip, string -> string.endsWith(suffix) }
-fun contains(otherString: String) = stringMatcher { grip, string -> string.contains(otherString) }
+fun equalsTo(otherString: String) = stringMatcher { _, string -> string == otherString }
+fun matches(regex: Regex) = stringMatcher { _, string -> regex.matches(string) }
+fun startsWith(prefix: String) = stringMatcher { _, string -> string.startsWith(prefix) }
+fun endsWith(suffix: String) = stringMatcher { _, string -> string.endsWith(suffix) }
+fun contains(otherString: String) = stringMatcher { _, string -> string.contains(otherString) }
 
 inline fun type(crossinline predicate: (Grip, Type) -> Boolean) =
     { grip: Grip, mirror: Typed<*> -> predicate(grip, mirror.type) }
@@ -80,10 +80,10 @@ inline fun methodType(crossinline predicate: (Grip, Type.Method) -> Boolean) =
 
 inline fun access(crossinline predicate: (Grip, Int) -> Boolean) =
     { grip: Grip, mirror: Element<*> -> predicate(grip, mirror.access) }
-fun access(otherAccess: Int) = access { grip, access -> access == otherAccess }
-fun accessHasAllOf(mask: Int) = access { grip, access -> access and mask == mask }
-fun accessHasAnyOf(mask: Int) = access { grip, access -> access and mask != 0 }
-fun accessHasNoneOf(mask: Int) = access { grip, access -> access and mask == 0 }
+fun access(otherAccess: Int) = access { _, access -> access == otherAccess }
+fun accessHasAllOf(mask: Int) = access { _, access -> access and mask == mask }
+fun accessHasAnyOf(mask: Int) = access { _, access -> access and mask != 0 }
+fun accessHasNoneOf(mask: Int) = access { _, access -> access and mask == 0 }
 fun isPublic() = accessHasAllOf(Opcodes.ACC_PUBLIC)
 fun isProtected() = accessHasAllOf(Opcodes.ACC_PROTECTED)
 fun isPrivate() = accessHasAllOf(Opcodes.ACC_PRIVATE)
@@ -103,25 +103,25 @@ inline fun annotatedWith(crossinline predicate: (Grip, AnnotationMirror) -> Bool
 inline fun annotatedWith(annotationType: Type, crossinline predicate: (Grip, AnnotationMirror) -> Boolean) =
     annotatedWith { grip, annotation -> annotation.type == annotationType && predicate(grip, annotation) }
 fun annotatedWith(annotationType: Type) =
-    annotatedWith { grip, annotation -> annotation.type == annotationType }
+    annotatedWith { _, annotation -> annotation.type == annotationType }
 
 inline fun version(crossinline predicate: (Grip, Int) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> predicate(grip, mirror.version) }
-fun version(otherVersion: Int) = version { grip, version -> version == otherVersion }
-fun versionIsGreater(otherVersion: Int) = version { grip, version -> version > otherVersion }
-fun versionIsGreaterOrEqual(otherVersion: Int) = version { grip, version -> version >= otherVersion }
-fun versionIsLower(otherVersion: Int) = version { grip, version -> version < otherVersion }
-fun versionIsLowerOrEqual(otherVersion: Int) = version { grip, version -> version <= otherVersion }
+fun version(otherVersion: Int) = version { _, version -> version == otherVersion }
+fun versionIsGreater(otherVersion: Int) = version { _, version -> version > otherVersion }
+fun versionIsGreaterOrEqual(otherVersion: Int) = version { _, version -> version >= otherVersion }
+fun versionIsLower(otherVersion: Int) = version { _, version -> version < otherVersion }
+fun versionIsLowerOrEqual(otherVersion: Int) = version { _, version -> version <= otherVersion }
 
 inline fun superType(crossinline predicate: (Grip, Type) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> mirror.superType?.let { predicate(grip, it) } ?: false }
 fun hasSuperType() =
-    { grip: Grip, mirror: ClassMirror -> mirror.superType != null }
+    { _: Grip, mirror: ClassMirror -> mirror.superType != null }
 
 inline fun interfaces(crossinline predicate: (Grip, List<Type>) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> predicate(grip, mirror.interfaces) }
-fun interfacesContain(type: Type) = interfaces { grip, interfaces -> interfaces.contains(type) }
-fun interfacesAreEmpty() = interfaces { grip, interfaces -> interfaces.isEmpty() }
+fun interfacesContain(type: Type) = interfaces { _, interfaces -> interfaces.contains(type) }
+fun interfacesAreEmpty() = interfaces { _, interfaces -> interfaces.isEmpty() }
 
 inline fun withField(crossinline predicate: (Grip, FieldMirror) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> mirror.fields.any { predicate(grip, it) } }
@@ -131,38 +131,38 @@ inline fun withConstructor(crossinline predicate: (Grip, MethodMirror) -> Boolea
 inline fun withMethod(crossinline predicate: (Grip, MethodMirror) -> Boolean) =
     { grip: Grip, mirror: ClassMirror -> mirror.methods.any { predicate(grip, it) } }
 fun isConstructor() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isConstructor }
+    { _: Grip, mirror: MethodMirror -> mirror.isConstructor }
 fun isDefaultConstructor() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isDefaultConstructor }
+    { _: Grip, mirror: MethodMirror -> mirror.isDefaultConstructor }
 fun isStaticInitializer() =
-    { grip: Grip, mirror: MethodMirror -> mirror.isStaticInitializer }
+    { _: Grip, mirror: MethodMirror -> mirror.isStaticInitializer }
 
 inline fun withFieldInitializer(crossinline predicate: (Grip, Any?) -> Boolean) =
     { grip: Grip, mirror: FieldMirror -> predicate(grip, mirror.value) }
 inline fun <reified T : Any> withFieldInitializer() =
-    withFieldInitializer { grip, value -> value is T }
+    withFieldInitializer { _, value -> value is T }
 fun hasFieldInitializer() =
-    withFieldInitializer { grip, value -> value != null }
+    withFieldInitializer { _, value -> value != null }
 
 inline fun withParameter(crossinline predicate: (Grip, MethodParameterMirror) -> Boolean) =
     { grip: Grip, mirror: MethodMirror -> mirror.parameters.any { predicate(grip, it) } }
 
 fun existsInClasses(query: Query<ClassesResult>) =
-    { grip: Grip, mirror: ClassMirror ->
+    { _: Grip, mirror: ClassMirror ->
       query.execute().containsType(mirror.type)
     }
 fun existsInFields(query: Query<FieldsResult>) =
-    { grip: Grip, mirror: FieldMirror ->
+    { _: Grip, mirror: FieldMirror ->
       query.execute().any {
         it.fields.any { it.name == mirror.name && it.type == mirror.type }
       }
     }
 fun existsInMethods(query: Query<MethodsResult>) =
-    { grip: Grip, mirror: MethodMirror ->
+    { _: Grip, mirror: MethodMirror ->
       query.execute().any {
         it.methods.any { it.name == mirror.name && it.type == mirror.type }
       }
     }
 
 inline fun <T> wrap(crossinline matcher: (T) -> Boolean): (Grip, T) -> Boolean =
-    { grip: Grip, value: T -> matcher(value) }
+    { _: Grip, value: T -> matcher(value) }
