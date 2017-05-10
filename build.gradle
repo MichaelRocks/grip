@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright 2016 Michael Rozumyanskiy
-=======
  * Copyright 2017 Michael Rozumyanskiy
->>>>>>> hotfix/0.5.1
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +15,7 @@
  */
 
 allprojects {
-  ext.kotlinVersion = '1.0.6'
+  ext.kotlinVersion = '1.1.2-3'
 
   buildscript {
     repositories {
@@ -55,5 +51,5 @@ ext {
   asmVersion = '5.2'
 
   junitVersion = '4.12'
-  mockitoVersion = '2.5.4'
+  mockitoVersion = '2.7.22'
 }

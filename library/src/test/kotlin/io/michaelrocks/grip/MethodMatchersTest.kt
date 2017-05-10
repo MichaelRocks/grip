@@ -51,10 +51,9 @@ class MethodMatchersTest {
   @Test fun testIsDefaultConstructorFalse() = constructor.assert(false) { isDefaultConstructor() }
   @Test fun testIsStaticInitializerTrue() = staticInitializer.assert(true) { isStaticInitializer() }
   @Test fun testIsStaticInitializerFalse() = defaultConstructor.assert(false) { isStaticInitializer() }
-  @Test fun testWithParameterTrue() = constructor.testParameters(true) { withParameter { grip, parameters -> true } }
-  @Test fun testWithParameterFalse() = constructor.testParameters(false) { withParameter { grip, parameters -> false } }
-  @Test fun testWithParameterEmpty() = defaultConstructor.testParameters(false) {
-    withParameter { grip, parameters -> true }
+  @Test fun testWithParameterTrue() = constructor.testParameters(true) { withParameter { _, _ -> true } }
+  @Test fun testWithParameterFalse() = constructor.testParameters(false) { withParameter { _, _ -> false } }
+  @Test fun testWithParameterEmpty() = defaultConstructor.testParameters(false) { withParameter { _, _ -> true }
   }
 
   private inline fun MethodMirror.testParameters(condition: Boolean, body: () -> ((Grip, MethodMirror) -> Boolean)) =

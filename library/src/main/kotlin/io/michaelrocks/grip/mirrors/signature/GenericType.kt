@@ -31,31 +31,23 @@ import java.lang.Long as JavaLong
 import java.lang.Short as JavaShort
 
 sealed class GenericType {
-  class Raw(val type: Type) : GenericType() {
+  data class Raw(val type: Type) : GenericType() {
     override fun toString(): String = type.className
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type }
-    override fun hashCode(): Int = 17 then type
   }
 
-  class TypeVariable(
+  data class TypeVariable(
       val name: String,
       val classBound: GenericType = OBJECT_RAW_TYPE,
       val interfaceBounds: List<GenericType> = emptyList()
   ) : GenericType() {
     override fun toString(): String = name
-    override fun equals(other: Any?): Boolean =
-        equals(other) { name == it.name && classBound == it.classBound && interfaceBounds == it.interfaceBounds }
-    override fun hashCode(): Int = 17 then name then classBound then interfaceBounds
   }
 
-  class Array(val elementType: GenericType) : GenericType() {
+  data class Array(val elementType: GenericType) : GenericType() {
     override fun toString(): String = "$elementType[]"
-    override fun equals(other: Any?): Boolean = equals(other) { elementType == it.elementType }
-    override fun hashCode(): Int = 17 then elementType
   }
 
-  class Parameterized(val type: Type.Object, val typeArguments: List<GenericType>) : GenericType() {
-
+  data class Parameterized(val type: Type.Object, val typeArguments: List<GenericType>) : GenericType() {
     constructor(
         type: Type.Object,
         typeArgument: GenericType,
@@ -64,58 +56,19 @@ sealed class GenericType {
 
     override fun toString() =
         StringBuilder(type.className).apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
-
-    override fun equals(other: Any?): Boolean = equals(other) { type == it.type && typeArguments == it.typeArguments }
-    override fun hashCode(): Int = 17 then type then typeArguments
   }
 
-  class Inner(val name: String, val type: GenericType, val ownerType: GenericType) : GenericType() {
+  data class Inner(val name: String, val type: GenericType, val ownerType: GenericType) : GenericType() {
     override fun toString(): String = "$ownerType.$name"
-    override fun equals(other: Any?): Boolean =
-        equals(other) { name == it.name && type == it.type && ownerType == it.ownerType }
-    override fun hashCode(): Int = 17 then name then type then ownerType
   }
 
-  class UpperBounded(val upperBound: GenericType) : GenericType() {
+  data class UpperBounded(val upperBound: GenericType) : GenericType() {
     override fun toString(): String = "? extends $upperBound"
-    override fun equals(other: Any?): Boolean = equals(other) { upperBound == it.upperBound }
-    override fun hashCode(): Int = 17 then upperBound
   }
 
-  class LowerBounded(val lowerBound: GenericType) : GenericType() {
+  data class LowerBounded(val lowerBound: GenericType) : GenericType() {
     override fun toString(): String = "? super $lowerBound"
-    override fun equals(other: Any?): Boolean = equals(other) { lowerBound == it.lowerBound }
-    override fun hashCode(): Int = 17 then lowerBound
   }
 }
 
 internal val OBJECT_RAW_TYPE = GenericType.Raw(getType<Any>())
-
-private inline fun <reified T : Any> T.equals(other: Any?, body: (T) -> Boolean): Boolean {
-  if (this === other) {
-    return true
-  }
-
-  val that = other as? T ?: return false
-  return body(that)
-}
-
-private inline infix fun Int.then(value: Boolean) = combine(this, if (value) 1231 else 1237)
-private inline infix fun Int.then(value: Byte) = combine(this, value.toInt())
-private inline infix fun Int.then(value: Char) = combine(this, value.toInt())
-private inline infix fun Int.then(value: Double) = then(JavaDouble.doubleToLongBits(value))
-private inline infix fun Int.then(value: Float) = combine(this, JavaFloat.floatToIntBits(value))
-private inline infix fun Int.then(value: Int) = combine(this, value)
-private inline infix fun Int.then(value: Long) = combine(this, (value xor (value ushr 32)).toInt())
-private inline infix fun Int.then(value: Short) = combine(this, value.toInt())
-private inline infix fun Int.then(value: BooleanArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: ByteArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: CharArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: DoubleArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: FloatArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: IntArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: LongArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: ShortArray?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: Array<*>?) = combine(this, value?.let { Arrays.hashCode(it) } ?: 0)
-private inline infix fun Int.then(value: Any?) = combine(this, value?.hashCode() ?: 0)
-private inline fun combine(current: Int, value: Int) = current * 31 + value

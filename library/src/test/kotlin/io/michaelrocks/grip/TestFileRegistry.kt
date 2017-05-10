@@ -11,7 +11,7 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
   override fun contains(file: File): Boolean = true
   override fun contains(type: Type.Object): Boolean = type in classesByType
 
-  override fun classpath(): Collection<File> = listOf(File("/"))
+  override fun classpath(): Collection<File> = listOf(DEFAULT_FILE)
 
   override fun readClass(type: Type.Object): ByteArray {
     val classLoader = classesByType[type]!!.java.classLoader
@@ -19,4 +19,9 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
   }
 
   override fun findTypesForFile(file: File): Collection<Type.Object> = classesByType.keys
+  override fun findFileForType(type: Type.Object) = if (contains(type)) DEFAULT_FILE else null
+
+  companion object {
+    private val DEFAULT_FILE = File("/")
+  }
 }
