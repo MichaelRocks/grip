@@ -49,15 +49,16 @@ internal class FileRegistryImpl(
   init {
     classpath.forEach {
       it.canonicalFile.let { file ->
-        require(file !in sources) { "File $file already added to registry" }
-        val fileSource = fileSourceFactory.createFileSource(file)
-        sources.put(file, fileSource)
-        fileSource.listFiles { path, fileType ->
-          if (fileType == FileSource.EntryType.CLASS) {
-            val name = path.replace('\\', '/').substringBeforeLast(".class")
-            val type = getObjectTypeByInternalName(name)
-            filesByTypes.put(type, file)
-            typesByFiles.getOrPut(file) { ArrayList() } += type
+        if (file !in sources) {
+          val fileSource = fileSourceFactory.createFileSource(file)
+          sources.put(file, fileSource)
+          fileSource.listFiles { path, fileType ->
+            if (fileType == FileSource.EntryType.CLASS) {
+              val name = path.replace('\\', '/').substringBeforeLast(".class")
+              val type = getObjectTypeByInternalName(name)
+              filesByTypes.put(type, file)
+              typesByFiles.getOrPut(file) { ArrayList() } += type
+            }
           }
         }
       }
