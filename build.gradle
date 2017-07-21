@@ -15,7 +15,7 @@
  */
 
 allprojects {
-  ext.kotlinVersion = '1.1.2-3'
+  ext.kotlinVersion = '1.1.3-2'
 
   buildscript {
     repositories {
@@ -51,5 +51,5 @@ ext {
   asmVersion = '5.2'
 
   junitVersion = '4.12'
-  mockitoVersion = '2.7.22'
+  mockitoVersion = '2.8.47'
 }
