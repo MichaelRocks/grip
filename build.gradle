@@ -15,7 +15,7 @@
  */
 
 allprojects {
-  ext.kotlinVersion = '1.1.3-2'
+  ext.kotlinVersion = '1.2.21'
 
   buildscript {
     repositories {
