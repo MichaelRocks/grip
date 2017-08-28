@@ -15,24 +15,6 @@
  */
 
 allprojects {
-  ext.kotlinVersion = '1.2.21'
-
-  buildscript {
-    repositories {
-      mavenLocal()
-      jcenter()
-      mavenCentral()
-    }
-  }
-
-  repositories {
-    mavenLocal()
-    jcenter()
-    mavenCentral()
-  }
-}
-
-allprojects {
   def properties = new Properties()
   properties.load(new FileInputStream(new File(rootDir, "version.properties")))
   def major = properties['version.major'] as int
@@ -45,11 +27,26 @@ allprojects {
 
   ext.dryRun = properties['version.dryRun'].toBoolean()
   ext.publish = properties['version.publish'].toBoolean()
-}
 
-ext {
-  asmVersion = '5.2'
+  ext.kotlinVersion = '1.2.21'
+  ext.asmVersion = '5.2'
 
-  junitVersion = '4.12'
-  mockitoVersion = '2.8.47'
+  ext.junitVersion = '4.12'
+  ext.mockitoVersion = '2.8.47'
+
+  buildscript {
+    repositories {
+      mavenLocal()
+      jcenter()
+    }
+
+    dependencies {
+      classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+  }
+
+  repositories {
+    mavenLocal()
+    jcenter()
+  }
 }
