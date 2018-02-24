@@ -32,7 +32,7 @@ allprojects {
   ext.asmVersion = '6.0'
 
   ext.junitVersion = '4.12'
-  ext.mockitoVersion = '2.8.47'
+  ext.mockitoVersion = '2.15.0'
 
   buildscript {
     repositories {
