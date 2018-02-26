@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.io.IOException
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
-internal class JarFileSource(private val jarFile: File) : FileSource {
+internal class JarFileSource(jarFile: File) : FileSource {
   private val jar = JarFile(jarFile, true)
 
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {

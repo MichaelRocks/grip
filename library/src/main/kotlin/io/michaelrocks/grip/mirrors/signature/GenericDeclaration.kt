@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ internal class InheritingGenericDeclaration(
     parent: GenericDeclaration = EmptyGenericDeclaration
 ) : MutableGenericDeclaration {
   override val typeVariables: MutableList<GenericType.TypeVariable> =
-      if (parent.typeVariables.isEmpty()) LazyList<GenericType.TypeVariable>() else parent.typeVariables.toMutableList()
+      if (parent.typeVariables.isEmpty()) LazyList() else parent.typeVariables.toMutableList()
 }
 
 internal object EmptyGenericDeclaration : GenericDeclaration {

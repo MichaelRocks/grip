@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ internal interface Reflector {
 internal class ReflectorImpl : Reflector {
   override fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror {
     val reader = ClassReader(data)
-    if (forAnnotation) {
-      return readClassMirror(reader, classRegistry, true)
+    return if (forAnnotation) {
+      readClassMirror(reader, classRegistry, true)
     } else {
-      return LazyClassMirror(reader) { readClassMirror(reader, classRegistry, false) }
+      LazyClassMirror(reader) { readClassMirror(reader, classRegistry, false) }
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ interface ClassSignatureMirror {
 
   fun toJvmSignature(): String
 
-  class Builder() {
+  class Builder {
     private val typeVariables = LazyList<GenericType.TypeVariable>()
     private var superType: GenericType = OBJECT_RAW_TYPE
     private val interfaces = LazyList<GenericType>()

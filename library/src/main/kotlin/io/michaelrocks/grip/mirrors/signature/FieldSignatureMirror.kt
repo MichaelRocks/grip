@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ interface FieldSignatureMirror {
 
   fun toJvmSignature(): String
 
-  class Builder() {
+  class Builder {
     private var type: GenericType = OBJECT_RAW_TYPE
 
     fun type(type: GenericType) = apply {

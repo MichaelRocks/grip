@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-@file:Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN", "NOTHING_TO_INLINE")
+@file:Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getType
-import java.util.Arrays
 import java.lang.Boolean as JavaBoolean
 import java.lang.Byte as JavaByte
 import java.lang.Character as JavaChar

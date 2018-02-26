@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers
 import kotlin.reflect.KClass
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "unused")
 fun <T> Any?.toNotNull(): T = null as T
 
 inline fun <reified T : Any> any(type: KClass<T>): T =
