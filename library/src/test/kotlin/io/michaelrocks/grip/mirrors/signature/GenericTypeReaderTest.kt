@@ -1,7 +1,22 @@
+/*
+ * Copyright 2016 Michael Rozumyanskiy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.mirrors.getObjectType
-import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.grip.mirrors.signature.GenericType.Array
 import io.michaelrocks.grip.mirrors.signature.GenericType.Inner
 import io.michaelrocks.grip.mirrors.signature.GenericType.LowerBounded
@@ -25,6 +40,7 @@ class GenericTypeReaderTest {
   fun testTypeVariable() {
     assertParsedSignatureEquals(
         "TT;",
+        TypeVariable("T"),
         TypeVariable("T")
     )
   }
@@ -33,7 +49,8 @@ class GenericTypeReaderTest {
   fun testGenericArray() {
     assertParsedSignatureEquals(
         "[TT;",
-        Array(TypeVariable("T"))
+        Array(TypeVariable("T")),
+        TypeVariable("T")
     )
   }
 
@@ -41,7 +58,9 @@ class GenericTypeReaderTest {
   fun testParameterizedType() {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>;",
-        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V")),
+        TypeVariable("K"),
+        TypeVariable("V")
     )
   }
 
@@ -50,9 +69,12 @@ class GenericTypeReaderTest {
     assertParsedSignatureEquals(
         "Ljava/util/Map<TK;TV;>.Entry<TK;TV;>;",
         Inner(
-            Parameterized(getObjectTypeByInternalName("Entry"), TypeVariable("K"), TypeVariable("V")),
+            "Entry",
+            Parameterized(getObjectType<Map.Entry<*, *>>(), TypeVariable("K"), TypeVariable("V")),
             Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
-        )
+        ),
+        TypeVariable("K"),
+        TypeVariable("V")
     )
   }
 
@@ -63,7 +85,8 @@ class GenericTypeReaderTest {
         Parameterized(
             getObjectType<List<*>>(),
             UpperBounded(TypeVariable("T"))
-        )
+        ),
+        TypeVariable("T")
     )
   }
 
@@ -74,7 +97,8 @@ class GenericTypeReaderTest {
         Parameterized(
             getObjectType<List<*>>(),
             LowerBounded(TypeVariable("T"))
-        )
+        ),
+        TypeVariable("T")
     )
   }
 
@@ -88,7 +112,8 @@ class GenericTypeReaderTest {
                     Parameterized(getObjectType<List<*>>(), TypeVariable("T"))
                 )
             )
-        )
+        ),
+        TypeVariable("T")
     )
   }
 
@@ -96,7 +121,8 @@ class GenericTypeReaderTest {
   fun testParameterizedTypeWithArray() {
     assertParsedSignatureEquals(
         "Ljava/util/List<[TT;>;",
-        Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T")))
+        Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T"))),
+        TypeVariable("T")
     )
   }
 
@@ -109,9 +135,25 @@ class GenericTypeReaderTest {
         )
     )
   }
+
+  @Test
+  fun testShadowedTypeVariable() {
+    assertParsedSignatureEquals(
+        "TT;",
+        TypeVariable("T", Raw(getObjectType<List<*>>())),
+        TypeVariable("T"),
+        TypeVariable("T", Raw(getObjectType<List<*>>()))
+    )
+  }
+
+  @Test(expected = IllegalStateException::class)
+  fun testUndefinedTypeVariable() {
+    readGenericType("TT;", EmptyGenericDeclaration)
+  }
 }
 
-private fun assertParsedSignatureEquals(signature: String, expected: GenericType) {
-  val actual = readGenericType(signature)
+private fun assertParsedSignatureEquals(signature: String, expected: GenericType, vararg typeVariables: TypeVariable) {
+  val genericDeclaration = GenericDeclaration(typeVariables.asList())
+  val actual = readGenericType(signature, genericDeclaration)
   assertEquals(expected, actual)
 }

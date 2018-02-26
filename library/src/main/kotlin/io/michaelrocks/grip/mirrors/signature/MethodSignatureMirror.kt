@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,26 @@
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.commons.LazyList
-import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.GenericTypeListWrapper
 import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.signature.SignatureReader
 
 interface MethodSignatureMirror {
-  val typeParameters: List<TypeParameter>
+  val typeVariables: List<GenericType.TypeVariable>
   val parameterTypes: List<GenericType>
   val returnType: GenericType
   val exceptionTypes: List<GenericType>
 
   fun toJvmSignature(): String
 
-  class Builder() {
-    private val typeParameters = LazyList<TypeParameter.Builder>()
+  class Builder {
+    private val typeVariables = LazyList<GenericType.TypeVariable>()
     private val parameterTypes = LazyList<GenericType>()
     private var returnType: GenericType? = null
     private val exceptionTypes = LazyList<GenericType>()
 
-    fun addTypeParameterBuilder(builder: TypeParameter.Builder) = apply {
-      typeParameters += builder
+    fun addTypeVariable(typeVariable: GenericType.TypeVariable) = apply {
+      typeVariables += typeVariable
     }
 
     fun addParameterType(parameterType: GenericType) = apply {
@@ -55,7 +54,7 @@ interface MethodSignatureMirror {
     fun build(): MethodSignatureMirror = MethodSignatureMirrorImpl(this)
 
     private class MethodSignatureMirrorImpl(builder: Builder) : MethodSignatureMirror {
-      override val typeParameters: List<TypeParameter> = builder.typeParameters.map { it.build() }.immutable()
+      override val typeVariables: List<GenericType.TypeVariable> = builder.typeVariables.detachImmutableCopy()
       override val parameterTypes: List<GenericType> = builder.parameterTypes.detachImmutableCopy()
       override val returnType: GenericType = builder.returnType!!
       override val exceptionTypes: List<GenericType> = builder.exceptionTypes.detachImmutableCopy()
@@ -65,11 +64,17 @@ interface MethodSignatureMirror {
   }
 }
 
-internal class LazyMethodSignatureMirror(private val signature: String) : MethodSignatureMirror {
-  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readMethodSignature(signature) }
+internal class LazyMethodSignatureMirror(
+    private val signature: String,
+    classGenericDeclaration: GenericDeclaration
+) : MethodSignatureMirror {
 
-  override val typeParameters: List<TypeParameter>
-    get() = delegate.typeParameters
+  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    readMethodSignature(signature, classGenericDeclaration)
+  }
+
+  override val typeVariables: List<GenericType.TypeVariable>
+    get() = delegate.typeVariables
   override val parameterTypes: List<GenericType>
     get() = delegate.parameterTypes
   override val returnType: GenericType
@@ -81,7 +86,7 @@ internal class LazyMethodSignatureMirror(private val signature: String) : Method
 }
 
 internal class EmptyMethodSignatureMirror(type: Type.Method, exceptions: List<Type.Object>) : MethodSignatureMirror {
-  override val typeParameters: List<TypeParameter>
+  override val typeVariables: List<GenericType.TypeVariable>
     get() = emptyList()
   override val parameterTypes: List<GenericType> =
       type.argumentTypes.run {
@@ -96,8 +101,16 @@ internal class EmptyMethodSignatureMirror(type: Type.Method, exceptions: List<Ty
   override fun toJvmSignature() = ""
 }
 
-internal fun readMethodSignature(signature: String): MethodSignatureMirror =
-    MethodSignatureReader().run {
+internal fun readMethodSignature(signature: String, genericDeclaration: GenericDeclaration): MethodSignatureMirror =
+    MethodSignatureReader(genericDeclaration).run {
       SignatureReader(signature).accept(this)
       toMethodSignature()
     }
+
+internal fun MethodSignatureMirror.asGenericDeclaration(): GenericDeclaration {
+  return GenericDeclaration(typeVariables)
+}
+
+internal fun MethodSignatureMirror.asLazyGenericDeclaration(): GenericDeclaration {
+  return LazyGenericDeclaration { asGenericDeclaration() }
+}

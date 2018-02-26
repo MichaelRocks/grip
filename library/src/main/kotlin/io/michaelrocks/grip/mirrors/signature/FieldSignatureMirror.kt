@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ interface FieldSignatureMirror {
 
   fun toJvmSignature(): String
 
-  class Builder() {
+  class Builder {
     private var type: GenericType = OBJECT_RAW_TYPE
 
     fun type(type: GenericType) = apply {
@@ -40,8 +40,11 @@ interface FieldSignatureMirror {
   }
 }
 
-internal class LazyFieldSignatureMirror(private val signature: String) : FieldSignatureMirror {
-  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readFieldSignature(signature) }
+internal class LazyFieldSignatureMirror(
+    private val signature: String,
+    private val genericDeclaration: GenericDeclaration
+) : FieldSignatureMirror {
+  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readFieldSignature(signature, genericDeclaration) }
 
   override val type: GenericType
     get() = delegate.type
@@ -55,7 +58,7 @@ internal class EmptyFieldSignatureMirror(type: Type) : FieldSignatureMirror {
   override fun toJvmSignature() = ""
 }
 
-internal fun readFieldSignature(signature: String): FieldSignatureMirror =
+internal fun readFieldSignature(signature: String, genericDeclaration: GenericDeclaration): FieldSignatureMirror =
     FieldSignatureMirror.Builder()
-        .type(readGenericType(signature))
+        .type(readGenericType(signature, genericDeclaration))
         .build()

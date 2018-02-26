@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type as AsmType
 
-internal abstract class AbstractAnnotationReader<T> protected constructor(
+internal abstract class AbstractAnnotationReader<out T> protected constructor(
     private val classRegistry: ClassRegistry,
     private val callback: (T) -> Unit
 ) : AnnotationVisitor(Opcodes.ASM5) {

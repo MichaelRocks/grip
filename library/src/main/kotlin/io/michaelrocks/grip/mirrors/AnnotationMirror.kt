@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
     val valuesHashCode = values.entries.fold(37) {
       hashCode, entry -> hashCode + (entry.key.hashCode() xor hashCode(entry.value))
     }
-    var hashCode = 37;
+    var hashCode = 37
     hashCode = hashCode * 17 + type.hashCode()
     hashCode = hashCode * 17 + valuesHashCode
     hashCode = hashCode * 17 + resolved.hashCode()

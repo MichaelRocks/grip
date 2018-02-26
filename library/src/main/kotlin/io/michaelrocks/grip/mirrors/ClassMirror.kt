@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,25 @@ import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.mirrors.signature.ClassSignatureMirror
 import io.michaelrocks.grip.mirrors.signature.EmptyClassSignatureMirror
-import io.michaelrocks.grip.mirrors.signature.LazyClassSignatureMirror
+import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
+import io.michaelrocks.grip.mirrors.signature.GenericDeclaration
 import org.objectweb.asm.ClassReader
-
-private val OBJECT_TYPE = getType<Any>()
 
 interface ClassMirror : Element<Type.Object>, Annotated {
   val version: Int
   val superType: Type.Object?
   val signature: ClassSignatureMirror
   val interfaces: List<Type.Object>
+
+  val declaringType: Type.Object?
+  val enclosingType: Type.Object?
+    get() {
+      val enclosure = enclosure
+      return when (enclosure) {
+        is Enclosure.Method -> enclosure.enclosingType
+        is Enclosure.None -> declaringType
+      }
+    }
 
   val simpleName: String
   val types: Collection<Type.Object>
@@ -42,13 +51,15 @@ interface ClassMirror : Element<Type.Object>, Annotated {
   val constructors: Collection<MethodMirror>
   val methods: Collection<MethodMirror>
 
+  val genericDeclaration: GenericDeclaration
+
   class Builder {
     private var version: Int = 0
     private var access: Int = 0
     private var name: String? = null
     private var type: Type.Object? = null
     private var superType: Type.Object? = null
-    private var signature: String? = null
+    private var signature: ClassSignatureMirror? = null
     private val interfaces = LazyList<Type.Object>()
 
     private val innerClasses = LazyList<InnerClass>()
@@ -61,6 +72,8 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private val fields = LazyList<FieldMirror>()
     private val constructors = LazyList<MethodMirror>()
     private val methods = LazyList<MethodMirror>()
+
+    private var genericDeclaration: GenericDeclaration = EmptyGenericDeclaration
 
     fun version(version: Int) = apply {
       this.version = version
@@ -76,16 +89,16 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     }
 
     fun superName(superName: String?) = apply {
-      this.superType = superName?.let { getTypeByInternalName(it) as Type.Object }
+      this.superType = superName?.let { getObjectTypeByInternalName(it) }
     }
 
-    fun signature(signature: String?) = apply {
+    fun signature(signature: ClassSignatureMirror?) = apply {
       this.signature = signature
     }
 
     fun interfaces(interfaces: Array<out String>?) = apply {
       this.interfaces.clear()
-      interfaces?.mapTo(this.interfaces) { getTypeByInternalName(it) as Type.Object }
+      interfaces?.mapTo(this.interfaces) { getObjectTypeByInternalName(it) }
     }
 
     fun addInnerClass(innerClass: InnerClass) = apply {
@@ -122,11 +135,19 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       this.methods += mirror
     }
 
+    fun genericDeclaration(genericDeclaration: GenericDeclaration) {
+      this.genericDeclaration = genericDeclaration
+    }
+
     fun build(): ClassMirror = ImmutableClassMirror(this)
 
     private fun buildSignature(): ClassSignatureMirror =
-        signature?.let { LazyClassSignatureMirror(it) } ?:
-            EmptyClassSignatureMirror(superType ?: OBJECT_TYPE, interfaces)
+        signature ?: EmptyClassSignatureMirror(superType, interfaces)
+
+    private fun buildDeclaringClass(): Type.Object? {
+      val innerClass = innerClasses.firstOrNull { it.type == type }
+      return innerClass?.outerType
+    }
 
     private fun buildName(): String {
       fun buildName(type: Type, innerClassesByOuterType: Map<Type.Object, InnerClass>): String {
@@ -150,7 +171,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
           return innerClass?.innerName ?: type.internalName.substringAfterLast('/')
       return type.internalName
           .removePrefix(enclosure.enclosingType.internalName)
-          .trimStart { it == '$' || (it >= '0' && it <= '9') }
+          .trimStart { it == '$' || it in '0'..'9' }
     }
 
     private fun buildTypes(): Collection<Type.Object> {
@@ -172,6 +193,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       override val signature = builder.buildSignature()
       override val interfaces = builder.interfaces.detachImmutableCopy()
       override val annotations = ImmutableAnnotationCollection(builder.annotations)
+      override val declaringType: Type.Object? = builder.buildDeclaringClass()
       override val simpleName = builder.buildSimpleName()
       override val types = builder.buildTypes()
       override val enclosure = builder.enclosure
@@ -180,6 +202,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
       override val fields = builder.fields.detachImmutableCopy()
       override val constructors = builder.constructors.detachImmutableCopy()
       override val methods = builder.methods.detachImmutableCopy()
+      override val genericDeclaration = builder.genericDeclaration
 
       override fun toString() = "ClassMirror{type = $type}"
     }
@@ -202,6 +225,10 @@ internal class LazyClassMirror(
   override val interfaces = classReader.interfaces.map { getObjectTypeByInternalName(it) }.immutable()
   override val annotations: AnnotationCollection
     get() = delegate.annotations
+  override val declaringType: Type.Object?
+    get() = delegate.declaringType
+  override val enclosingType: Type.Object?
+    get() = delegate.enclosingType
   override val simpleName: String
     get() = delegate.simpleName
   override val types: Collection<Type.Object>
@@ -218,6 +245,8 @@ internal class LazyClassMirror(
     get() = delegate.constructors
   override val methods: Collection<MethodMirror>
     get() = delegate.methods
+  override val genericDeclaration: GenericDeclaration
+    get() = delegate.genericDeclaration
 
   private fun getClassVersion(): Int =
       classReader.readInt(classReader.getItem(1) - 7)

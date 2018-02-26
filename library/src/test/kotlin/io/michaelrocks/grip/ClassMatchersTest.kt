@@ -26,6 +26,7 @@ import io.michaelrocks.grip.mirrors.STATIC_INITIALIZER_TYPE
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectType
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
+import io.michaelrocks.grip.mirrors.signature.EmptyGenericDeclaration
 import io.michaelrocks.mockito.given
 import io.michaelrocks.mockito.mock
 import org.junit.Test
@@ -35,7 +36,11 @@ class ClassMatchersTest {
     given(version).thenReturn(51)
     given(superType).thenReturn(getObjectType("LSuper;"))
     given(interfaces).thenReturn(listOf(getObjectType("Lio/michaelrocks/Interface;")))
-    given(fields).thenReturn(listOf(FieldMirror.Builder().name("field").type(Type.Primitive.Int).build()))
+    given(fields).thenReturn(
+        listOf(
+            FieldMirror.Builder(EmptyGenericDeclaration).name("field").type(Type.Primitive.Int).build()
+        )
+    )
     given(constructors).thenReturn(
         listOf(MethodMirror.Builder().name(CONSTRUCTOR_NAME).type(DEFAULT_CONSTRUCTOR_TYPE).build())
     )

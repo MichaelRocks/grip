@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
+@file:Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+
 package io.michaelrocks.grip.mirrors.signature
 
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getType
+import java.lang.Boolean as JavaBoolean
+import java.lang.Byte as JavaByte
+import java.lang.Character as JavaChar
+import java.lang.Double as JavaDouble
+import java.lang.Float as JavaFloat
+import java.lang.Integer as JavaInt
+import java.lang.Long as JavaLong
+import java.lang.Short as JavaShort
 
 sealed class GenericType {
   data class Raw(val type: Type) : GenericType() {
     override fun toString(): String = type.className
   }
 
-  data class TypeVariable(val name: String) : GenericType() {
+  data class TypeVariable(
+      val name: String,
+      val classBound: GenericType = OBJECT_RAW_TYPE,
+      val interfaceBounds: List<GenericType> = emptyList()
+  ) : GenericType() {
     override fun toString(): String = name
   }
 
@@ -43,8 +57,8 @@ sealed class GenericType {
         StringBuilder(type.className).apply { typeArguments.joinTo(this, prefix = "<", postfix = ">") }.toString()
   }
 
-  data class Inner(val type: GenericType, val ownerType: GenericType) : GenericType() {
-    override fun toString(): String = "$ownerType.$type"
+  data class Inner(val name: String, val type: GenericType, val ownerType: GenericType) : GenericType() {
+    override fun toString(): String = "$ownerType.$name"
   }
 
   data class UpperBounded(val upperBound: GenericType) : GenericType() {

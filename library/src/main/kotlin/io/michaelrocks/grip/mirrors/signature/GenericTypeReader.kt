@@ -27,10 +27,12 @@ import org.objectweb.asm.signature.SignatureVisitor
 private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
+    private val genericDeclaration: GenericDeclaration,
     private val callback: (GenericType) -> Unit
 ) : SignatureVisitor(Opcodes.ASM5) {
   private var genericType: GenericType? = null
   private var classType: Type.Object? = null
+  private var className: String? = null
   private val typeArguments = LazyList<GenericType>()
   private var arrayDimensions = 0
 
@@ -40,7 +42,8 @@ internal class GenericTypeReader(
   }
 
   override fun visitTypeVariable(name: String) {
-    genericType = GenericType.TypeVariable(name)
+    genericType =
+        genericDeclaration.typeVariables.lastOrNull { it.name == name } ?: error("Undeclared type variable $name")
     visitEnd()
   }
 
@@ -56,7 +59,8 @@ internal class GenericTypeReader(
 
   override fun visitInnerClassType(name: String) {
     buildGenericType()
-    classType = getObjectTypeByInternalName(name)
+    classType = getObjectTypeByInternalName("${classType!!.internalName}\$$name")
+    className = name
     typeArguments.clear()
   }
 
@@ -65,7 +69,7 @@ internal class GenericTypeReader(
   }
 
   override fun visitTypeArgument(name: Char): SignatureVisitor {
-    return GenericTypeReader {
+    return GenericTypeReader(genericDeclaration) {
       typeArguments.add(
           when (name) {
             SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
@@ -90,7 +94,7 @@ internal class GenericTypeReader(
           } else {
             GenericType.Parameterized(classType!!, typeArguments.toList())
           }
-      genericType = genericType?.let { GenericType.Inner(innerType, it) } ?: innerType
+      genericType = genericType?.let { GenericType.Inner(className!!, innerType, it) } ?: innerType
     }
 
     while (arrayDimensions > 0) {
@@ -100,10 +104,10 @@ internal class GenericTypeReader(
   }
 }
 
-internal fun readGenericType(signature: String): GenericType {
+internal fun readGenericType(signature: String, genericDeclaration: GenericDeclaration): GenericType {
   var genericType: GenericType? = null
   SignatureReader(signature).acceptType(
-      GenericTypeReader {
+      GenericTypeReader(genericDeclaration) {
         genericType = it
       }
   )

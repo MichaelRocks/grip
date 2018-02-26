@@ -19,40 +19,47 @@ package io.michaelrocks.grip.mirrors.signature
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureVisitor
 
-class MethodSignatureReader : SignatureVisitor(Opcodes.ASM5) {
+class MethodSignatureReader(
+    classGenericDeclaration: GenericDeclaration
+) : SignatureVisitor(Opcodes.ASM5) {
+
   private val builder = MethodSignatureMirror.Builder()
-  private var typeParameterBuilder: TypeParameter.Builder? = null
+  private var typeVariableBuilder: TypeVariableBuilder? = null
+  private val genericDeclaration = InheritingGenericDeclaration(classGenericDeclaration)
 
   fun toMethodSignature(): MethodSignatureMirror = builder.build()
 
   override fun visitFormalTypeParameter(name: String) {
-    typeParameterBuilder = TypeParameter.Builder(name).apply {
-      builder.addTypeParameterBuilder(this)
-    }
+    buildTypeVariable()
+    typeVariableBuilder = TypeVariableBuilder(name)
   }
 
-  override fun visitClassBound(): SignatureVisitor =
-      GenericTypeReader {
-        typeParameterBuilder!!.classBound(it)
-      }
+  override fun visitClassBound(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.classBound(it) }
+  }
 
-  override fun visitInterfaceBound(): SignatureVisitor =
-      GenericTypeReader {
-        typeParameterBuilder!!.addInterfaceBound(it)
-      }
+  override fun visitInterfaceBound(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
+  }
 
-  override fun visitParameterType(): SignatureVisitor =
-      GenericTypeReader {
-        builder.addParameterType(it)
-      }
+  override fun visitParameterType(): SignatureVisitor {
+    buildTypeVariable()
+    return GenericTypeReader(genericDeclaration) { builder.addParameterType(it) }
+  }
 
-  override fun visitReturnType(): SignatureVisitor =
-      GenericTypeReader {
-        builder.returnType(it)
-      }
+  override fun visitReturnType(): SignatureVisitor {
+    buildTypeVariable()
+    return GenericTypeReader(genericDeclaration) { builder.returnType(it) }
+  }
 
-  override fun visitExceptionType(): SignatureVisitor =
-      GenericTypeReader {
-        builder.addExceptionType(it)
-      }
+  override fun visitExceptionType(): SignatureVisitor {
+    return GenericTypeReader(genericDeclaration) { builder.addExceptionType(it) }
+  }
+
+  private fun buildTypeVariable() {
+    typeVariableBuilder?.let {
+      genericDeclaration.typeVariables.add(it.build())
+    }
+    typeVariableBuilder = null
+  }
 }
