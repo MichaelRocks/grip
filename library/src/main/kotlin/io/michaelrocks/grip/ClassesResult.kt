@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,10 @@ interface ClassesResult : Map<Type.Object, ClassMirror> {
 
     fun addClass(mirror: ClassMirror) = apply {
       val oldMirror = classes.put(mirror.type, mirror)
-      require(oldMirror == null)
+      require(oldMirror == null) { "Duplicate ClassMirror for type ${mirror.type}" }
     }
 
-    fun build(): ClassesResult = ImmutableClassesResult(
-        this)
+    fun build(): ClassesResult = ImmutableClassesResult(this)
 
     private class ImmutableClassesResult(
         builder: Builder
