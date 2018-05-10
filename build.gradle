@@ -15,7 +15,7 @@
  */
 
 allprojects {
-  version = '0.6.1-beta'
+  version = '0.6.2-beta'
   group = 'io.michaelrocks'
 
   ext.kotlinVersion = '1.2.41'
