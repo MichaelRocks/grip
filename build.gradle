@@ -20,7 +20,7 @@ allprojects {
 
   ext.kotlinVersion = '1.2.41'
   ext.asmVersion = '6.1.1'
-  ext.pabloVersion = '1.0.0'
+  ext.pabloVersion = '1.0.1'
 
   ext.junitVersion = '4.12'
   ext.mockitoVersion = '2.15.0'
