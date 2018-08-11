@@ -23,7 +23,7 @@ allprojects {
   ext.pabloVersion = '1.0.3'
 
   ext.junitVersion = '4.12'
-  ext.mockitoVersion = '2.15.0'
+  ext.mockitoVersion = '2.21.0'
 
   buildscript {
     repositories {
