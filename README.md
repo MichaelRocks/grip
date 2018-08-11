@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-  compile 'io.michaelrocks:grip:0.6.2-beta'
+  compile 'io.michaelrocks:grip:0.6.3-beta'
 }
 ```
 
