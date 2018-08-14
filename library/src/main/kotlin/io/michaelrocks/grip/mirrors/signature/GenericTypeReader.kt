@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2018 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.michaelrocks.grip.commons.LazyList
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.grip.mirrors.getType
+import io.michaelrocks.grip.mirrors.toArrayType
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
@@ -97,10 +98,25 @@ internal class GenericTypeReader(
       genericType = genericType?.let { GenericType.Inner(className!!, innerType, it) } ?: innerType
     }
 
-    while (arrayDimensions > 0) {
-      genericType = GenericType.Array(genericType!!)
-      --arrayDimensions
+    if (arrayDimensions > 0) {
+      genericType = genericType!!.let { type ->
+        if (type is GenericType.Raw) {
+          GenericType.Raw(type.type.toArrayType(arrayDimensions))
+        } else {
+          type.toGenericArrayType(arrayDimensions).also {
+            arrayDimensions = 0
+          }
+        }
+      }
     }
+  }
+
+  private tailrec fun GenericType.toGenericArrayType(dimensions: Int): GenericType {
+    if (dimensions == 0) {
+      return this
+    }
+
+    return GenericType.Array(this).toGenericArrayType(dimensions - 1)
   }
 }
 
