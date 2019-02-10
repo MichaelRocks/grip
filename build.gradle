@@ -19,7 +19,7 @@ allprojects {
   group = 'io.michaelrocks'
 
   ext.kotlinVersion = '1.3.21'
-  ext.asmVersion = '6.2.1'
+  ext.asmVersion = '7.0'
   ext.pabloVersion = '1.0.3'
 
   ext.junitVersion = '4.12'
