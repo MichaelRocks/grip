@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,20 @@ import java.util.Arrays
 
 interface AnnotationMirror : Typed<Type.Object> {
   val values: Map<String, Any>
+  val visible: Boolean
   val resolved: Boolean
 
   class Builder {
     private var type: Type.Object? = null
+    private var visible: Boolean = false
     private val values = LazyMap<String, Any>()
 
     fun type(type: Type.Object) = apply {
       this.type = type
+    }
+
+    fun visible(visible: Boolean) = apply {
+      this.visible = visible
     }
 
     fun addValue(value: Any) = addValue("value", value)
@@ -46,14 +52,14 @@ interface AnnotationMirror : Typed<Type.Object> {
     private class ImmutableAnnotationMirror(builder: Builder) : AbstractAnnotationMirror() {
       override val type = builder.type!!
       override val values = builder.values.immutableCopy()
-      override val resolved: Boolean
-        get() = true
+      override val visible = builder.visible
+      override val resolved: Boolean get() = true
     }
   }
 }
 
 internal abstract class AbstractAnnotationMirror : AnnotationMirror {
-  override fun toString(): String = "AnnotationMirror{type = $type, values = $values}"
+  override fun toString(): String = "AnnotationMirror{type = $type, values = $values, visible = $visible}"
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -61,7 +67,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
     }
 
     val that = other as? AnnotationMirror ?: return false
-    if (type != that.type || values.size != that.values.size || resolved != that.resolved) {
+    if (type != that.type || values.size != that.values.size || visible != that.visible || resolved != that.resolved) {
       return false
     }
 
@@ -87,12 +93,13 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
   }
 
   override fun hashCode(): Int {
-    val valuesHashCode = values.entries.fold(37) {
-      hashCode, entry -> hashCode + (entry.key.hashCode() xor hashCode(entry.value))
+    val valuesHashCode = values.entries.fold(37) { hashCode, entry ->
+      hashCode + (entry.key.hashCode() xor hashCode(entry.value))
     }
     var hashCode = 37
     hashCode = hashCode * 17 + type.hashCode()
     hashCode = hashCode * 17 + valuesHashCode
+    hashCode = hashCode * 17 + visible.hashCode()
     hashCode = hashCode * 17 + resolved.hashCode()
     return hashCode
   }
@@ -123,18 +130,30 @@ internal class UnresolvedAnnotationMirror(
 ) : AbstractAnnotationMirror() {
   override val values: Map<String, Any>
     get() = emptyMap()
+  override val visible: Boolean
+    get() = false
   override val resolved: Boolean
     get() = false
 
   override fun toString(): String = "UnresolvedAnnotationMirror{type = $type}"
 }
 
-fun buildAnnotation(type: Type.Object): AnnotationMirror =
-    AnnotationMirror.Builder().type(type).build()
+fun buildAnnotation(type: Type.Object, visible: Boolean): AnnotationMirror {
+  return AnnotationMirror.Builder()
+      .type(type)
+      .visible(visible)
+      .build()
+}
 
-inline fun buildAnnotation(type: Type.Object, body: AnnotationMirror.Builder.() -> Unit): AnnotationMirror =
-    AnnotationMirror.Builder().run {
-      type(type)
-      body()
-      build()
-    }
+inline fun buildAnnotation(
+    type: Type.Object,
+    visible: Boolean,
+    body: AnnotationMirror.Builder.() -> Unit
+): AnnotationMirror {
+  return AnnotationMirror.Builder().run {
+    type(type)
+    visible(visible)
+    body()
+    build()
+  }
+}

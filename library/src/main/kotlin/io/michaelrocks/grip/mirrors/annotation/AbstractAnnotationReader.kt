@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ internal abstract class AbstractAnnotationReader<out T> protected constructor(
 
   override fun visitAnnotation(name: String?, desc: String): AnnotationVisitor {
     val parent = this
-    return AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+    return AnnotationInstanceReader(getObjectType(desc), true, classRegistry) {
       addNormalizedValue(parent, name, it)
     }
   }

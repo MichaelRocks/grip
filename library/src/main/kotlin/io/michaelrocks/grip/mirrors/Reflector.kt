@@ -85,7 +85,7 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
       return given(!forAnnotation) {
-        AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+        AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
           builder.addAnnotation(it)
         }
       }
@@ -159,7 +159,7 @@ internal class ReflectorImpl : Reflector {
   ) : FieldVisitor(Opcodes.ASM5) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor =
-        AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+        AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
           builder.addAnnotation(it)
         }
 
@@ -175,14 +175,14 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitParameterAnnotation(parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? =
         given(!forAnnotation) {
-          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+          AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
             builder.addParameterAnnotation(parameter, it)
           }
         }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
         given(!forAnnotation) {
-          AnnotationInstanceReader(getObjectType(desc), classRegistry) {
+          AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
             builder.addAnnotation(it)
           }
         }
