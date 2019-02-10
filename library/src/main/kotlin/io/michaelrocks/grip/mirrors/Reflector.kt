@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,14 +174,14 @@ internal class ReflectorImpl : Reflector {
   ) : MethodVisitor(Opcodes.ASM5) {
 
     override fun visitParameterAnnotation(parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? =
-        given(visible && !forAnnotation) {
+        given(!forAnnotation) {
           AnnotationInstanceReader(getObjectType(desc), classRegistry) {
             builder.addParameterAnnotation(parameter, it)
           }
         }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
-        given(visible && !forAnnotation) {
+        given(!forAnnotation) {
           AnnotationInstanceReader(getObjectType(desc), classRegistry) {
             builder.addAnnotation(it)
           }
