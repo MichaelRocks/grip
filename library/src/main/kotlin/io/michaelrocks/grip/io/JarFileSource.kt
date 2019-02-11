@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package io.michaelrocks.grip.io
 
-import io.michaelrocks.grip.commons.using
 import java.io.File
 import java.io.IOException
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
-internal class JarFileSource(jarFile: File) : FileSource {
+class JarFileSource(jarFile: File) : FileSource {
   private val jar = JarFile(jarFile, true)
 
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
@@ -39,7 +38,7 @@ internal class JarFileSource(jarFile: File) : FileSource {
 
   override fun readFile(path: String): ByteArray {
     return jar.getJarEntry(path).let { entry ->
-      using(jar.getInputStream(entry)) { stream -> stream.readBytes() }
+      jar.getInputStream(entry).use { stream -> stream.readBytes() }
     }
   }
 
