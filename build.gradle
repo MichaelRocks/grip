@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 allprojects {
-  version = '0.7.0-beta'
+  version = '0.8.0-beta'
   group = 'io.michaelrocks'
 
   ext.kotlinVersion = '1.2.60'
