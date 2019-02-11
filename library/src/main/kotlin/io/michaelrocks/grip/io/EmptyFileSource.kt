@@ -17,7 +17,17 @@
 package io.michaelrocks.grip.io
 
 object EmptyFileSource : FileSource {
-  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) = Unit
-  override fun readFile(path: String): ByteArray = throw UnsupportedOperationException()
-  override fun close() = Unit
+  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
+  }
+
+  override fun readFile(path: String): ByteArray {
+    throw UnsupportedOperationException()
+  }
+
+  override fun close() {
+  }
+
+  override fun toString(): String {
+    return "EmptyFileSource"
+  }
 }

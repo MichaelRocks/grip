@@ -16,29 +16,22 @@
 
 package io.michaelrocks.grip.io
 
-import java.io.File
-
-class DirectoryFileSource(private val directory: File) : FileSource {
-  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
-    fun File.toEntryType() = when {
-      isDirectory -> FileSource.EntryType.DIRECTORY
-      name.endsWith(".class", ignoreCase = true) -> FileSource.EntryType.CLASS
-      else -> FileSource.EntryType.FILE
-    }
-
-    for (file in directory.walkTopDown()) {
-      callback(file.relativeTo(directory).path, file.toEntryType())
-    }
+object EmptyFileSink : FileSink {
+  override fun createFile(path: String, data: ByteArray) {
+    throw UnsupportedOperationException()
   }
 
-  override fun readFile(path: String): ByteArray {
-    return File(directory, path).readBytes()
+  override fun createDirectory(path: String) {
+    throw UnsupportedOperationException()
+  }
+
+  override fun flush() {
   }
 
   override fun close() {
   }
 
   override fun toString(): String {
-    return "DirectoryFileSource($directory)"
+    return "EmptyFileSink"
   }
 }

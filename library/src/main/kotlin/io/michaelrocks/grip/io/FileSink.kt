@@ -19,16 +19,12 @@ package io.michaelrocks.grip.io
 import java.io.Closeable
 import java.io.File
 
-interface FileSource : Closeable {
-  fun listFiles(callback: (name: String, type: EntryType) -> Unit)
-  fun readFile(path: String): ByteArray
-
-  enum class EntryType { CLASS,
-    FILE,
-    DIRECTORY
-  }
+interface FileSink : Closeable {
+  fun createFile(path: String, data: ByteArray)
+  fun createDirectory(path: String)
+  fun flush()
 
   interface Factory {
-    fun createFileSource(inputFile: File): FileSource
+    fun createFileSink(inputFile: File, outputFile: File): FileSink
   }
 }
