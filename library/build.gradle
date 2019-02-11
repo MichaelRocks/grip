@@ -21,12 +21,12 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
-  compile "org.ow2.asm:asm:$asmVersion"
+  implementation "org.ow2.asm:asm:$asmVersion"
 
-  testCompile "junit:junit:$junitVersion"
-  testCompile "org.mockito:mockito-core:$mockitoVersion"
+  testImplementation "junit:junit:$junitVersion"
+  testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }
 
 jar {
