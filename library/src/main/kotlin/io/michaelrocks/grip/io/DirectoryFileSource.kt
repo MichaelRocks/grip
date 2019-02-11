@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-internal class DirectoryFileSource(private val directory: File) : FileSource {
+class DirectoryFileSource(private val directory: File) : FileSource {
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
     fun File.toEntryType() = when {
       isDirectory -> FileSource.EntryType.DIRECTORY
@@ -31,7 +31,14 @@ internal class DirectoryFileSource(private val directory: File) : FileSource {
     }
   }
 
-  override fun readFile(path: String): ByteArray = File(directory, path).readBytes()
+  override fun readFile(path: String): ByteArray {
+    return File(directory, path).readBytes()
+  }
 
-  override fun close() = Unit
+  override fun close() {
+  }
+
+  override fun toString(): String {
+    return "DirectoryFileSource($directory)"
+  }
 }

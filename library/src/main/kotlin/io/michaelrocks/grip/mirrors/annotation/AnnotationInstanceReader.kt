@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import io.michaelrocks.grip.mirrors.Type
 
 internal class AnnotationInstanceReader(
     annotationType: Type.Object,
+    visible: Boolean,
     classRegistry: ClassRegistry,
     callback: (AnnotationMirror) -> Unit
 ) : AbstractAnnotationReader<AnnotationMirror>(classRegistry, callback) {
@@ -29,6 +30,7 @@ internal class AnnotationInstanceReader(
   private val builder =
       AnnotationMirror.Builder()
           .type(annotationType)
+          .visible(visible)
           .addValues(classRegistry.getAnnotationMirror(annotationType))
 
   override fun addValue(name: String?, value: Any) {

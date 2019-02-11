@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.commons
+package io.michaelrocks.grip.io
 
-internal inline fun <T : Any> given(condition: Boolean, body: () -> T): T? {
-  return if (condition) body() else null
+import java.io.Closeable
+import java.io.File
+
+interface FileSink : Closeable {
+  fun createFile(path: String, data: ByteArray)
+  fun createDirectory(path: String)
+  fun flush()
+
+  interface Factory {
+    fun createFileSink(inputFile: File, outputFile: File): FileSink
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,29 +23,56 @@ import io.michaelrocks.grip.mirrors.buildAnnotation
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import java.util.Collections
 
-fun createAnnotationMirror(annotationName: String): AnnotationMirror =
-    createAnnotationMirror(annotationName, emptyMap<String, Any>())
+fun createAnnotationMirror(
+    annotationName: String,
+    visible: Boolean = false
+): AnnotationMirror {
+  return createAnnotationMirror(annotationName, emptyMap(), visible)
+}
 
-fun createAnnotationMirror(annotationName: String, defaultValue: Any): AnnotationMirror =
-    createAnnotationMirror(annotationName, "value", defaultValue)
+fun createAnnotationMirror(
+    annotationName: String,
+    defaultValue: Any,
+    visible: Boolean = false
+): AnnotationMirror {
+  return createAnnotationMirror(annotationName, "value", defaultValue, visible)
+}
 
-fun createAnnotationMirror(annotationName: String, methodName: String, defaultValue: Any): AnnotationMirror =
-    createAnnotationMirror(annotationName, Collections.singletonMap(methodName, defaultValue))
+fun createAnnotationMirror(
+    annotationName: String,
+    methodName: String,
+    defaultValue: Any,
+    visible: Boolean = false
+): AnnotationMirror {
+  return createAnnotationMirror(annotationName, Collections.singletonMap(methodName, defaultValue), visible)
+}
 
-fun createAnnotationMirror(annotationName: String, vararg values: Pair<String, Any>): AnnotationMirror =
-    createAnnotationMirror(annotationName, hashMapOf(*values))
+fun createAnnotationMirror(
+    annotationName: String,
+    vararg values: Pair<String, Any>,
+    visible: Boolean = false
+): AnnotationMirror {
+  return createAnnotationMirror(annotationName, hashMapOf(*values), visible)
+}
 
-fun createAnnotationMirror(annotationName: String, values: Map<String, Any>): AnnotationMirror =
-    buildAnnotation(getAnnotationType(annotationName)) {
-      addValues(SimpleAnnotationMirror(getAnnotationType(annotationName), values))
-    }
+fun createAnnotationMirror(
+    annotationName: String,
+    values: Map<String, Any>,
+    visible: Boolean = false
+): AnnotationMirror {
+  return buildAnnotation(getAnnotationType(annotationName), visible) {
+    addValues(SimpleAnnotationMirror(getAnnotationType(annotationName), values, visible))
+  }
+}
 
-fun getAnnotationType(annotationName: String): Type.Object =
-    getObjectTypeByInternalName(annotationName)
+fun getAnnotationType(annotationName: String): Type.Object {
+  return getObjectTypeByInternalName(annotationName)
+}
 
 private class SimpleAnnotationMirror(
     override val type: Type.Object,
-    override val values: Map<String, Any>
+    override val values: Map<String, Any>,
+    override val visible: Boolean = false
 ) : AbstractAnnotationMirror() {
   override val resolved: Boolean
     get() = false

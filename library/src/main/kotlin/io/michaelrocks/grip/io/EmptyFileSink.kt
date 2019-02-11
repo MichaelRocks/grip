@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.commons
+package io.michaelrocks.grip.io
 
-internal inline fun <T : Any> given(condition: Boolean, body: () -> T): T? {
-  return if (condition) body() else null
+object EmptyFileSink : FileSink {
+  override fun createFile(path: String, data: ByteArray) {
+    throw UnsupportedOperationException()
+  }
+
+  override fun createDirectory(path: String) {
+    throw UnsupportedOperationException()
+  }
+
+  override fun flush() {
+  }
+
+  override fun close() {
+  }
+
+  override fun toString(): String {
+    return "EmptyFileSink"
+  }
 }
