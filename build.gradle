@@ -1,6 +1,6 @@
 allprojects {
   version = '0.8.0-beta'
-  group = 'io.michaelrocks'
+  group = 'io.michaelrocks.grip'
 
   ext.kotlinVersion = '1.5.21'
   ext.asmVersion = '9.2'
