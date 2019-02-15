@@ -177,15 +177,15 @@ fun existsInClasses(query: Query<ClassesResult>) =
 
 fun existsInFields(query: Query<FieldsResult>) =
   { _: Grip, mirror: FieldMirror ->
-    query.execute().any {
-      it.fields.any { it.name == mirror.name && it.type == mirror.type }
+    query.execute().any { result ->
+      result.fields.any { it.name == mirror.name && it.type == mirror.type }
     }
   }
 
 fun existsInMethods(query: Query<MethodsResult>) =
   { _: Grip, mirror: MethodMirror ->
-    query.execute().any {
-      it.methods.any { it.name == mirror.name && it.type == mirror.type }
+    query.execute().any { result ->
+      result.methods.any { it.name == mirror.name && it.type == mirror.type }
     }
   }
 
