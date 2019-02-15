@@ -93,7 +93,7 @@ internal class EmptyClassSignatureMirror(superType: Type?, interfaces: List<Type
 }
 
 internal fun ClassSignatureMirror.asGenericDeclaration(): GenericDeclaration {
-  return GenericDeclaration(typeVariables)
+  return GenericDeclaration.create(typeVariables)
 }
 
 internal fun ClassSignatureMirror.asLazyGenericDeclaration(): GenericDeclaration {

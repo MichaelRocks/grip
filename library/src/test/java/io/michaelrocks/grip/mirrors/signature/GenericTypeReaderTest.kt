@@ -155,7 +155,7 @@ class GenericTypeReaderTest {
 }
 
 private fun assertParsedSignatureEquals(signature: String, expected: GenericType, vararg typeVariables: TypeVariable) {
-  val genericDeclaration = GenericDeclaration(typeVariables.asList())
+  val genericDeclaration = GenericDeclaration.create(typeVariables.asList())
   val actual = readGenericType(GripFactory.ASM_API_DEFAULT, genericDeclaration, signature)
   assertEquals(expected, actual)
 }

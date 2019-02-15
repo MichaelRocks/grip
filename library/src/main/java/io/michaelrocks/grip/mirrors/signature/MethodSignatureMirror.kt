@@ -105,8 +105,8 @@ internal class EmptyMethodSignatureMirror(type: Type.Method, exceptions: List<Ty
   override fun toJvmSignature() = ""
 }
 
-fun MethodSignatureMirror.asGenericDeclaration(): GenericDeclaration {
-  return GenericDeclaration(typeVariables)
+internal fun MethodSignatureMirror.asGenericDeclaration(): GenericDeclaration {
+  return GenericDeclaration.create(typeVariables)
 }
 
 internal fun MethodSignatureMirror.asLazyGenericDeclaration(): GenericDeclaration {

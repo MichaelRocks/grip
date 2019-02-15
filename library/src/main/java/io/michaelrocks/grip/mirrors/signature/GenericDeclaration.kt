@@ -20,6 +20,14 @@ import io.michaelrocks.grip.commons.LazyList
 
 interface GenericDeclaration {
   val typeVariables: List<GenericType.TypeVariable>
+
+  companion object {
+    internal fun create(typeVariables: List<GenericType.TypeVariable>): GenericDeclaration {
+      return object : GenericDeclaration {
+        override val typeVariables: List<GenericType.TypeVariable> = typeVariables
+      }
+    }
+  }
 }
 
 internal interface MutableGenericDeclaration : GenericDeclaration {
@@ -36,12 +44,6 @@ internal class InheritingGenericDeclaration(
 internal object EmptyGenericDeclaration : GenericDeclaration {
   override val typeVariables: List<GenericType.TypeVariable>
     get() = emptyList()
-}
-
-internal fun GenericDeclaration(typeVariables: List<GenericType.TypeVariable>): GenericDeclaration {
-  return object : GenericDeclaration {
-    override val typeVariables: List<GenericType.TypeVariable> = typeVariables
-  }
 }
 
 internal class LazyGenericDeclaration(
