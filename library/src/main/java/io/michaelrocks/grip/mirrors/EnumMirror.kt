@@ -16,6 +16,6 @@
 
 package io.michaelrocks.grip.mirrors
 
-fun EnumMirror(desc: String, value: String): EnumMirror = EnumMirror(getObjectType(desc), value)
-
-data class EnumMirror(val type: Type.Object, val value: String)
+data class EnumMirror(val type: Type.Object, val value: String) {
+  constructor(desc: String, value: String) : this(getObjectType(desc), value)
+}
