@@ -69,16 +69,16 @@ class AnnotationGenerator private constructor(private val classVisitor: ClassVis
   }
 
   private fun addValue(annotationVisitor: AnnotationVisitor, name: String?, defaultValue: Any) {
-    if (defaultValue is EnumMirror) {
-      annotationVisitor.visitEnum(name, defaultValue.type.descriptor, defaultValue.value)
-    } else if (defaultValue is AnnotationMirror) {
-      val innerAnnotationVisitor = annotationVisitor.visitAnnotation(name, defaultValue.type.descriptor)
-      for (entry in defaultValue.values.entries) {
-        addValue(innerAnnotationVisitor, entry.key, entry.value)
+    when (defaultValue) {
+      is EnumMirror -> annotationVisitor.visitEnum(name, defaultValue.type.descriptor, defaultValue.value)
+      is AnnotationMirror -> {
+        val innerAnnotationVisitor = annotationVisitor.visitAnnotation(name, defaultValue.type.descriptor)
+        for (entry in defaultValue.values.entries) {
+          addValue(innerAnnotationVisitor, entry.key, entry.value)
+        }
+        innerAnnotationVisitor.visitEnd()
       }
-      innerAnnotationVisitor.visitEnd()
-    } else if (defaultValue is Array<*>) {
-      when (defaultValue.javaClass.componentType) {
+      is Array<*> -> when (defaultValue.javaClass.componentType) {
         EnumMirror::class.java,
         AnnotationMirror::class.java,
         String::class.java,
@@ -89,8 +89,7 @@ class AnnotationGenerator private constructor(private val classVisitor: ClassVis
         }
         else -> annotationVisitor.visit(name, defaultValue)
       }
-    } else {
-      annotationVisitor.visit(name, defaultValue)
+      else -> annotationVisitor.visit(name, defaultValue)
     }
   }
 
