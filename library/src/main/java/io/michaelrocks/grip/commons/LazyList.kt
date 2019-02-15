@@ -19,7 +19,7 @@ package io.michaelrocks.grip.commons
 import java.util.ArrayList
 import java.util.Collections
 
-internal class LazyList<T>(val factory: () -> MutableList<T> = { ArrayList<T>() }) : MutableList<T> {
+internal class LazyList<T>(val factory: () -> MutableList<T> = { ArrayList() }) : MutableList<T> {
   private var delegate: MutableList<T> = emptyMutableList()
 
   override val size: Int
