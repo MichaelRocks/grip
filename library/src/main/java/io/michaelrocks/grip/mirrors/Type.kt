@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 import org.objectweb.asm.Type as AsmType
 
 // TODO: Consider caching AsmType to Type conversion in properties
-sealed class Type private constructor(internal val type: AsmType) {
+sealed class Type(internal val type: AsmType) {
   val descriptor: String
     get() = type.descriptor
   open val internalName: String
