@@ -23,7 +23,7 @@ import io.michaelrocks.mockito.mock
 import org.junit.Test
 
 class TypedMatchersTest {
-  val typed = mock<Typed<*>>().apply {
+  private val typed = mock<Typed<*>>().apply {
     given(type).thenReturn(Type.Primitive.Void)
   }
 

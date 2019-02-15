@@ -25,7 +25,7 @@ import io.michaelrocks.mockito.mock
 import org.junit.Test
 
 class AnnotatedMatchersTest {
-  val annotated = mock<Annotated>().apply {
+  private val annotated = mock<Annotated>().apply {
     given(annotations).thenReturn(
       ImmutableAnnotationCollection(
         buildAnnotation(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"), visible = true)
