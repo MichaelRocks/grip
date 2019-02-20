@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,13 @@
 
 package io.michaelrocks.grip.io
 
-import java.io.Closeable
 import java.io.File
 
-interface FileSource : Closeable {
-  fun listFiles(callback: (name: String, type: EntryType) -> Unit)
-  fun readFile(path: String): ByteArray
-
-  enum class EntryType {
-    CLASS,
-    FILE,
-    DIRECTORY
-  }
-
-  interface Factory {
-    fun createFileSource(inputFile: File, fileFormat: FileFormat? = null): FileSource
+class DefaultFileSinkFactory : FileSink.Factory {
+  override fun createFileSink(outputFile: File, fileFormat: FileFormat): FileSink {
+    return when (fileFormat) {
+      FileFormat.DIRECTORY -> DirectoryFileSink(outputFile)
+      FileFormat.JAR -> JarFileSink(outputFile)
+    }
   }
 }

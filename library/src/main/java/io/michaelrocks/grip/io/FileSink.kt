@@ -25,6 +25,6 @@ interface FileSink : Closeable {
   fun flush()
 
   interface Factory {
-    fun createFileSink(inputFile: File, outputFile: File): FileSink
+    fun createFileSink(outputFile: File, fileFormat: FileFormat): FileSink
   }
 }
