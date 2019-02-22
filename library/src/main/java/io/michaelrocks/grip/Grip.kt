@@ -25,16 +25,22 @@ interface Grip : Closeable {
   infix fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R>
 }
 
+abstract class AbstractGrip : Grip {
+  override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
+    return projection.configurator(this)
+  }
+}
+
 internal class GripImpl(
   override val fileRegistry: CloseableFileRegistry,
   override val classRegistry: CloseableClassRegistry
-) : Grip {
+) : AbstractGrip() {
 
   private var closed = false
 
   override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
     checkNotClosed()
-    return projection.configurator(this)
+    return super.select(projection)
   }
 
   override fun close() {
