@@ -34,18 +34,26 @@ interface ClassRegistry {
   fun getAnnotationMirror(type: Type.Object): AnnotationMirror
 }
 
+interface CloseableClassRegistry : ClassRegistry, AutoCloseable
+
 internal class ClassRegistryImpl(
-  private val fileRegistry: FileRegistry,
+  private val fileRegistry: CloseableFileRegistry,
   private val reflector: Reflector
-) : ClassRegistry {
+) : CloseableClassRegistry {
+
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
 
-  override fun getClassMirror(type: Type.Object): ClassMirror =
-    classesByType.getOrPut(type) { readClassMirror(type, false) }
+  private var closed = false
 
-  override fun getAnnotationMirror(type: Type.Object): AnnotationMirror =
-    annotationsByType.getOrPut(type) {
+  override fun getClassMirror(type: Type.Object): ClassMirror {
+    checkNotClosed()
+    return classesByType.getOrPut(type) { readClassMirror(type, false) }
+  }
+
+  override fun getAnnotationMirror(type: Type.Object): AnnotationMirror {
+    checkNotClosed()
+    return annotationsByType.getOrPut(type) {
       if (type !in fileRegistry) {
         return UnresolvedAnnotationMirror(type)
       } else {
@@ -59,6 +67,14 @@ internal class ClassRegistryImpl(
         }
       }
     }
+  }
+
+  override fun close() {
+    closed = true
+    fileRegistry.close()
+    classesByType.clear()
+    annotationsByType.clear()
+  }
 
   private fun readClassMirror(type: Type.Object, forAnnotation: Boolean): ClassMirror {
     return try {
@@ -66,6 +82,10 @@ internal class ClassRegistryImpl(
     } catch (exception: Exception) {
       throw IllegalArgumentException("Unable to read a ClassMirror for ${type.internalName}", exception)
     }
+  }
+
+  private fun checkNotClosed() {
+    check(!closed) { "$this is closed" }
   }
 
   companion object {

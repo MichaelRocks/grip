@@ -237,11 +237,11 @@ class ClassRegistryToAnnotationTest {
       writer.toByteArray()
     }
 
-  private fun createClassRegistry(vararg entries: Pair<Type.Object, ByteArray>): ClassRegistry =
+  private fun createClassRegistry(vararg entries: Pair<Type.Object, ByteArray>): CloseableClassRegistry =
     ClassRegistryImpl(createFileRegistry(*entries), ReflectorImpl(GripFactory.ASM_API_DEFAULT))
 
-  private fun createFileRegistry(vararg entries: Pair<Type.Object, ByteArray>): FileRegistry =
-    mock<FileRegistry>().apply {
+  private fun createFileRegistry(vararg entries: Pair<Type.Object, ByteArray>): CloseableFileRegistry =
+    mock<CloseableFileRegistry>().apply {
       given(contains(notNull<Type.Object>())).thenAnswer { invocation ->
         entries.any { it.first == invocation.arguments[0] }
       }

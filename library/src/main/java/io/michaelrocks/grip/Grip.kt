@@ -26,23 +26,24 @@ interface Grip : Closeable {
 }
 
 internal class GripImpl(
-  override val fileRegistry: FileRegistry,
-  override val classRegistry: ClassRegistry,
-  private val closeable: Closeable
+  override val fileRegistry: CloseableFileRegistry,
+  override val classRegistry: CloseableClassRegistry
 ) : Grip {
 
   private var closed = false
 
   override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
-    check(!closed) { "Grip was closed" }
+    checkNotClosed()
     return projection.configurator(this)
   }
 
   override fun close() {
-    try {
-      closeable.close()
-    } finally {
-      closed = true
-    }
+    closed = true
+    classRegistry.close()
+    fileRegistry.close()
+  }
+
+  private fun checkNotClosed() {
+    check(!closed) { "$this is closed" }
   }
 }

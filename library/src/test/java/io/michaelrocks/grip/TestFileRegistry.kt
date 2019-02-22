@@ -21,7 +21,7 @@ import io.michaelrocks.grip.mirrors.getObjectType
 import java.io.File
 import kotlin.reflect.KClass
 
-class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
+class TestFileRegistry(vararg classes: KClass<*>) : CloseableFileRegistry {
   private val classesByType = classes.associateBy { getObjectType(it) }
 
   override fun contains(file: File): Boolean = true
@@ -38,6 +38,10 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
 
   override fun findTypesForFile(file: File): Collection<Type.Object> = classesByType.keys
   override fun findFileForType(type: Type.Object) = if (contains(type)) DEFAULT_FILE else null
+
+  override fun close() {
+    // Do nothing.
+  }
 
   companion object {
     private val DEFAULT_FILE = File("/")

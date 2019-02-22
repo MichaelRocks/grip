@@ -21,7 +21,6 @@ import io.michaelrocks.grip.commons.immutable
 import io.michaelrocks.grip.io.FileSource
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
-import java.io.Closeable
 import java.io.File
 import java.util.ArrayList
 import java.util.HashMap
@@ -38,13 +37,18 @@ interface FileRegistry {
   fun findFileForType(type: Type.Object): File?
 }
 
+internal interface CloseableFileRegistry : FileRegistry, AutoCloseable
+
 internal class FileRegistryImpl(
   classpath: Iterable<File>,
   private val fileSourceFactory: FileSource.Factory
-) : FileRegistry, Closeable {
+) : CloseableFileRegistry {
+
   private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type.Object, File>()
   private val typesByFiles = HashMap<File, MutableCollection<Type.Object>>()
+
+  private var closed = false
 
   init {
     classpath.forEach {
@@ -94,15 +98,18 @@ internal class FileRegistryImpl(
   }
 
   override fun findTypesForFile(file: File): Collection<Type.Object> {
+    checkNotClosed()
     require(contains(file)) { "File $file is not added to the registry" }
     return typesByFiles[file.canonicalFile]?.immutable() ?: emptyList()
   }
 
   override fun findFileForType(type: Type.Object): File? {
+    checkNotClosed()
     return filesByTypes[type]
   }
 
   override fun close() {
+    closed = true
     sources.values.forEach { it.closeQuietly() }
     sources.clear()
     filesByTypes.clear()
@@ -110,6 +117,6 @@ internal class FileRegistryImpl(
   }
 
   private fun checkNotClosed() {
-    check(!sources.isEmpty()) { "FileRegistry was closed" }
+    check(!closed) { "$this is closed" }
   }
 }
