@@ -19,7 +19,7 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.io.DefaultFileFormatDetector
 import io.michaelrocks.grip.io.DefaultFileSourceFactory
 import io.michaelrocks.grip.io.FileSource
-import io.michaelrocks.grip.mirrors.ReflectorImpl
+import io.michaelrocks.grip.mirrors.DefaultReflector
 import org.objectweb.asm.Opcodes
 import java.io.File
 import java.util.ArrayList
@@ -57,9 +57,9 @@ internal class GripFactoryImpl(
   }
 
   override fun create(files: Iterable<File>, fileSourceFactory: FileSource.Factory): Grip {
-    val fileRegistry = FileRegistryImpl(files, fileSourceFactory)
-    val reflector = ReflectorImpl(asmApi)
-    val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
-    return GripImpl(fileRegistry, classRegistry)
+    val fileRegistry = DefaultFileRegistry(files, fileSourceFactory)
+    val reflector = DefaultReflector(asmApi)
+    val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
+    return DefaultGrip(fileRegistry, classRegistry)
   }
 }

@@ -36,7 +36,7 @@ internal interface Reflector {
   fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror
 }
 
-internal class ReflectorImpl(
+internal class DefaultReflector(
   private val asmApi: Int,
 ) : Reflector {
   override fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror {

@@ -18,15 +18,15 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.classes.Annotation1
 import io.michaelrocks.grip.classes.Annotation2
+import io.michaelrocks.grip.mirrors.DefaultReflector
 import io.michaelrocks.grip.mirrors.EnumMirror
-import io.michaelrocks.grip.mirrors.ReflectorImpl
 import io.michaelrocks.grip.mirrors.getObjectType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class ClassRegistryImplTest {
+class DefaultClassRegistryTest {
   private lateinit var classRegistry: ClassRegistry
 
   @Before
@@ -35,8 +35,8 @@ class ClassRegistryImplTest {
       Annotation1::class,
       Annotation2::class
     )
-    val reflector = ReflectorImpl(GripFactory.ASM_API_DEFAULT)
-    classRegistry = ClassRegistryImpl(fileRegistry, reflector)
+    val reflector = DefaultReflector(GripFactory.ASM_API_DEFAULT)
+    classRegistry = DefaultClassRegistry(fileRegistry, reflector)
   }
 
   @Test

@@ -31,7 +31,7 @@ abstract class AbstractGrip : Grip {
   }
 }
 
-internal class GripImpl(
+internal class DefaultGrip(
   override val fileRegistry: CloseableFileRegistry,
   override val classRegistry: CloseableClassRegistry
 ) : AbstractGrip() {

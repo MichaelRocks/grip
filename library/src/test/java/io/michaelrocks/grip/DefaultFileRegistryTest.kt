@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 
-class FileRegistryImplTest {
+class DefaultFileRegistryTest {
   @Test
   fun containsFile() {
     val source = mock<FileSource>()
     val file = File("source1")
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file.canonicalFile)).thenReturn(source)
-    val registry = FileRegistryImpl(listOf(file), factory)
+    val registry = DefaultFileRegistry(listOf(file), factory)
     assertTrue(registry.contains(file))
     assertFalse(registry.contains(File("source2")))
   }
@@ -54,7 +54,7 @@ class FileRegistryImplTest {
     val file = File("source")
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file.canonicalFile)).thenReturn(source)
-    val registry = FileRegistryImpl(listOf(file), factory)
+    val registry = DefaultFileRegistry(listOf(file), factory)
     assertTrue(registry.contains(getObjectTypeByInternalName("Type1")))
     assertFalse(registry.contains(getObjectTypeByInternalName("Type2")))
   }
@@ -63,7 +63,7 @@ class FileRegistryImplTest {
   fun classpath() {
     val classpath = (1..1000).map { File("source$it") }
     val factory = mock<FileSource.Factory>(RETURNS_DEEP_STUBS)
-    val registry = FileRegistryImpl(classpath, factory)
+    val registry = DefaultFileRegistry(classpath, factory)
     assertEquals(classpath.map { it.canonicalFile }, registry.classpath().toList())
   }
 
@@ -80,7 +80,7 @@ class FileRegistryImplTest {
     val file = File("source")
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file.canonicalFile)).thenReturn(source)
-    val registry = FileRegistryImpl(listOf(file), factory)
+    val registry = DefaultFileRegistry(listOf(file), factory)
     assertSame(data, registry.readClass(getObjectTypeByInternalName("Type1")))
     assertThrows<IllegalArgumentException> { registry.readClass(getObjectTypeByInternalName("Type2")) }
   }
@@ -99,7 +99,7 @@ class FileRegistryImplTest {
     val factory = mock<FileSource.Factory>()
     given(factory.createFileSource(file1.canonicalFile)).thenReturn(source1)
     given(factory.createFileSource(file2.canonicalFile)).thenReturn(source2)
-    val registry = FileRegistryImpl(listOf(file1, file2), factory)
+    val registry = DefaultFileRegistry(listOf(file1, file2), factory)
     assertEquals(listOf(getObjectTypeByInternalName("Type1")), registry.findTypesForFile(file1).toList())
     assertEquals(listOf<Type.Object>(), registry.findTypesForFile(file2).toList())
     assertThrows<IllegalArgumentException> { registry.findTypesForFile(File("file3")) }
@@ -108,7 +108,7 @@ class FileRegistryImplTest {
   @Test
   fun close() {
     val factory = mock<FileSource.Factory>(RETURNS_DEEP_STUBS)
-    val registry = FileRegistryImpl(listOf(File("source")), factory)
+    val registry = DefaultFileRegistry(listOf(File("source")), factory)
     registry.close()
 
     assertThrows<IllegalStateException> { registry.contains(File("source")) }

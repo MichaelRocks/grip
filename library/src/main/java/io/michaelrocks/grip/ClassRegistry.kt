@@ -36,7 +36,7 @@ interface ClassRegistry {
 
 interface CloseableClassRegistry : ClassRegistry, AutoCloseable
 
-internal class ClassRegistryImpl(
+internal class DefaultClassRegistry(
   private val fileRegistry: CloseableFileRegistry,
   private val reflector: Reflector
 ) : CloseableClassRegistry {

@@ -19,8 +19,8 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.annotations.AnnotationGenerator
 import io.michaelrocks.grip.annotations.createAnnotationMirror
 import io.michaelrocks.grip.annotations.getAnnotationType
+import io.michaelrocks.grip.mirrors.DefaultReflector
 import io.michaelrocks.grip.mirrors.EnumMirror
-import io.michaelrocks.grip.mirrors.ReflectorImpl
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getArrayType
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
@@ -238,7 +238,7 @@ class ClassRegistryToAnnotationTest {
     }
 
   private fun createClassRegistry(vararg entries: Pair<Type.Object, ByteArray>): CloseableClassRegistry =
-    ClassRegistryImpl(createFileRegistry(*entries), ReflectorImpl(GripFactory.ASM_API_DEFAULT))
+    DefaultClassRegistry(createFileRegistry(*entries), DefaultReflector(GripFactory.ASM_API_DEFAULT))
 
   private fun createFileRegistry(vararg entries: Pair<Type.Object, ByteArray>): CloseableFileRegistry =
     mock<CloseableFileRegistry>().apply {

@@ -39,7 +39,7 @@ interface FileRegistry {
 
 internal interface CloseableFileRegistry : FileRegistry, AutoCloseable
 
-internal class FileRegistryImpl(
+internal class DefaultFileRegistry(
   classpath: Iterable<File>,
   private val fileSourceFactory: FileSource.Factory
 ) : CloseableFileRegistry {
