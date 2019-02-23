@@ -16,9 +16,7 @@
 
 package io.michaelrocks.grip
 
-import java.io.Closeable
-
-interface Grip : Closeable {
+interface Grip : AutoCloseable {
   val fileRegistry: FileRegistry
   val classRegistry: ClassRegistry
   val classProducer: ClassProducer

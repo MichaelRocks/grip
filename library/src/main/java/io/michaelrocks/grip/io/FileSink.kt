@@ -16,10 +16,9 @@
 
 package io.michaelrocks.grip.io
 
-import java.io.Closeable
 import java.io.File
 
-interface FileSink : Closeable {
+interface FileSink : AutoCloseable {
   fun createFile(path: String, data: ByteArray)
   fun createDirectory(path: String)
   fun flush()

@@ -26,3 +26,11 @@ internal fun Closeable.closeQuietly() {
     // Ignore the exception.
   }
 }
+
+internal fun AutoCloseable.closeQuietly() {
+  try {
+    close()
+  } catch (exception: Exception) {
+    // Ignore the exception.
+  }
+}
