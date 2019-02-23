@@ -44,7 +44,7 @@ class GripTest {
     )
     val reflector = DefaultReflector(GripFactory.ASM_API_DEFAULT)
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
-    grip = DefaultGrip(fileRegistry, classRegistry)
+    grip = DefaultGrip(fileRegistry, classRegistry, UnsupportedClassProducer("Unexpected usage of ClassProducer"))
   }
 
   @Test

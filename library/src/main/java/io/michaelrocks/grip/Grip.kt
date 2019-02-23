@@ -21,6 +21,7 @@ import java.io.Closeable
 interface Grip : Closeable {
   val fileRegistry: FileRegistry
   val classRegistry: ClassRegistry
+  val classProducer: ClassProducer
 
   infix fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R>
 }
@@ -33,7 +34,8 @@ abstract class AbstractGrip : Grip {
 
 internal class DefaultGrip(
   override val fileRegistry: CloseableFileRegistry,
-  override val classRegistry: CloseableClassRegistry
+  override val classRegistry: CloseableClassRegistry,
+  override val classProducer: CloseableClassProducer
 ) : AbstractGrip() {
 
   private var closed = false
@@ -45,6 +47,7 @@ internal class DefaultGrip(
 
   override fun close() {
     closed = true
+    classProducer.close()
     classRegistry.close()
     fileRegistry.close()
   }
