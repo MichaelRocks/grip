@@ -18,6 +18,7 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.commons.closeQuietly
 import io.michaelrocks.grip.io.EmptyFileSink
+import io.michaelrocks.grip.io.FileFormat
 import io.michaelrocks.grip.io.FileFormatDetector
 import io.michaelrocks.grip.io.FileSink
 import io.michaelrocks.grip.mirrors.Type
@@ -31,6 +32,7 @@ interface ClassProducer {
 }
 
 interface MutableClassProducer : ClassProducer {
+  fun setOutputFile(file: File, fileFormat: FileFormat)
   fun setOutputSink(sink: FileSink)
 }
 
@@ -57,6 +59,11 @@ internal class DefaultClassProducer(
 
     val fileSink = getFileSink(type, overwrite)
     fileSink.createFile("$className.class", classData)
+  }
+
+  override fun setOutputFile(file: File, fileFormat: FileFormat) {
+    val sink = fileSinkFactory.createFileSink(file, fileFormat)
+    setOutputSink(sink)
   }
 
   override fun setOutputSink(sink: FileSink) {
