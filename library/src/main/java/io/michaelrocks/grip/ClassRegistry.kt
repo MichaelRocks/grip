@@ -34,12 +34,17 @@ interface ClassRegistry {
   fun getAnnotationMirror(type: Type.Object): AnnotationMirror
 }
 
+interface MutableClassRegistry : ClassRegistry {
+  fun invalidateType(type: Type.Object)
+}
+
 interface CloseableClassRegistry : ClassRegistry, AutoCloseable
+interface CloseableMutableClassRegistry : CloseableClassRegistry, MutableClassRegistry
 
 internal class DefaultClassRegistry(
   private val fileRegistry: CloseableFileRegistry,
   private val reflector: Reflector
-) : CloseableClassRegistry {
+) : CloseableMutableClassRegistry {
 
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
@@ -67,6 +72,13 @@ internal class DefaultClassRegistry(
         }
       }
     }
+  }
+
+  override fun invalidateType(type: Type.Object) {
+    classesByType -= type
+    annotationsByType -= type
+
+    // FIXME: GenericDeclarations aren't invalidated with the ClassRegistry. Take a look at ReflectorImpl.
   }
 
   override fun close() {

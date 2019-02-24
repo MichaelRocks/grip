@@ -19,6 +19,8 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.io.DefaultFileFormatDetector
 import io.michaelrocks.grip.io.DefaultFileSinkFactory
 import io.michaelrocks.grip.io.DefaultFileSourceFactory
+import io.michaelrocks.grip.io.EmptyFileSink
+import io.michaelrocks.grip.io.FileFormat
 import io.michaelrocks.grip.io.FileFormatDetector
 import io.michaelrocks.grip.io.FileSink
 import io.michaelrocks.grip.io.FileSource
@@ -71,14 +73,31 @@ internal class DefaultGripFactory(
     fileSourceFactory: FileSource.Factory,
     fileSinkFactory: FileSink.Factory,
   ): Grip {
+    return createInternal(files, outputDirectory, fileFormatDetector, fileSourceFactory, fileSinkFactory)
+  }
+
+  fun createMutable(
+    files: Iterable<File>,
+    outputDirectory: File? = null,
+    fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
+    fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
+    fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory()
+  ): MutableGrip {
+    return createInternal(files, outputDirectory, fileFormatDetector, fileSourceFactory, fileSinkFactory)
+  }
+
+  private fun createInternal(
+    files: Iterable<File>,
+    outputDirectory: File? = null,
+    fileFormatDetector: FileFormatDetector,
+    fileSourceFactory: FileSource.Factory,
+    fileSinkFactory: FileSink.Factory
+  ): MutableGrip {
     val fileRegistry = DefaultFileRegistry(files, fileSourceFactory)
     val reflector = DefaultReflector(asmApi)
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
-    val classProducer = if (outputDirectory != null) {
-      DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputDirectory)
-    } else {
-      UnsupportedClassProducer("Cannot produce a class because output directory isn't set")
-    }
-    return DefaultGrip(fileRegistry, classRegistry, classProducer)
+    val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY) else EmptyFileSink
+    val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
+    return DefaultMutableGrip(fileRegistry, classRegistry, classProducer)
   }
 }

@@ -24,23 +24,22 @@ interface Grip : AutoCloseable {
   infix fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R>
 }
 
-abstract class AbstractGrip : Grip {
-  override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
-    return projection.configurator(this)
-  }
+interface MutableGrip : Grip {
+  override val fileRegistry: MutableFileRegistry
+  override val classRegistry: MutableClassRegistry
+  override val classProducer: MutableClassProducer
 }
 
-internal class DefaultGrip(
-  override val fileRegistry: CloseableFileRegistry,
-  override val classRegistry: CloseableClassRegistry,
-  override val classProducer: CloseableClassProducer
-) : AbstractGrip() {
+internal abstract class AbstractGrip : Grip {
+  abstract override val fileRegistry: CloseableFileRegistry
+  abstract override val classRegistry: CloseableClassRegistry
+  abstract override val classProducer: CloseableClassProducer
 
   private var closed = false
 
   override fun <M, R> select(projection: Projection<M, R>): FromConfigurator<M, R> {
     checkNotClosed()
-    return super.select(projection)
+    return projection.configurator(this)
   }
 
   override fun close() {
@@ -54,3 +53,15 @@ internal class DefaultGrip(
     check(!closed) { "$this is closed" }
   }
 }
+
+internal class DefaultGrip(
+  override val fileRegistry: CloseableFileRegistry,
+  override val classRegistry: CloseableClassRegistry,
+  override val classProducer: CloseableClassProducer
+) : AbstractGrip()
+
+internal class DefaultMutableGrip(
+  override val fileRegistry: CloseableMutableFileRegistry,
+  override val classRegistry: CloseableMutableClassRegistry,
+  override val classProducer: CloseableMutableClassProducer
+) : AbstractGrip(), MutableGrip

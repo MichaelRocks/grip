@@ -17,7 +17,7 @@
 package io.michaelrocks.grip
 
 import io.michaelrocks.grip.commons.closeQuietly
-import io.michaelrocks.grip.io.FileFormat
+import io.michaelrocks.grip.io.EmptyFileSink
 import io.michaelrocks.grip.io.FileFormatDetector
 import io.michaelrocks.grip.io.FileSink
 import io.michaelrocks.grip.mirrors.Type
@@ -30,14 +30,19 @@ interface ClassProducer {
   fun produceClass(classData: ByteArray, overwrite: Boolean = false)
 }
 
+interface MutableClassProducer : ClassProducer {
+  fun setOutputSink(sink: FileSink)
+}
+
 internal interface CloseableClassProducer : ClassProducer, AutoCloseable
+internal interface CloseableMutableClassProducer : CloseableClassProducer, MutableClassProducer
 
 internal class DefaultClassProducer(
   private val fileRegistry: CloseableFileRegistry,
   private val fileSinkFactory: FileSink.Factory,
   private val fileFormatDetector: FileFormatDetector,
-  private val outputDirectory: File
-) : CloseableClassProducer {
+  private var outputSink: FileSink = EmptyFileSink
+) : CloseableMutableClassProducer {
 
   private val sinks = LinkedHashMap<File, FileSink>()
   private val producedTypes = HashSet<Type.Object>()
@@ -52,6 +57,13 @@ internal class DefaultClassProducer(
 
     val fileSink = getFileSink(type, overwrite)
     fileSink.createFile("$className.class", classData)
+  }
+
+  override fun setOutputSink(sink: FileSink) {
+    if (outputSink !== sink) {
+      outputSink.close()
+      outputSink = sink
+    }
   }
 
   override fun close() {
@@ -79,22 +91,10 @@ internal class DefaultClassProducer(
       }
     }
 
-    return sinks.getOrPut(outputDirectory) {
-      fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY)
-    }
+    return outputSink
   }
 
   private fun checkNotClosed() {
     check(!closed) { "$this is closed" }
-  }
-}
-
-internal class UnsupportedClassProducer(private val message: String?) : CloseableClassProducer {
-  override fun produceClass(classData: ByteArray, overwrite: Boolean) {
-    throw UnsupportedOperationException(message)
-  }
-
-  override fun close() {
-    // Do nothing.
   }
 }

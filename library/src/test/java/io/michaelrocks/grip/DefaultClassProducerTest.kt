@@ -60,7 +60,8 @@ class DefaultClassProducerTest {
       "file2" to listOf("io/michaelrocks/grip/file2/Class3"),
       "file3" to listOf()
     )
-    classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, File("file4"))
+    val outputSink = fileSinkFactory.createFileSink(File("file4"), FileFormat.DIRECTORY)
+    classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
   }
 
   @Test(expected = ClassAlreadyExistsException::class)

@@ -37,39 +37,27 @@ interface FileRegistry {
   fun findFileForType(type: Type.Object): File?
 }
 
+interface MutableFileRegistry : FileRegistry {
+  fun addFileToClasspath(file: File)
+  fun removeFileFromClasspath(file: File)
+}
+
 internal interface CloseableFileRegistry : FileRegistry, AutoCloseable
+internal interface CloseableMutableFileRegistry : CloseableFileRegistry, MutableFileRegistry
 
 internal class DefaultFileRegistry(
-  classpath: Iterable<File>,
   private val fileSourceFactory: FileSource.Factory
-) : CloseableFileRegistry {
+) : CloseableMutableFileRegistry {
+
+  constructor(classpath: Iterable<File>, fileSourceFactory: FileSource.Factory) : this(fileSourceFactory) {
+    classpath.forEach { addFileToClasspath(it) }
+  }
 
   private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type.Object, File>()
   private val typesByFiles = HashMap<File, MutableCollection<Type.Object>>()
 
   private var closed = false
-
-  init {
-    classpath.forEach {
-      it.canonicalFile.let { file ->
-        if (file !in sources) {
-          val fileSource = fileSourceFactory.createFileSource(file)
-          sources.put(file, fileSource)
-          fileSource.listFiles { path, fileType ->
-            if (fileType == FileSource.EntryType.CLASS) {
-              val name = path.replace('\\', '/').substringBeforeLast(".class")
-              val type = getObjectTypeByInternalName(name)
-              filesByTypes.put(type, file)
-              typesByFiles.getOrPut(file) { ArrayList() } += type
-            }
-          }
-        }
-      }
-    }
-
-    check(!sources.isEmpty()) { "Classpath is empty" }
-  }
 
   override fun contains(file: File): Boolean {
     checkNotClosed()
@@ -108,12 +96,45 @@ internal class DefaultFileRegistry(
     return filesByTypes[type]
   }
 
+  override fun addFileToClasspath(file: File) {
+    checkNotClosed()
+    addCanonicalFileToClasspath(file.canonicalFile)
+  }
+
+  override fun removeFileFromClasspath(file: File) {
+    checkNotClosed()
+    removeCanonicalFileFromClasspath(file.canonicalFile)
+  }
+
   override fun close() {
     closed = true
     sources.values.forEach { it.closeQuietly() }
     sources.clear()
     filesByTypes.clear()
     typesByFiles.clear()
+  }
+
+  private fun addCanonicalFileToClasspath(file: File) {
+    if (file !in sources) {
+      val fileSource = fileSourceFactory.createFileSource(file)
+      sources.put(file, fileSource)
+      fileSource.listFiles { path, fileType ->
+        if (fileType == FileSource.EntryType.CLASS) {
+          val name = path.replace('\\', '/').substringBeforeLast(".class")
+          val type = getObjectTypeByInternalName(name)
+          filesByTypes.put(type, file)
+          typesByFiles.getOrPut(file, ::ArrayList) += type
+        }
+      }
+    }
+  }
+
+  private fun removeCanonicalFileFromClasspath(file: File) {
+    val types = typesByFiles.remove(file)
+    if (types != null) {
+      filesByTypes.keys.removeAll(types)
+    }
+    sources.remove(file)?.close()
   }
 
   private fun checkNotClosed() {
