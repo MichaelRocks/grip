@@ -35,10 +35,10 @@ interface GripFactory {
 
   fun create(
     files: Iterable<File>,
+    outputDirectory: File? = null,
     fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
     fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
     fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory(),
-    outputDirectory: File? = null
   ): Grip
 
   companion object {
@@ -66,10 +66,10 @@ internal class DefaultGripFactory(
 
   override fun create(
     files: Iterable<File>,
+    outputDirectory: File?,
     fileFormatDetector: FileFormatDetector,
     fileSourceFactory: FileSource.Factory,
     fileSinkFactory: FileSink.Factory,
-    outputDirectory: File?
   ): Grip {
     val fileRegistry = DefaultFileRegistry(files, fileSourceFactory)
     val reflector = DefaultReflector(asmApi)
