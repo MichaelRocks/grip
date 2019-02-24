@@ -25,6 +25,7 @@ import io.michaelrocks.grip.io.FileFormatDetector
 import io.michaelrocks.grip.io.FileSink
 import io.michaelrocks.grip.io.FileSource
 import io.michaelrocks.grip.mirrors.DefaultReflector
+import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.Opcodes
 import java.io.File
 import java.util.ArrayList
@@ -98,6 +99,17 @@ internal class DefaultGripFactory(
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
     val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY) else EmptyFileSink
     val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
-    return DefaultMutableGrip(fileRegistry, classRegistry, classProducer)
+    val wrappedClassProducer = object : ClassProducerWrapper(classProducer) {
+      override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {
+        val type = super.produceClass(classData, overwrite)
+        if (type in fileRegistry) {
+          classRegistry.invalidateType(type)
+        }
+        return type
+      }
+    }
+    return DefaultMutableGrip(fileRegistry, classRegistry, wrappedClassProducer)
   }
+
+  private abstract class ClassProducerWrapper(delegate: CloseableMutableClassProducer) : CloseableMutableClassProducer by delegate
 }
