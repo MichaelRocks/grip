@@ -16,8 +16,10 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.mirrors.Type
+
 internal class UnsupportedClassProducer(private val message: String?) : CloseableClassProducer {
-  override fun produceClass(classData: ByteArray, overwrite: Boolean) {
+  override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {
     throw UnsupportedOperationException(message)
   }
 

@@ -28,7 +28,7 @@ import java.io.File
 import java.util.LinkedHashMap
 
 interface ClassProducer {
-  fun produceClass(classData: ByteArray, overwrite: Boolean = false)
+  fun produceClass(classData: ByteArray, overwrite: Boolean = false): Type.Object
 }
 
 interface MutableClassProducer : ClassProducer {
@@ -51,7 +51,7 @@ internal class DefaultClassProducer(
 
   private var closed = false
 
-  override fun produceClass(classData: ByteArray, overwrite: Boolean) {
+  override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {
     checkNotClosed()
     val reader = ClassReader(classData)
     val className = reader.className
@@ -59,6 +59,7 @@ internal class DefaultClassProducer(
 
     val fileSink = getFileSink(type, overwrite)
     fileSink.createFile("$className.class", classData)
+    return type
   }
 
   override fun setOutputFile(file: File, fileFormat: FileFormat) {
