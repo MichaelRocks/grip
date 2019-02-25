@@ -28,32 +28,19 @@ import io.michaelrocks.grip.mirrors.DefaultReflector
 import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.Opcodes
 import java.io.File
-import java.util.ArrayList
 
-interface GripFactory<out T : Grip> {
-  fun create(file: File, vararg files: File): T = create(file, *files, outputDirectory = null)
-  fun create(file: File, vararg files: File, outputDirectory: File?): T
-
-  fun create(files: Iterable<File>): T = create(files, outputDirectory = null)
-  fun create(files: Iterable<File>, outputDirectory: File? = null): T
+interface GripFactory {
+  fun create(classpath: Iterable<File>, outputDirectory: File? = null): Grip
+  fun createMutable(classpath: Iterable<File>, outputDirectory: File? = null): MutableGrip
 
   companion object {
     const val ASM_API_DEFAULT = Opcodes.ASM9
 
     @JvmStatic
-    val INSTANCE: GripFactory<Grip> = immutable(ASM_API_DEFAULT)
+    val INSTANCE: GripFactory = newInstance(ASM_API_DEFAULT)
 
     @JvmStatic
-    @Deprecated("Use immutable() or mutable() factory methods instead", ReplaceWith("immutable(asmApi)"))
-    fun newInstance(asmApi: Int): GripFactory<Grip> {
-      return immutable(asmApi)
-    }
-
-    fun immutable(asmApi: Int): GripFactory<Grip> {
-      return DefaultGripFactory(asmApi)
-    }
-
-    fun mutable(asmApi: Int): GripFactory<MutableGrip> {
+    fun newInstance(asmApi: Int): GripFactory {
       return DefaultGripFactory(asmApi)
     }
   }
@@ -61,15 +48,12 @@ interface GripFactory<out T : Grip> {
 
 internal class DefaultGripFactory(
   private val asmApi: Int,
-) : GripFactory<MutableGrip> {
-  override fun create(file: File, vararg files: File, outputDirectory: File?): MutableGrip {
-    val allFiles = ArrayList<File>(files.size + 1)
-    allFiles.add(file)
-    allFiles.addAll(files)
-    return createInternal(allFiles, outputDirectory = outputDirectory)
+) : GripFactory {
+  override fun create(files: Iterable<File>, outputDirectory: File?): Grip {
+    return createInternal(files, outputDirectory)
   }
 
-  override fun create(files: Iterable<File>, outputDirectory: File?): MutableGrip {
+  override fun createMutable(files: Iterable<File>, outputDirectory: File?): MutableGrip {
     return createInternal(files, outputDirectory)
   }
 
@@ -94,6 +78,7 @@ internal class DefaultGripFactory(
         return type
       }
     }
+
     return DefaultMutableGrip(fileRegistry, classRegistry, wrappedClassProducer)
   }
 

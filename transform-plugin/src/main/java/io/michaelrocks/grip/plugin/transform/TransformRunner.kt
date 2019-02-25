@@ -17,6 +17,7 @@
 package io.michaelrocks.grip.plugin.transform
 
 import io.michaelrocks.grip.ClassMirrorSource
+import io.michaelrocks.grip.DefaultGripFactory
 import io.michaelrocks.grip.Grip
 import io.michaelrocks.grip.GripFactory
 import io.michaelrocks.grip.mirrors.ClassMirror
@@ -32,12 +33,13 @@ internal interface TransformRunner {
 
 internal class DefaultTransformRunner(
   private val transforms: List<Transform>,
-  private val outputProvider: OutputProvider
+  private val outputProvider: OutputProvider,
+  private val gripFactory: GripFactory = DefaultGripFactory
 ) : TransformRunner {
   private val logger = getLogger()
 
   override fun run(transformSet: TransformSet) {
-    val grip = GripFactory.createMutable(transformSet.getClasspath())
+    val grip = gripFactory.createMutable(transformSet.getClasspath())
     val generatedInputs = ArrayList<ScopedInput>(transforms.size)
 
     for (transform in transforms) {
