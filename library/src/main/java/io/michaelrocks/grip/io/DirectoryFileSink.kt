@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-class DirectoryFileSink(private val directory: File) : FileSink {
+internal class DirectoryFileSink(private val directory: File) : FileSink {
   override fun createFile(path: String, data: ByteArray) {
     val file = File(directory, path)
     file.parentFile?.mkdirs()

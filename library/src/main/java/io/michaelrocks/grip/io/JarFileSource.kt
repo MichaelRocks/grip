@@ -21,7 +21,7 @@ import java.io.IOException
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
-class JarFileSource(private val jarFile: File) : FileSource {
+internal class JarFileSource(private val jarFile: File) : FileSource {
   private val jar = JarFile(jarFile, true)
 
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {

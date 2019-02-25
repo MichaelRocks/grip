@@ -30,28 +30,30 @@ import org.objectweb.asm.Opcodes
 import java.io.File
 import java.util.ArrayList
 
-interface GripFactory {
-  fun create(file: File, vararg files: File): Grip = create(file, *files, outputDirectory = null)
-  fun create(file: File, vararg files: File, outputDirectory: File?): Grip
+interface GripFactory<out T : Grip> {
+  fun create(file: File, vararg files: File): T = create(file, *files, outputDirectory = null)
+  fun create(file: File, vararg files: File, outputDirectory: File?): T
 
-  fun create(files: Iterable<File>): Grip = create(files, outputDirectory = null)
-
-  fun create(
-    files: Iterable<File>,
-    outputDirectory: File? = null,
-    fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
-    fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
-    fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory(),
-  ): Grip
+  fun create(files: Iterable<File>): T = create(files, outputDirectory = null)
+  fun create(files: Iterable<File>, outputDirectory: File? = null): T
 
   companion object {
     const val ASM_API_DEFAULT = Opcodes.ASM9
 
     @JvmStatic
-    val INSTANCE = newInstance(ASM_API_DEFAULT)
+    val INSTANCE: GripFactory<Grip> = immutable(ASM_API_DEFAULT)
 
     @JvmStatic
-    fun newInstance(asmApi: Int): GripFactory {
+    @Deprecated("Use immutable() or mutable() factory methods instead", ReplaceWith("immutable(asmApi)"))
+    fun newInstance(asmApi: Int): GripFactory<Grip> {
+      return immutable(asmApi)
+    }
+
+    fun immutable(asmApi: Int): GripFactory<Grip> {
+      return DefaultGripFactory(asmApi)
+    }
+
+    fun mutable(asmApi: Int): GripFactory<MutableGrip> {
       return DefaultGripFactory(asmApi)
     }
   }
@@ -59,40 +61,24 @@ interface GripFactory {
 
 internal class DefaultGripFactory(
   private val asmApi: Int,
-) : GripFactory {
-  override fun create(file: File, vararg files: File, outputDirectory: File?): Grip {
+) : GripFactory<MutableGrip> {
+  override fun create(file: File, vararg files: File, outputDirectory: File?): MutableGrip {
     val allFiles = ArrayList<File>(files.size + 1)
     allFiles.add(file)
     allFiles.addAll(files)
-    return create(allFiles, outputDirectory = outputDirectory)
+    return createInternal(allFiles, outputDirectory = outputDirectory)
   }
 
-  override fun create(
-    files: Iterable<File>,
-    outputDirectory: File?,
-    fileFormatDetector: FileFormatDetector,
-    fileSourceFactory: FileSource.Factory,
-    fileSinkFactory: FileSink.Factory,
-  ): Grip {
-    return createInternal(files, outputDirectory, fileFormatDetector, fileSourceFactory, fileSinkFactory)
-  }
-
-  fun createMutable(
-    files: Iterable<File>,
-    outputDirectory: File? = null,
-    fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
-    fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
-    fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory()
-  ): MutableGrip {
-    return createInternal(files, outputDirectory, fileFormatDetector, fileSourceFactory, fileSinkFactory)
+  override fun create(files: Iterable<File>, outputDirectory: File?): MutableGrip {
+    return createInternal(files, outputDirectory)
   }
 
   private fun createInternal(
     files: Iterable<File>,
     outputDirectory: File? = null,
-    fileFormatDetector: FileFormatDetector,
-    fileSourceFactory: FileSource.Factory,
-    fileSinkFactory: FileSink.Factory
+    fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
+    fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
+    fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory(),
   ): MutableGrip {
     val fileRegistry = DefaultFileRegistry(files, fileSourceFactory)
     val reflector = DefaultReflector(asmApi)

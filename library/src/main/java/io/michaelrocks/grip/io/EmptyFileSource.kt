@@ -16,7 +16,7 @@
 
 package io.michaelrocks.grip.io
 
-object EmptyFileSource : FileSource {
+internal object EmptyFileSource : FileSource {
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
   }
 

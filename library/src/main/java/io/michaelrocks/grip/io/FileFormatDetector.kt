@@ -18,6 +18,6 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-interface FileFormatDetector {
+internal interface FileFormatDetector {
   fun detectFileFormat(file: File): FileFormat
 }

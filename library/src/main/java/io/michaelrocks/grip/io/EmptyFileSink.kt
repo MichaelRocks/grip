@@ -16,7 +16,7 @@
 
 package io.michaelrocks.grip.io
 
-object EmptyFileSink : FileSink {
+internal object EmptyFileSink : FileSink {
   override fun createFile(path: String, data: ByteArray) {
     throw UnsupportedOperationException()
   }

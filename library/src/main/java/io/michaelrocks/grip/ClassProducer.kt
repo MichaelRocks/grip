@@ -32,8 +32,8 @@ interface ClassProducer {
 }
 
 interface MutableClassProducer : ClassProducer {
-  fun setOutputFile(file: File, fileFormat: FileFormat)
-  fun setOutputSink(sink: FileSink)
+  fun setOutputDirectory(directory: File)
+  fun resetOutputDirectory()
 }
 
 internal interface CloseableClassProducer : ClassProducer, AutoCloseable
@@ -62,16 +62,14 @@ internal class DefaultClassProducer(
     return type
   }
 
-  override fun setOutputFile(file: File, fileFormat: FileFormat) {
-    val sink = fileSinkFactory.createFileSink(file, fileFormat)
-    setOutputSink(sink)
+  override fun setOutputDirectory(directory: File) {
+    checkNotClosed()
+    setOutputFile(directory, FileFormat.DIRECTORY)
   }
 
-  override fun setOutputSink(sink: FileSink) {
-    if (outputSink !== sink) {
-      outputSink.close()
-      outputSink = sink
-    }
+  override fun resetOutputDirectory() {
+    checkNotClosed()
+    setOutputSink(EmptyFileSink)
   }
 
   override fun close() {
@@ -100,6 +98,18 @@ internal class DefaultClassProducer(
     }
 
     return outputSink
+  }
+
+  private fun setOutputFile(file: File, fileFormat: FileFormat) {
+    val sink = fileSinkFactory.createFileSink(file, fileFormat)
+    setOutputSink(sink)
+  }
+
+  private fun setOutputSink(sink: FileSink) {
+    if (outputSink !== sink) {
+      outputSink.close()
+      outputSink = sink
+    }
   }
 
   private fun checkNotClosed() {

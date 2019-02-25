@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-class DirectoryFileSource(private val directory: File) : FileSource {
+internal class DirectoryFileSource(private val directory: File) : FileSource {
   override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
     fun File.toEntryType() = when {
       isDirectory -> FileSource.EntryType.DIRECTORY

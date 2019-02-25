@@ -21,7 +21,7 @@ import java.io.File
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
 
-class JarFileSink(private val jarFile: File) : FileSink {
+internal class JarFileSink(private val jarFile: File) : FileSink {
   private val stream = createJarOutputStream(jarFile)
 
   override fun createFile(path: String, data: ByteArray) {

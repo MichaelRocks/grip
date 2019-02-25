@@ -16,7 +16,7 @@
 
 package io.michaelrocks.grip.io
 
-enum class FileFormat {
+internal enum class FileFormat {
   DIRECTORY,
   JAR
 }

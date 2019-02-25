@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-class DefaultFileSinkFactory : FileSink.Factory {
+internal class DefaultFileSinkFactory : FileSink.Factory {
   override fun createFileSink(outputFile: File, fileFormat: FileFormat): FileSink {
     return when (fileFormat) {
       FileFormat.DIRECTORY -> DirectoryFileSink(outputFile)

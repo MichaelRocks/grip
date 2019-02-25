@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-interface FileSource : AutoCloseable {
+internal interface FileSource : AutoCloseable {
   fun listFiles(callback: (name: String, type: EntryType) -> Unit)
   fun readFile(path: String): ByteArray
 

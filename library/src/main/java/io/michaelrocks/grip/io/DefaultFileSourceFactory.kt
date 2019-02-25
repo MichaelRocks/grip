@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-class DefaultFileSourceFactory(
+internal class DefaultFileSourceFactory(
   private val fileFormatDetector: FileFormatDetector
 ) : FileSource.Factory {
   override fun createFileSource(inputFile: File, fileFormat: FileFormat?): FileSource {

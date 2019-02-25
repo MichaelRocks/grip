@@ -18,7 +18,7 @@ package io.michaelrocks.grip.io
 
 import java.io.File
 
-class DefaultFileFormatDetector : FileFormatDetector {
+internal class DefaultFileFormatDetector : FileFormatDetector {
   override fun detectFileFormat(file: File): FileFormat {
     return when {
       !file.exists() || file.isDirectory -> FileFormat.DIRECTORY
