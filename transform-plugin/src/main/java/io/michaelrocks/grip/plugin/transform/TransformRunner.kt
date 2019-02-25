@@ -39,29 +39,30 @@ internal class DefaultTransformRunner(
   private val logger = getLogger()
 
   override fun run(transformSet: TransformSet) {
-    val grip = gripFactory.createMutable(transformSet.getClasspath())
-    val generatedInputs = ArrayList<ScopedInput>(transforms.size)
+    gripFactory.createMutable(transformSet.getClasspath()).use { grip ->
+      val generatedInputs = ArrayList<ScopedInput>(transforms.size)
 
-    for (transform in transforms) {
-      logger.info("Invoking \"{}\" transform", transform.name)
+      for (transform in transforms) {
+        logger.info("Invoking \"{}\" transform", transform.name)
 
-      val scopes = transform.scopes
-      val output = outputProvider.getOutputLocation(transform.name)
-      val inputs = transformSet.units.mapNotNullTo(ArrayList<ScopedInput>()) { unit ->
-        if (unit.scopes.any { it in scopes }) TransformUnitScopedInput(grip, unit) else null
+        val scopes = transform.scopes
+        val output = outputProvider.getOutputLocation(transform.name)
+        val inputs = transformSet.units.mapNotNullTo(ArrayList<ScopedInput>()) { unit ->
+          if (unit.scopes.any { it in scopes }) TransformUnitScopedInput(grip, unit) else null
+        }
+        inputs += generatedInputs
+
+        grip.classProducer.setOutputDirectory(output)
+        val transformInvocation = ImmutableInvocation(grip, inputs)
+        transform.transform(transformInvocation)
+        grip.classProducer.resetOutputDirectory()
+
+        grip.fileRegistry.addFileToClasspath(output)
+        generatedInputs += SimpleScopedInput(
+          Scope.GENERATED,
+          FileClassMirrorSource(grip, output)
+        )
       }
-      inputs += generatedInputs
-
-      grip.classProducer.setOutputDirectory(output)
-      val transformInvocation = ImmutableInvocation(grip, inputs)
-      transform.transform(transformInvocation)
-      grip.classProducer.resetOutputDirectory()
-
-      grip.fileRegistry.addFileToClasspath(output)
-      generatedInputs += SimpleScopedInput(
-        Scope.GENERATED,
-        FileClassMirrorSource(grip, output)
-      )
     }
   }
 
