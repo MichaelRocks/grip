@@ -5,6 +5,13 @@ allprojects {
   ext.kotlinVersion = '1.5.21'
   ext.asmVersion = '9.2'
   ext.pabloVersion = '1.3.1'
+  ext.logbackVersion = '1.2.3'
+
+  ext.androidCompileSdkVersion = 30
+  ext.androidTargetSdkVersion = 30
+  ext.androidMinSdkVersion = 16
+  ext.androidBuildToolsVersion = '30.0.3'
+  ext.androidToolsVersion = '4.2.1'
 
   ext.junitVersion = '4.13.2'
   ext.mockitoVersion = '3.11.2'
@@ -13,6 +20,7 @@ allprojects {
     repositories {
       mavenLocal()
       mavenCentral()
+      google()
     }
 
     dependencies {
@@ -24,5 +32,6 @@ allprojects {
   repositories {
     mavenLocal()
     mavenCentral()
+    google()
   }
 }

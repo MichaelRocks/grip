@@ -2,3 +2,4 @@ rootProject.name = 'grip'
 
 include ':library'
 include ':transform-api'
+include ':transform-plugin'
