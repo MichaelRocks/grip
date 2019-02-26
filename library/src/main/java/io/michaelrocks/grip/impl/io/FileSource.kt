@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip
+package io.michaelrocks.grip.impl.io
 
-import io.michaelrocks.grip.mirrors.AnnotationMirror
-import io.michaelrocks.grip.mirrors.ClassMirror
-import io.michaelrocks.grip.mirrors.Type
+import java.io.File
 
-interface ClassRegistry {
-  fun getClassMirror(type: Type.Object): ClassMirror
-  fun getAnnotationMirror(type: Type.Object): AnnotationMirror
-}
+interface FileSource : AutoCloseable {
+  fun listFiles(callback: (name: String, type: EntryType) -> Unit)
+  fun readFile(path: String): ByteArray
 
-interface MutableClassRegistry : ClassRegistry {
-  fun invalidateType(type: Type.Object)
+  enum class EntryType {
+    CLASS,
+    FILE,
+    DIRECTORY
+  }
+
+  interface Factory {
+    fun createFileSource(inputFile: File, fileFormat: FileFormat? = null): FileSource
+  }
 }

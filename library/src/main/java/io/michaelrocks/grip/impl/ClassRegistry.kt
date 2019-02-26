@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl
 
-import java.io.File
+import io.michaelrocks.grip.ClassRegistry
+import io.michaelrocks.grip.MutableClassRegistry
 
-internal class DefaultFileSourceFactory(
-  private val fileFormatDetector: FileFormatDetector
-) : FileSource.Factory {
-  override fun createFileSource(inputFile: File, fileFormat: FileFormat?): FileSource {
-    return when (fileFormat) {
-      null -> createFileSource(inputFile, fileFormatDetector.detectFileFormat(inputFile))
-      FileFormat.DIRECTORY -> DirectoryFileSource(inputFile)
-      FileFormat.JAR -> JarFileSource(inputFile)
-    }
-  }
-}
+interface CloseableClassRegistry : ClassRegistry, AutoCloseable
+interface CloseableMutableClassRegistry : CloseableClassRegistry, MutableClassRegistry

@@ -16,9 +16,11 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.io.FileFormat
-import io.michaelrocks.grip.io.FileFormatDetector
-import io.michaelrocks.grip.io.FileSink
+import io.michaelrocks.grip.impl.CloseableFileRegistry
+import io.michaelrocks.grip.impl.DefaultClassProducer
+import io.michaelrocks.grip.impl.io.FileFormat
+import io.michaelrocks.grip.impl.io.FileFormatDetector
+import io.michaelrocks.grip.impl.io.FileSink
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.mockito.eq

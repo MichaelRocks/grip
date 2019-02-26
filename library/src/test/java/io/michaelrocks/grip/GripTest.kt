@@ -21,7 +21,8 @@ import io.michaelrocks.grip.classes.Annotation2
 import io.michaelrocks.grip.classes.Class1
 import io.michaelrocks.grip.classes.Class2
 import io.michaelrocks.grip.classes.Enum1
-import io.michaelrocks.grip.mirrors.DefaultReflector
+import io.michaelrocks.grip.impl.DefaultClassRegistry
+import io.michaelrocks.grip.impl.DefaultReflector
 import io.michaelrocks.grip.mirrors.getObjectType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

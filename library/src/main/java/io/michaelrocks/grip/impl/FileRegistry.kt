@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl
 
-import java.io.File
+import io.michaelrocks.grip.FileRegistry
+import io.michaelrocks.grip.MutableFileRegistry
 
-internal class DefaultFileFormatDetector : FileFormatDetector {
-  override fun detectFileFormat(file: File): FileFormat {
-    return when {
-      !file.exists() || file.isDirectory -> FileFormat.DIRECTORY
-      else -> FileFormat.JAR
-    }
-  }
-}
+interface CloseableFileRegistry : FileRegistry, AutoCloseable
+interface CloseableMutableFileRegistry : CloseableFileRegistry, MutableFileRegistry

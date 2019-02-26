@@ -16,6 +16,7 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.impl.CloseableClassProducer
 import io.michaelrocks.grip.mirrors.Type
 
 internal class UnsupportedClassProducer(private val message: String?) : CloseableClassProducer {

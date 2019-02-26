@@ -16,16 +16,6 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.io.DefaultFileFormatDetector
-import io.michaelrocks.grip.io.DefaultFileSinkFactory
-import io.michaelrocks.grip.io.DefaultFileSourceFactory
-import io.michaelrocks.grip.io.EmptyFileSink
-import io.michaelrocks.grip.io.FileFormat
-import io.michaelrocks.grip.io.FileFormatDetector
-import io.michaelrocks.grip.io.FileSink
-import io.michaelrocks.grip.io.FileSource
-import io.michaelrocks.grip.mirrors.DefaultReflector
-import io.michaelrocks.grip.mirrors.Type
 import org.objectweb.asm.Opcodes
 import java.io.File
 
@@ -44,43 +34,4 @@ interface GripFactory {
       return DefaultGripFactory(asmApi)
     }
   }
-}
-
-internal class DefaultGripFactory(
-  private val asmApi: Int,
-) : GripFactory {
-  override fun create(files: Iterable<File>, outputDirectory: File?): Grip {
-    return createInternal(files, outputDirectory)
-  }
-
-  override fun createMutable(files: Iterable<File>, outputDirectory: File?): MutableGrip {
-    return createInternal(files, outputDirectory)
-  }
-
-  private fun createInternal(
-    files: Iterable<File>,
-    outputDirectory: File? = null,
-    fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
-    fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
-    fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory(),
-  ): MutableGrip {
-    val fileRegistry = DefaultFileRegistry(files, fileSourceFactory)
-    val reflector = DefaultReflector(asmApi)
-    val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
-    val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY) else EmptyFileSink
-    val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
-    val wrappedClassProducer = object : ClassProducerWrapper(classProducer) {
-      override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {
-        val type = super.produceClass(classData, overwrite)
-        if (type in fileRegistry) {
-          classRegistry.invalidateType(type)
-        }
-        return type
-      }
-    }
-
-    return DefaultMutableGrip(fileRegistry, classRegistry, wrappedClassProducer)
-  }
-
-  private abstract class ClassProducerWrapper(delegate: CloseableMutableClassProducer) : CloseableMutableClassProducer by delegate
 }

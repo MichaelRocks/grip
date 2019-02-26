@@ -18,7 +18,8 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.classes.Annotation1
 import io.michaelrocks.grip.classes.Annotation2
-import io.michaelrocks.grip.mirrors.DefaultReflector
+import io.michaelrocks.grip.impl.DefaultClassRegistry
+import io.michaelrocks.grip.impl.DefaultReflector
 import io.michaelrocks.grip.mirrors.EnumMirror
 import io.michaelrocks.grip.mirrors.getObjectType
 import org.junit.Assert.assertEquals

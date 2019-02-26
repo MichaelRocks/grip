@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl
 
-import java.io.File
+import io.michaelrocks.grip.ClassRegistry
+import io.michaelrocks.grip.mirrors.ClassMirror
 
-internal interface FileFormatDetector {
-  fun detectFileFormat(file: File): FileFormat
+interface Reflector {
+  fun reflect(data: ByteArray, classRegistry: ClassRegistry, forAnnotation: Boolean): ClassMirror
 }

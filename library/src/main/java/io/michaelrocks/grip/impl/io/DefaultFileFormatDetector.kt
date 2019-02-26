@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl.io
 
 import java.io.File
 
-internal class DirectoryFileSink(private val directory: File) : FileSink {
-  override fun createFile(path: String, data: ByteArray) {
-    val file = File(directory, path)
-    file.parentFile?.mkdirs()
-    file.writeBytes(data)
-  }
-
-  override fun createDirectory(path: String) {
-    File(directory, path).mkdirs()
-  }
-
-  override fun flush() {
-  }
-
-  override fun close() {
-  }
-
-  override fun toString(): String {
-    return "DirectoryFileSink($directory)"
+class DefaultFileFormatDetector : FileFormatDetector {
+  override fun detectFileFormat(file: File): FileFormat {
+    return when {
+      !file.exists() || file.isDirectory -> FileFormat.DIRECTORY
+      else -> FileFormat.JAR
+    }
   }
 }

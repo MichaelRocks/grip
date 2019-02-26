@@ -39,7 +39,7 @@ open class GripPlugin : Plugin<Project> {
   }
 
   private fun tryBindToPluginEagerly(): Boolean {
-    val androidPlugins = project.plugins.filterIsInstance<BasePlugin<*>>()
+    val androidPlugins = project.plugins.filterIsInstance<BasePlugin>()
     if (androidPlugins.isEmpty()) {
       return false
     }
@@ -54,7 +54,7 @@ open class GripPlugin : Plugin<Project> {
 
   private fun bindToPluginDeferred() {
     project.plugins.whenPluginAdded { plugin ->
-      if (plugin is BasePlugin<*>) {
+      if (plugin is BasePlugin) {
         bindToAndroidPlugin(plugin)
       }
     }
@@ -66,8 +66,8 @@ open class GripPlugin : Plugin<Project> {
     }
   }
 
-  private fun bindToAndroidPlugin(plugin: BasePlugin<*>) {
-    extension.bindToTransformRegistrar(AndroidTransformRegistrar(plugin.extension))
+  private fun bindToAndroidPlugin(plugin: BasePlugin) {
+    extension.bindToTransformRegistrar(AndroidTransformRegistrar(plugin.getExtension()))
   }
 
   private fun bindToJavaPlugin() {

@@ -16,6 +16,13 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.impl.CloseableClassProducer
+import io.michaelrocks.grip.impl.CloseableClassRegistry
+import io.michaelrocks.grip.impl.CloseableFileRegistry
+import io.michaelrocks.grip.impl.CloseableMutableClassProducer
+import io.michaelrocks.grip.impl.CloseableMutableClassRegistry
+import io.michaelrocks.grip.impl.CloseableMutableFileRegistry
+
 interface Grip : AutoCloseable {
   val fileRegistry: FileRegistry
   val classRegistry: ClassRegistry

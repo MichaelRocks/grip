@@ -16,6 +16,7 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.impl.CloseableFileRegistry
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectType
 import java.io.File

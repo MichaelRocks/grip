@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl.io
 
-import java.io.File
-
-internal class DefaultFileSinkFactory : FileSink.Factory {
-  override fun createFileSink(outputFile: File, fileFormat: FileFormat): FileSink {
-    return when (fileFormat) {
-      FileFormat.DIRECTORY -> DirectoryFileSink(outputFile)
-      FileFormat.JAR -> JarFileSink(outputFile)
-    }
-  }
+enum class FileFormat {
+  DIRECTORY,
+  JAR
 }

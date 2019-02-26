@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl.io
 
-internal enum class FileFormat {
-  DIRECTORY,
-  JAR
+import java.io.File
+
+interface FileSink : AutoCloseable {
+  fun createFile(path: String, data: ByteArray)
+  fun createDirectory(path: String)
+  fun flush()
+
+  interface Factory {
+    fun createFileSink(outputFile: File, fileFormat: FileFormat): FileSink
+  }
 }

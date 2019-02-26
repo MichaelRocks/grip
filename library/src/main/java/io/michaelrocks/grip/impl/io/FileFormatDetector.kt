@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip
+package io.michaelrocks.grip.impl.io
 
-import io.michaelrocks.grip.mirrors.AnnotationMirror
-import io.michaelrocks.grip.mirrors.ClassMirror
-import io.michaelrocks.grip.mirrors.Type
+import java.io.File
 
-interface ClassRegistry {
-  fun getClassMirror(type: Type.Object): ClassMirror
-  fun getAnnotationMirror(type: Type.Object): AnnotationMirror
-}
-
-interface MutableClassRegistry : ClassRegistry {
-  fun invalidateType(type: Type.Object)
+interface FileFormatDetector {
+  fun detectFileFormat(file: File): FileFormat
 }

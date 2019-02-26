@@ -14,44 +14,24 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl.io
 
-import io.michaelrocks.grip.commons.closeQuietly
-import java.io.File
-import java.util.jar.JarEntry
-import java.util.jar.JarOutputStream
-
-internal class JarFileSink(private val jarFile: File) : FileSink {
-  private val stream = createJarOutputStream(jarFile)
-
+object EmptyFileSink : FileSink {
   override fun createFile(path: String, data: ByteArray) {
-    val entry = JarEntry(path)
-    stream.putNextEntry(entry)
-    stream.write(data)
-    stream.closeEntry()
+    throw UnsupportedOperationException()
   }
 
   override fun createDirectory(path: String) {
-    val directoryPath = if (path.endsWith("/")) path else "$path/"
-    val entry = JarEntry(directoryPath)
-    stream.putNextEntry(entry)
-    stream.closeEntry()
+    throw UnsupportedOperationException()
   }
 
   override fun flush() {
-    stream.flush()
   }
 
   override fun close() {
-    stream.closeQuietly()
   }
 
   override fun toString(): String {
-    return "JarFileSink($jarFile)"
-  }
-
-  private fun createJarOutputStream(jarFile: File): JarOutputStream {
-    jarFile.parentFile?.mkdirs()
-    return JarOutputStream(jarFile.outputStream().buffered())
+    return "EmptyFileSink"
   }
 }

@@ -19,7 +19,10 @@ package io.michaelrocks.grip
 import io.michaelrocks.grip.annotations.AnnotationGenerator
 import io.michaelrocks.grip.annotations.createAnnotationMirror
 import io.michaelrocks.grip.annotations.getAnnotationType
-import io.michaelrocks.grip.mirrors.DefaultReflector
+import io.michaelrocks.grip.impl.CloseableClassRegistry
+import io.michaelrocks.grip.impl.CloseableFileRegistry
+import io.michaelrocks.grip.impl.DefaultClassRegistry
+import io.michaelrocks.grip.impl.DefaultReflector
 import io.michaelrocks.grip.mirrors.EnumMirror
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getArrayType

@@ -34,7 +34,7 @@ internal interface TransformRunner {
 internal class DefaultTransformRunner(
   private val transforms: List<Transform>,
   private val outputProvider: OutputProvider,
-  private val gripFactory: GripFactory = DefaultGripFactory
+  private val gripFactory: GripFactory = GripFactory.INSTANCE
 ) : TransformRunner {
   private val logger = getLogger()
 

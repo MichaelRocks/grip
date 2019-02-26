@@ -16,7 +16,8 @@
 
 package io.michaelrocks.grip
 
-import io.michaelrocks.grip.io.FileSource
+import io.michaelrocks.grip.impl.DefaultFileRegistry
+import io.michaelrocks.grip.impl.io.FileSource
 import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectType
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName

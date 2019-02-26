@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip
+package io.michaelrocks.grip.impl.io
 
-import io.michaelrocks.grip.mirrors.AnnotationMirror
-import io.michaelrocks.grip.mirrors.ClassMirror
-import io.michaelrocks.grip.mirrors.Type
+object EmptyFileSource : FileSource {
+  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
+  }
 
-interface ClassRegistry {
-  fun getClassMirror(type: Type.Object): ClassMirror
-  fun getAnnotationMirror(type: Type.Object): AnnotationMirror
-}
+  override fun readFile(path: String): ByteArray {
+    throw UnsupportedOperationException()
+  }
 
-interface MutableClassRegistry : ClassRegistry {
-  fun invalidateType(type: Type.Object)
+  override fun close() {
+  }
+
+  override fun toString(): String {
+    return "EmptyFileSource"
+  }
 }

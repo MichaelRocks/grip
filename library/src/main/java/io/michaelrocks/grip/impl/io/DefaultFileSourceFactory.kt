@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.io
+package io.michaelrocks.grip.impl.io
 
-internal object EmptyFileSource : FileSource {
-  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
-  }
+import java.io.File
 
-  override fun readFile(path: String): ByteArray {
-    throw UnsupportedOperationException()
-  }
-
-  override fun close() {
-  }
-
-  override fun toString(): String {
-    return "EmptyFileSource"
+class DefaultFileSourceFactory(
+  private val fileFormatDetector: FileFormatDetector
+) : FileSource.Factory {
+  override fun createFileSource(inputFile: File, fileFormat: FileFormat?): FileSource {
+    return when (fileFormat) {
+      null -> createFileSource(inputFile, fileFormatDetector.detectFileFormat(inputFile))
+      FileFormat.DIRECTORY -> DirectoryFileSource(inputFile)
+      FileFormat.JAR -> JarFileSource(inputFile)
+    }
   }
 }
