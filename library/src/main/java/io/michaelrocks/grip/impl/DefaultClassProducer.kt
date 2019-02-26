@@ -31,12 +31,13 @@ import java.util.LinkedHashMap
 class DefaultClassProducer(
   private val fileRegistry: CloseableFileRegistry,
   private val fileSinkFactory: FileSink.Factory,
-  private val fileFormatDetector: FileFormatDetector,
-  private var outputSink: FileSink = EmptyFileSink
+  private val fileFormatDetector: FileFormatDetector
 ) : CloseableMutableClassProducer {
 
   private val sinks = LinkedHashMap<File, FileSink>()
   private val producedTypes = HashSet<Type.Object>()
+
+  private var outputSink: FileSink = EmptyFileSink
 
   private var closed = false
 

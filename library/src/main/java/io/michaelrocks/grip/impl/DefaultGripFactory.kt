@@ -23,8 +23,6 @@ import io.michaelrocks.grip.MutableGrip
 import io.michaelrocks.grip.impl.io.DefaultFileFormatDetector
 import io.michaelrocks.grip.impl.io.DefaultFileSinkFactory
 import io.michaelrocks.grip.impl.io.DefaultFileSourceFactory
-import io.michaelrocks.grip.impl.io.EmptyFileSink
-import io.michaelrocks.grip.impl.io.FileFormat
 import io.michaelrocks.grip.impl.io.FileFormatDetector
 import io.michaelrocks.grip.impl.io.FileSink
 import io.michaelrocks.grip.impl.io.FileSource
@@ -52,8 +50,11 @@ class DefaultGripFactory(
     val fileRegistry = DefaultFileRegistry(classpath, fileSourceFactory)
     val reflector = DefaultReflector(asmApi)
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
-    val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY) else EmptyFileSink
-    val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
+    val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector)
+    if (outputDirectory != null) {
+      classProducer.setOutputDirectory(outputDirectory)
+    }
+
     val wrappedClassProducer = object : ClassProducerWrapper(classProducer) {
       override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {
         val type = super.produceClass(classData, overwrite)
