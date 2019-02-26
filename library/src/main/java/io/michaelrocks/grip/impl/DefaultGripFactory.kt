@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip
+package io.michaelrocks.grip.impl
 
-import io.michaelrocks.grip.impl.CloseableMutableClassProducer
-import io.michaelrocks.grip.impl.DefaultClassProducer
-import io.michaelrocks.grip.impl.DefaultClassRegistry
-import io.michaelrocks.grip.impl.DefaultFileRegistry
-import io.michaelrocks.grip.impl.DefaultReflector
+import io.michaelrocks.grip.DefaultMutableGrip
+import io.michaelrocks.grip.Grip
+import io.michaelrocks.grip.GripFactory
+import io.michaelrocks.grip.MutableGrip
 import io.michaelrocks.grip.impl.io.DefaultFileFormatDetector
 import io.michaelrocks.grip.impl.io.DefaultFileSinkFactory
 import io.michaelrocks.grip.impl.io.DefaultFileSourceFactory
@@ -53,10 +52,7 @@ class DefaultGripFactory(
     val fileRegistry = DefaultFileRegistry(classpath, fileSourceFactory)
     val reflector = DefaultReflector(asmApi)
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
-    val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(
-      outputDirectory,
-      FileFormat.DIRECTORY
-    ) else EmptyFileSink
+    val outputSink = if (outputDirectory != null) fileSinkFactory.createFileSink(outputDirectory, FileFormat.DIRECTORY) else EmptyFileSink
     val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector, outputSink)
     val wrappedClassProducer = object : ClassProducerWrapper(classProducer) {
       override fun produceClass(classData: ByteArray, overwrite: Boolean): Type.Object {

@@ -16,6 +16,7 @@
 
 package io.michaelrocks.grip
 
+import io.michaelrocks.grip.impl.DefaultGripFactory
 import org.objectweb.asm.Opcodes
 import java.io.File
 
