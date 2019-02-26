@@ -42,7 +42,7 @@ class DefaultGripFactory(
     return createInternal(classpath, outputDirectory)
   }
 
-  internal fun createInternal(
+  fun createInternal(
     classpath: Iterable<File>,
     outputDirectory: File? = null,
     fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
