@@ -17,7 +17,6 @@
 package io.michaelrocks.grip.plugin.transform
 
 import io.michaelrocks.grip.ClassMirrorSource
-import io.michaelrocks.grip.DefaultGripFactory
 import io.michaelrocks.grip.Grip
 import io.michaelrocks.grip.GripFactory
 import io.michaelrocks.grip.mirrors.ClassMirror
