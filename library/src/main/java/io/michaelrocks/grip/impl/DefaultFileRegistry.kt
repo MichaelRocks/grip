@@ -26,10 +26,15 @@ import java.util.HashMap
 import java.util.LinkedHashMap
 
 class DefaultFileRegistry(
-  private val fileSourceFactory: FileSource.Factory
+  private val fileSourceFactory: FileSource.Factory,
+  private val fileCanonicalizer: FileCanonicalizer
 ) : CloseableMutableFileRegistry {
 
-  constructor(classpath: Iterable<File>, fileSourceFactory: FileSource.Factory) : this(fileSourceFactory) {
+  constructor(
+    classpath: Iterable<File>,
+    fileSourceFactory: FileSource.Factory,
+    fileCanonicalizer: FileCanonicalizer
+  ) : this(fileSourceFactory, fileCanonicalizer) {
     classpath.forEach { addFileToClasspath(it) }
   }
 
@@ -41,7 +46,7 @@ class DefaultFileRegistry(
 
   override fun contains(file: File): Boolean {
     checkNotClosed()
-    return file.canonicalFile in sources
+    return canonicalizeFile(file) in sources
   }
 
   override fun contains(type: Type.Object): Boolean {
@@ -68,7 +73,7 @@ class DefaultFileRegistry(
   override fun findTypesForFile(file: File): Collection<Type.Object> {
     checkNotClosed()
     require(contains(file)) { "File $file is not added to the registry" }
-    return typesByFiles[file.canonicalFile]?.immutable() ?: emptyList()
+    return typesByFiles[canonicalizeFile(file)]?.immutable() ?: emptyList()
   }
 
   override fun findFileForType(type: Type.Object): File? {
@@ -78,12 +83,12 @@ class DefaultFileRegistry(
 
   override fun addFileToClasspath(file: File) {
     checkNotClosed()
-    addCanonicalFileToClasspath(file.canonicalFile)
+    addCanonicalFileToClasspath(canonicalizeFile(file))
   }
 
   override fun removeFileFromClasspath(file: File) {
     checkNotClosed()
-    removeCanonicalFileFromClasspath(file.canonicalFile)
+    removeCanonicalFileFromClasspath(canonicalizeFile(file))
   }
 
   override fun close() {
@@ -115,6 +120,10 @@ class DefaultFileRegistry(
       filesByTypes.keys.removeAll(types)
     }
     sources.remove(file)?.close()
+  }
+
+  private fun canonicalizeFile(file: File): File {
+    return fileCanonicalizer.canonicalizeFile(file)
   }
 
   private fun checkNotClosed() {

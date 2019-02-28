@@ -43,11 +43,12 @@ class DefaultGripFactory(
   fun createInternal(
     classpath: Iterable<File>,
     outputDirectory: File? = null,
+    fileCanonicalizer: FileCanonicalizer = DefaultFileCanonicalizer(),
     fileFormatDetector: FileFormatDetector = DefaultFileFormatDetector(),
     fileSourceFactory: FileSource.Factory = DefaultFileSourceFactory(fileFormatDetector),
     fileSinkFactory: FileSink.Factory = DefaultFileSinkFactory()
   ): MutableGrip {
-    val fileRegistry = DefaultFileRegistry(classpath, fileSourceFactory)
+    val fileRegistry = DefaultFileRegistry(classpath, fileSourceFactory, fileCanonicalizer)
     val reflector = DefaultReflector(asmApi)
     val classRegistry = DefaultClassRegistry(fileRegistry, reflector)
     val classProducer = DefaultClassProducer(fileRegistry, fileSinkFactory, fileFormatDetector)
