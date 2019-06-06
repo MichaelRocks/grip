@@ -49,12 +49,10 @@ internal class DefaultFileCopier : FileCopier {
     logger.info("Incremental directory change: {} -> {}", source, target)
     target.mkdirs()
     changes.files.forEach { file ->
-      if (file.isFile) {
-        val status = changes.getFileStatus(file)
-        val relativePath = file.toRelativeString(source)
-        val targetFile = File(target, relativePath)
-        applyChanges(file, targetFile, status)
-      }
+      val status = changes.getFileStatus(file)
+      val relativePath = file.toRelativeString(source)
+      val targetFile = File(target, relativePath)
+      applyChanges(file, targetFile, status)
     }
   }
 
@@ -67,11 +65,16 @@ internal class DefaultFileCopier : FileCopier {
     logger.debug("Incremental file change ({}): {} -> {}", status, source, target)
     when (status) {
       Changes.Status.UNCHANGED -> return
-      Changes.Status.REMOVED -> target.delete()
-      Changes.Status.ADDED -> source.copyTo(target, true)
-      Changes.Status.CHANGED -> source.copyTo(target, true)
+      Changes.Status.REMOVED -> target.deleteRecursively()
+      Changes.Status.ADDED -> source.replaceRecursively(target)
+      Changes.Status.CHANGED -> source.replaceRecursively(target)
       Changes.Status.UNKNOWN -> applyChanges(source, target, computeFileStatus(source))
     }
+  }
+
+  private fun File.replaceRecursively(target: File) {
+    target.deleteRecursively()
+    copyRecursively(target, false)
   }
 
   private fun computeFileStatus(source: File): Changes.Status {
