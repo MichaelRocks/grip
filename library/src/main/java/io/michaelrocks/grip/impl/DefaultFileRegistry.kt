@@ -72,8 +72,9 @@ class DefaultFileRegistry(
 
   override fun findTypesForFile(file: File): Collection<Type.Object> {
     checkNotClosed()
-    require(contains(file)) { "File $file is not added to the registry" }
-    return typesByFiles[canonicalizeFile(file)]?.immutable() ?: emptyList()
+    val canonicalFile = canonicalizeFile(file)
+    require(contains(canonicalFile)) { "File $file is not added to the registry" }
+    return typesByFiles[canonicalFile]?.immutable() ?: emptyList()
   }
 
   override fun findFileForType(type: Type.Object): File? {
