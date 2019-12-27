@@ -99,7 +99,8 @@ internal class DefaultTransformRunner(
   companion object {
     private fun TransformSet.getClasspath(): List<File> {
       val classpath = ArrayList<File>(units.size + referencedUnits.size + bootClasspath.size)
-      units.mapTo(classpath) { it.input }
+      // Modifiable units will be copied to output before processing.
+      units.mapTo(classpath) { it.output }
       referencedUnits.mapTo(classpath) { it.input }
       classpath += bootClasspath
       return classpath
