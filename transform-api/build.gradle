@@ -10,3 +10,11 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
+
+jar {
+  destinationDirectory.set(file('build/jar'))
+}
+
+pablo {
+  artifactName = 'grip-transform-api'
+}

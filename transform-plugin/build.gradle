@@ -17,4 +17,13 @@ dependencies {
 
   testImplementation "junit:junit:$junitVersion"
   testImplementation "org.mockito:mockito-core:$mockitoVersion"
+  testImplementation "org.ow2.asm:asm:$asmVersion"
+}
+
+jar {
+  destinationDirectory.set(file('build/jar'))
+}
+
+pablo {
+  artifactName = 'grip-transform-plugin'
 }
