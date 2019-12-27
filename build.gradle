@@ -16,6 +16,10 @@ allprojects {
   ext.junitVersion = '4.13.2'
   ext.mockitoVersion = '3.11.2'
 
+  ext.androidxEspressoVersion = '3.2.0'
+  ext.androidxTestRunnerVersion = '1.2.0'
+  ext.androidxTestRulesVersion = '1.2.0'
+
   buildscript {
     repositories {
       mavenLocal()

@@ -1,0 +1,120 @@
+import io.michaelrocks.grip.Grip
+import io.michaelrocks.grip.GripClassWriter
+import io.michaelrocks.grip.transform.Scope
+import io.michaelrocks.grip.transform.Transform
+import org.objectweb.asm.*
+import org.objectweb.asm.commons.GeneratorAdapter
+import org.objectweb.asm.commons.Method
+
+buildscript {
+  dependencies {
+    classpath "com.android.tools.build:gradle:$androidToolsVersion"
+    classpath "io.michaelrocks.grip:grip-transform-plugin:$version"
+    classpath "io.michaelrocks.grip:grip-transform-api:$version"
+  }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'io.michaelrocks.grip'
+
+android {
+  compileSdkVersion androidCompileSdkVersion
+  buildToolsVersion androidBuildToolsVersion
+
+  defaultConfig {
+    applicationId "io.michaelrocks.grip.sample"
+    minSdkVersion androidMinSdkVersion
+    targetSdkVersion androidTargetSdkVersion
+    versionCode 1
+    versionName version
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt')
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+dependencies {
+  androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoVersion"
+  androidTestImplementation "androidx.test:runner:$androidxTestRunnerVersion"
+  androidTestImplementation "androidx.test:rules:$androidxTestRulesVersion"
+}
+
+grip {
+  registerTransform(
+      new Transform() {
+        @Override
+        String getName() {
+          return "transform1"
+        }
+
+        @Override
+        Set<Scope> getScopes() {
+          return EnumSet.of(Scope.PROJECT)
+        }
+
+        @Override
+        void transform(final Transform.Invocation invocation) {
+          final Grip grip = invocation.grip
+          invocation.inputs.forEach { input ->
+            input.createClassMirrorSource().classMirrors.iterator().forEachRemaining { mirror ->
+              final ClassReader reader = new ClassReader(grip.fileRegistry.readClass(mirror.type))
+              final ClassWriter writer = new GripClassWriter(reader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS, grip.classRegistry)
+
+              final Type logType = Type.getType("Landroid/util/Log;")
+              final Method traceMethod = new Method("v", "(Ljava/lang/String;Ljava/lang/String;)I")
+              final ClassVisitor classVisitor = new ClassVisitor(Opcodes.ASM6, writer) {
+                @Override
+                MethodVisitor visitMethod(final int access, final String name, final String descriptor, final String signature, final String[] exceptions) {
+                  final MethodVisitor methodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions)
+                  return new GeneratorAdapter(Opcodes.ASM6, methodVisitor, access, name, descriptor) {
+                    @Override
+                    void visitCode() {
+                      super.visitCode()
+                      log("---> $name")
+                    }
+
+                    @Override
+                    void visitInsn(final int opcode) {
+                      switch (opcode) {
+                        case Opcodes.IRETURN:
+                        case Opcodes.LRETURN:
+                        case Opcodes.FRETURN:
+                        case Opcodes.DRETURN:
+                        case Opcodes.ARETURN:
+                        case Opcodes.RETURN:
+                          log("<--- $name")
+                          break
+                      }
+
+                      super.visitInsn(opcode)
+                    }
+
+                    private void log(final String message) {
+                      push(mirror.type.className)
+                      push(message)
+                      invokeStatic(logType, traceMethod)
+                      pop()
+                    }
+                  }
+                }
+              }
+
+              reader.accept(classVisitor, ClassReader.SKIP_FRAMES)
+              grip.classProducer.produceClass(writer.toByteArray(), true)
+            }
+          }
+        }
+      }
+  )
+}
