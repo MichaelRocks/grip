@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ fun <T> given(methodCall: T): OngoingStubbing<T> = Mockito.`when`(methodCall)
 fun <T> verify(mock: T): T = Mockito.verify(mock)
 fun <T> verify(mock: T, mode: VerificationMode = times(1)): T = Mockito.verify(mock, mode)
 fun verifyNoMoreInteractions(vararg mocks: Any) = Mockito.verifyNoMoreInteractions(*mocks)
-fun verifyZeroInteractions(vararg mocks: Any) = Mockito.verifyZeroInteractions(*mocks)
+fun verifyZeroInteractions(vararg mocks: Any) = Mockito.verifyNoInteractions(*mocks)
 
 fun <T> reset(vararg mocks: T) = Mockito.reset(*mocks)
 
