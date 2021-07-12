@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import org.objectweb.asm.signature.SignatureVisitor
 private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
-    private val genericDeclaration: GenericDeclaration,
-    private val callback: (GenericType) -> Unit
-) : SignatureVisitor(Opcodes.ASM5) {
+  private val genericDeclaration: GenericDeclaration,
+  private val callback: (GenericType) -> Unit
+) : SignatureVisitor(Opcodes.ASM9) {
   private var genericType: GenericType? = null
   private var classType: Type.Object? = null
   private var className: String? = null
