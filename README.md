@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MichaelRocks/grip.svg?branch=master)](https://travis-ci.org/MichaelRocks/grip)
+[![Build](https://github.com/MichaelRocks/grip/actions/workflows/build.yml/badge.svg)](https://github.com/MichaelRocks/grip/actions/workflows/build.yml)
 
 Grip
 ====
