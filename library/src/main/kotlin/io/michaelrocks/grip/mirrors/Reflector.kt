@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,19 +54,21 @@ internal class ReflectorImpl : Reflector {
   }
 
   private class ReflectorClassVisitor(
-      private val classRegistry: ClassRegistry,
-      private val forAnnotation: Boolean
-  ) : ClassVisitor(Opcodes.ASM5) {
+    private val classRegistry: ClassRegistry,
+    private val forAnnotation: Boolean
+  ) : ClassVisitor(Opcodes.ASM9) {
 
     private val builder = ClassMirror.Builder()
     private lateinit var classGenericDeclaration: GenericDeclaration
 
     fun toClassMirror(): ClassMirror = builder.build()
 
-    override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?,
-        interfaces: Array<out String>?) {
+    override fun visit(
+      version: Int, access: Int, name: String, signature: String?, superName: String?,
+      interfaces: Array<out String>?
+    ) {
       val enclosingGenericDeclaration =
-          classRegistry.resolveGenericDeclarationLazily(getObjectTypeByInternalName(name))
+        classRegistry.resolveGenericDeclarationLazily(getObjectTypeByInternalName(name))
       val signatureMirror = signature?.let { LazyClassSignatureMirror(it, enclosingGenericDeclaration) }
       classGenericDeclaration =
           signatureMirror?.let {
@@ -153,35 +155,35 @@ internal class ReflectorImpl : Reflector {
   }
 
   private class ReflectorFieldVisitor(
-      private val classRegistry: ClassRegistry,
-      private val builder: FieldMirror.Builder,
-      private val callback: (FieldMirror) -> Unit
-  ) : FieldVisitor(Opcodes.ASM5) {
+    private val classRegistry: ClassRegistry,
+    private val builder: FieldMirror.Builder,
+    private val callback: (FieldMirror) -> Unit
+  ) : FieldVisitor(Opcodes.ASM9) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor =
-        AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
-          builder.addAnnotation(it)
-        }
+      AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
+        builder.addAnnotation(it)
+      }
 
     override fun visitEnd() = callback(builder.build())
   }
 
   private class ReflectorMethodVisitor(
-      private val classRegistry: ClassRegistry,
-      private val forAnnotation: Boolean,
-      private val builder: MethodMirror.Builder,
-      private val callback: (MethodMirror) -> Unit
-  ) : MethodVisitor(Opcodes.ASM5) {
+    private val classRegistry: ClassRegistry,
+    private val forAnnotation: Boolean,
+    private val builder: MethodMirror.Builder,
+    private val callback: (MethodMirror) -> Unit
+  ) : MethodVisitor(Opcodes.ASM9) {
 
     override fun visitParameterAnnotation(parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? =
-        given(!forAnnotation) {
-          AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
-            builder.addParameterAnnotation(parameter, it)
-          }
+      given(!forAnnotation) {
+        AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
+          builder.addParameterAnnotation(parameter, it)
         }
+      }
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
-        given(!forAnnotation) {
+      given(!forAnnotation) {
           AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
             builder.addAnnotation(it)
           }
