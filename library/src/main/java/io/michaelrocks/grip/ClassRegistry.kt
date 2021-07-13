@@ -35,30 +35,30 @@ interface ClassRegistry {
 }
 
 internal class ClassRegistryImpl(
-    private val fileRegistry: FileRegistry,
-    private val reflector: Reflector
+  private val fileRegistry: FileRegistry,
+  private val reflector: Reflector
 ) : ClassRegistry {
   private val classesByType = HashMap<Type, ClassMirror>()
   private val annotationsByType = HashMap<Type, AnnotationMirror>()
 
   override fun getClassMirror(type: Type.Object): ClassMirror =
-      classesByType.getOrPut(type) { readClassMirror(type, false) }
+    classesByType.getOrPut(type) { readClassMirror(type, false) }
 
   override fun getAnnotationMirror(type: Type.Object): AnnotationMirror =
-      annotationsByType.getOrPut(type) {
-        if (type !in fileRegistry) {
-          return UnresolvedAnnotationMirror(type)
-        } else {
-          val classMirror = readClassMirror(type, true)
-          val visible = isAnnotationVisible(classMirror)
-          buildAnnotation(type, visible) {
-            check(classMirror.access or Opcodes.ACC_ANNOTATION != 0)
-            for (method in classMirror.methods) {
-              method.defaultValue?.let { addValue(method.name, it) }
-            }
+    annotationsByType.getOrPut(type) {
+      if (type !in fileRegistry) {
+        return UnresolvedAnnotationMirror(type)
+      } else {
+        val classMirror = readClassMirror(type, true)
+        val visible = isAnnotationVisible(classMirror)
+        buildAnnotation(type, visible) {
+          check(classMirror.access or Opcodes.ACC_ANNOTATION != 0)
+          for (method in classMirror.methods) {
+            method.defaultValue?.let { addValue(method.name, it) }
           }
         }
       }
+    }
 
   private fun readClassMirror(type: Type.Object, forAnnotation: Boolean): ClassMirror {
     return try {

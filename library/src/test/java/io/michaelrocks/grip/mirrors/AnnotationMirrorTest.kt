@@ -37,19 +37,21 @@ class AnnotationMirrorTest {
 
   @Test
   fun testEqualsWithAnnotationArrays() {
-    val annotation1 = createAnnotationMirror("EqualsWithAnnotationArrays",
-        arrayOf(
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50))
-        )
+    val annotation1 = createAnnotationMirror(
+      "EqualsWithAnnotationArrays",
+      arrayOf(
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50))
+      )
     )
-    val annotation2 = createAnnotationMirror("EqualsWithAnnotationArrays",
-        arrayOf(
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50))
-        )
+    val annotation2 = createAnnotationMirror(
+      "EqualsWithAnnotationArrays",
+      arrayOf(
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50))
+      )
     )
     assertEquals(1, annotation1.values.size)
     assertEquals(annotation1, annotation2)
@@ -59,13 +61,13 @@ class AnnotationMirrorTest {
   @Test
   fun testEqualsWithDifferentOrder() {
     val values1 = hashMapOf(
-        "intValue" to 42,
-        "stringValue" to "42"
+      "intValue" to 42,
+      "stringValue" to "42"
     )
     val annotation1 = createAnnotationMirror("EqualsWithAnnotationArrays", values1)
     val values2 = hashMapOf(
-        "intValue" to 42,
-        "stringValue" to "42"
+      "intValue" to 42,
+      "stringValue" to "42"
     )
     val annotation2 = createAnnotationMirror("EqualsWithAnnotationArrays", values2)
     assertEquals(2, annotation1.values.size)
@@ -116,21 +118,23 @@ class AnnotationMirrorTest {
 
   @Test
   fun testNotEqualsWithAnnotationArrays() {
-    val annotation1 = createAnnotationMirror("NotEqualsWithAnnotationArrays",
-        arrayOf(
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(1))
-        )
+    val annotation1 = createAnnotationMirror(
+      "NotEqualsWithAnnotationArrays",
+      arrayOf(
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(1))
+      )
     )
-    val annotation2 = createAnnotationMirror("NotEqualsWithAnnotationArrays",
-        arrayOf(
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50)),
-            createAnnotationMirror("EqualsWithIntArrays", intArrayOf(-1))
-        )
+    val annotation2 = createAnnotationMirror(
+      "NotEqualsWithAnnotationArrays",
+      arrayOf(
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(42, 43, 44)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(45, 46, 47)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(48, 49, 50)),
+        createAnnotationMirror("EqualsWithIntArrays", intArrayOf(-1))
+      )
     )
     assertNotEquals(annotation1, annotation2)
   }

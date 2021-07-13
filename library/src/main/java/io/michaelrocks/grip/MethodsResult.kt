@@ -26,7 +26,7 @@ interface MethodsResult : Map<Type.Object, List<MethodMirror>> {
     get() = keys
 
   fun containsType(type: Type.Object) =
-      containsKey(type)
+    containsKey(type)
 
   class Builder {
     private val methods = LazyMap<Type.Object, List<MethodMirror>>()
@@ -39,16 +39,16 @@ interface MethodsResult : Map<Type.Object, List<MethodMirror>> {
     fun build(): MethodsResult = ImmutableMethodsResult(this)
 
     private class ImmutableMethodsResult(
-        builder: Builder
+      builder: Builder
     ) : MethodsResult, Map<Type.Object, List<MethodMirror>> by builder.methods.detachImmutableCopy()
   }
 }
 
 internal inline fun buildMethodsResult(body: MethodsResult.Builder.() -> Unit) =
-    MethodsResult.Builder().run {
-      body()
-      build()
-    }
+  MethodsResult.Builder().run {
+    body()
+    build()
+  }
 
 val Map.Entry<Type.Object, List<MethodMirror>>.type: Type.Object
   get() = key

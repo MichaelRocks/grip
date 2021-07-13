@@ -65,8 +65,8 @@ interface MethodSignatureMirror {
 }
 
 internal class LazyMethodSignatureMirror(
-    private val signature: String,
-    classGenericDeclaration: GenericDeclaration
+  private val signature: String,
+  classGenericDeclaration: GenericDeclaration
 ) : MethodSignatureMirror {
 
   private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -89,23 +89,23 @@ internal class EmptyMethodSignatureMirror(type: Type.Method, exceptions: List<Ty
   override val typeVariables: List<GenericType.TypeVariable>
     get() = emptyList()
   override val parameterTypes: List<GenericType> =
-      type.argumentTypes.run {
-        if (isEmpty()) emptyList()
-        else GenericTypeListWrapper(toList())
-      }
+    type.argumentTypes.run {
+      if (isEmpty()) emptyList()
+      else GenericTypeListWrapper(toList())
+    }
   override val returnType: GenericType =
-      GenericType.Raw(type.returnType)
+    GenericType.Raw(type.returnType)
   override val exceptionTypes: List<GenericType> =
-      if (exceptions.isEmpty()) emptyList() else GenericTypeListWrapper(exceptions)
+    if (exceptions.isEmpty()) emptyList() else GenericTypeListWrapper(exceptions)
 
   override fun toJvmSignature() = ""
 }
 
 internal fun readMethodSignature(signature: String, genericDeclaration: GenericDeclaration): MethodSignatureMirror =
-    MethodSignatureReader(genericDeclaration).run {
-      SignatureReader(signature).accept(this)
-      toMethodSignature()
-    }
+  MethodSignatureReader(genericDeclaration).run {
+    SignatureReader(signature).accept(this)
+    toMethodSignature()
+  }
 
 internal fun MethodSignatureMirror.asGenericDeclaration(): GenericDeclaration {
   return GenericDeclaration(typeVariables)

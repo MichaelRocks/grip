@@ -37,11 +37,11 @@ class GripTest {
   @Before
   fun createGrip() {
     val fileRegistry = TestFileRegistry(
-        Class1::class,
-        Class2::class,
-        Annotation1::class,
-        Annotation2::class,
-        Enum1::class
+      Class1::class,
+      Class2::class,
+      Annotation1::class,
+      Annotation2::class,
+      Enum1::class
     )
     val reflector = ReflectorImpl()
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
@@ -52,19 +52,19 @@ class GripTest {
   fun testClasses() {
     val file = File("")
     assertClassesResultContains<Class1>(
-        grip select classes from file where (name(contains("Class1")) and isPublic())
+      grip select classes from file where (name(contains("Class1")) and isPublic())
     )
     assertClassesResultContains<Class1>(
-        grip select classes from file where (name(endsWith("Class1")) and isPublic())
+      grip select classes from file where (name(endsWith("Class1")) and isPublic())
     )
     assertClassesResultContains<Class2>(
-        grip select classes from file where (not(name(endsWith("Class1") or startsWith("Class1"))) and not(isPackagePrivate()))
+      grip select classes from file where (not(name(endsWith("Class1") or startsWith("Class1"))) and not(isPackagePrivate()))
     )
     assertClassesResultContains<Class1>(
-        grip select classes from file where (annotatedWith(getObjectType<Annotation1>()))
+      grip select classes from file where (annotatedWith(getObjectType<Annotation1>()))
     )
     assertClassesResultNotContains<Class1>(
-        grip select classes from file where (annotatedWith(getObjectType<Retention>()))
+      grip select classes from file where (annotatedWith(getObjectType<Retention>()))
     )
   }
 

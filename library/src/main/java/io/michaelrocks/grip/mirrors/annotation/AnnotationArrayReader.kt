@@ -20,8 +20,8 @@ import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.commons.LazyList
 
 internal class AnnotationArrayReader(
-    classRegistry: ClassRegistry,
-    callback: (List<Any>) -> Unit
+  classRegistry: ClassRegistry,
+  callback: (List<Any>) -> Unit
 ) : AbstractAnnotationReader<List<Any>>(classRegistry, callback) {
 
   private val values = LazyList<Any>()
@@ -32,5 +32,5 @@ internal class AnnotationArrayReader(
   }
 
   override fun buildResult(): List<Any> =
-      values.detachImmutableCopy()
+    values.detachImmutableCopy()
 }

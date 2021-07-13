@@ -20,17 +20,17 @@ sealed class Enclosure {
   object None : Enclosure()
 
   sealed class Method(
-      val enclosingType: Type.Object
+    val enclosingType: Type.Object
   ) : Enclosure() {
 
     class Anonymous(
-        enclosingType: Type.Object
+      enclosingType: Type.Object
     ) : Method(enclosingType)
 
     class Named(
-        enclosingType: Type.Object,
-        val methodName: String,
-        val methodType: Type.Method
+      enclosingType: Type.Object,
+      val methodName: String,
+      val methodType: Type.Method
     ) : Method(enclosingType)
   }
 }

@@ -23,7 +23,8 @@ interface FileSource : Closeable {
   fun listFiles(callback: (name: String, type: EntryType) -> Unit)
   fun readFile(path: String): ByteArray
 
-  enum class EntryType { CLASS,
+  enum class EntryType {
+    CLASS,
     FILE,
     DIRECTORY
   }

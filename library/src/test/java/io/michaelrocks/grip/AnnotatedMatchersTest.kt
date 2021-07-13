@@ -27,36 +27,46 @@ import org.junit.Test
 class AnnotatedMatchersTest {
   val annotated = mock<Annotated>().apply {
     given(annotations).thenReturn(
-        ImmutableAnnotationCollection(
-            buildAnnotation(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"), visible = true)
-        )
+      ImmutableAnnotationCollection(
+        buildAnnotation(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"), visible = true)
+      )
     )
   }
 
-  @Test fun testAnnotatedWithByTypeTrue() = annotated.testAnnotations(true) {
+  @Test
+  fun testAnnotatedWithByTypeTrue() = annotated.testAnnotations(true) {
     annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation"))
   }
-  @Test fun testAnnotatedWithByTypeFalse() = annotated.testAnnotations(false) {
+
+  @Test
+  fun testAnnotatedWithByTypeFalse() = annotated.testAnnotations(false) {
     annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation"))
   }
-  @Test fun testAnnotatedWithByPredicateTrue() = annotated.testAnnotations(true) {
+
+  @Test
+  fun testAnnotatedWithByPredicateTrue() = annotated.testAnnotations(true) {
     annotatedWith { _, annotation -> annotation.values.isEmpty() }
   }
-  @Test fun testAnnotatedWithByPredicateFalse() = annotated.testAnnotations(false) {
+
+  @Test
+  fun testAnnotatedWithByPredicateFalse() = annotated.testAnnotations(false) {
     annotatedWith { _, annotation -> annotation.values.isNotEmpty() }
   }
 
-  @Test fun testAnnotatedWithByTypeAndPredicateTrue() = annotated.testAnnotations(true) {
+  @Test
+  fun testAnnotatedWithByTypeAndPredicateTrue() = annotated.testAnnotations(true) {
     annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/Annotation")) { _, annotation ->
       annotation.values.isEmpty()
     }
   }
-  @Test fun testAnnotatedWithByTypeAndPredicateFalse() = annotated.testAnnotations(false) {
+
+  @Test
+  fun testAnnotatedWithByTypeAndPredicateFalse() = annotated.testAnnotations(false) {
     annotatedWith(getObjectTypeByInternalName("io/michaelrocks/mocks/AnotherAnnotation")) { _, annotation ->
       annotation.values.isNotEmpty()
     }
   }
 
   private inline fun Annotated.testAnnotations(condition: Boolean, body: () -> ((Grip, Annotated) -> Boolean)) =
-      assertAndVerify(condition, body) { annotations }
+    assertAndVerify(condition, body) { annotations }
 }

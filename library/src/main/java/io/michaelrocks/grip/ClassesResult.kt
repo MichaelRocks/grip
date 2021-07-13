@@ -28,6 +28,7 @@ interface ClassesResult : Map<Type.Object, ClassMirror> {
 
   fun containsType(type: Type.Object) =
     containsKey(type)
+
   fun containsClass(classMirror: ClassMirror) =
     containsValue(classMirror)
 
@@ -42,16 +43,16 @@ interface ClassesResult : Map<Type.Object, ClassMirror> {
     fun build(): ClassesResult = ImmutableClassesResult(this)
 
     private class ImmutableClassesResult(
-        builder: Builder
+      builder: Builder
     ) : ClassesResult, Map<Type.Object, ClassMirror> by builder.classes.detachImmutableCopy()
   }
 }
 
 internal inline fun buildClassesResult(body: ClassesResult.Builder.() -> Unit) =
-    ClassesResult.Builder().run {
-      body()
-      build()
-    }
+  ClassesResult.Builder().run {
+    body()
+    build()
+  }
 
 val Map.Entry<Type.Object, ClassMirror>.type: Type.Object
   get() = key

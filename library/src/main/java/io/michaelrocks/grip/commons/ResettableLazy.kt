@@ -17,7 +17,7 @@
 package io.michaelrocks.grip.commons
 
 internal class ResettableLazy<out T>(
-    private val initializer: () -> T
+  private val initializer: () -> T
 ) {
   private var currentValue: Any? = Uninitialized
 
@@ -38,7 +38,7 @@ internal class ResettableLazy<out T>(
   }
 
   override fun toString(): String =
-      if (initialized) currentValue.toString() else "Lazy value not initialized yet."
+    if (initialized) currentValue.toString() else "Lazy value not initialized yet."
 
   private object Uninitialized
 }

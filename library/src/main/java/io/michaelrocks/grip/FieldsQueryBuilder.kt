@@ -21,24 +21,24 @@ import io.michaelrocks.grip.mirrors.FieldMirror
 import java.util.ArrayList
 
 internal class FieldsQueryBuilder(
-    grip: Grip
+  grip: Grip
 ) : AbstractQueryBuilder<FieldMirror, FieldsResult>(grip) {
 
   override fun execute(source: ClassMirrorSource, matcher: (Grip, FieldMirror) -> Boolean): FieldsResult =
-      buildFieldsResult {
-        val fieldMirrors = ResettableLazy { ArrayList<FieldMirror>() }
-        for (classMirror in source.getClassMirrors()) {
-          for (fieldMirror in classMirror.fields) {
-            if (matcher(grip, fieldMirror)) {
-              fieldMirrors.value.add(fieldMirror)
-            }
+    buildFieldsResult {
+      val fieldMirrors = ResettableLazy { ArrayList<FieldMirror>() }
+      for (classMirror in source.getClassMirrors()) {
+        for (fieldMirror in classMirror.fields) {
+          if (matcher(grip, fieldMirror)) {
+            fieldMirrors.value.add(fieldMirror)
           }
-
-          if (fieldMirrors.initialized) {
-            addFields(classMirror, fieldMirrors.value)
-          }
-
-          fieldMirrors.reset()
         }
+
+        if (fieldMirrors.initialized) {
+          addFields(classMirror, fieldMirrors.value)
+        }
+
+        fieldMirrors.reset()
       }
+    }
 }

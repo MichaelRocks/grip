@@ -39,8 +39,8 @@ interface FileRegistry {
 }
 
 internal class FileRegistryImpl(
-    classpath: Iterable<File>,
-    private val fileSourceFactory: FileSource.Factory
+  classpath: Iterable<File>,
+  private val fileSourceFactory: FileSource.Factory
 ) : FileRegistry, Closeable {
   private val sources = LinkedHashMap<File, FileSource>()
   private val filesByTypes = HashMap<Type.Object, File>()

@@ -30,29 +30,42 @@ class FieldInitializerMatchersTest {
   }
   private val nullValueField = mock<FieldMirror>()
 
-  @Test fun testWithFieldInitializerTrue() = stringValueField.testFieldInitializer(true) {
+  @Test
+  fun testWithFieldInitializerTrue() = stringValueField.testFieldInitializer(true) {
     withFieldInitializer { _, _ -> true }
   }
-  @Test fun testWithFieldInitializerFalse() = stringValueField.testFieldInitializer(false) {
+
+  @Test
+  fun testWithFieldInitializerFalse() = stringValueField.testFieldInitializer(false) {
     withFieldInitializer { _, _ -> false }
   }
 
-  @Test fun testWithFieldInitializerStringTrue() = stringValueField.testFieldInitializer(true) {
+  @Test
+  fun testWithFieldInitializerStringTrue() = stringValueField.testFieldInitializer(true) {
     withFieldInitializer<String>()
   }
-  @Test fun testWithFieldInitializerStringFalse() = nullValueField.testFieldInitializer(false) {
+
+  @Test
+  fun testWithFieldInitializerStringFalse() = nullValueField.testFieldInitializer(false) {
     withFieldInitializer<String>()
   }
-  @Test fun testWithFieldInitializerIntTrue() = intValueField.testFieldInitializer(true) {
-    withFieldInitializer<Int>()
-  }
-  @Test fun testWithFieldInitializerIntFalse() = stringValueField.testFieldInitializer(false) {
+
+  @Test
+  fun testWithFieldInitializerIntTrue() = intValueField.testFieldInitializer(true) {
     withFieldInitializer<Int>()
   }
 
-  @Test fun testHasFieldInitializerTrue() = stringValueField.testFieldInitializer(true) { hasFieldInitializer() }
-  @Test fun testHasFieldInitializerFalse() = nullValueField.testFieldInitializer(false) { hasFieldInitializer() }
+  @Test
+  fun testWithFieldInitializerIntFalse() = stringValueField.testFieldInitializer(false) {
+    withFieldInitializer<Int>()
+  }
+
+  @Test
+  fun testHasFieldInitializerTrue() = stringValueField.testFieldInitializer(true) { hasFieldInitializer() }
+
+  @Test
+  fun testHasFieldInitializerFalse() = nullValueField.testFieldInitializer(false) { hasFieldInitializer() }
 
   private inline fun FieldMirror.testFieldInitializer(condition: Boolean, body: () -> ((Grip, FieldMirror) -> Boolean)) =
-      assertAndVerify(condition, body) { value }
+    assertAndVerify(condition, body) { value }
 }

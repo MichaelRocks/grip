@@ -26,9 +26,9 @@ interface Grip : Closeable {
 }
 
 internal class GripImpl(
-    override val fileRegistry: FileRegistry,
-    override val classRegistry: ClassRegistry,
-    private val closeable: Closeable
+  override val fileRegistry: FileRegistry,
+  override val classRegistry: ClassRegistry,
+  private val closeable: Closeable
 ) : Grip {
 
   private var closed = false

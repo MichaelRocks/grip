@@ -24,55 +24,55 @@ import kotlin.reflect.KClass
 fun <T> Any?.toNotNull(): T = null as T
 
 inline fun <reified T : Any> any(type: KClass<T>): T =
-    ArgumentMatchers.any<T>(type.java).toNotNull()
+  ArgumentMatchers.any<T>(type.java).toNotNull()
 
 inline fun <reified T : Any> any(): T =
-    ArgumentMatchers.any<T>().toNotNull()
+  ArgumentMatchers.any<T>().toNotNull()
 
 fun anyString(): String =
-    ArgumentMatchers.anyString().toNotNull()
+  ArgumentMatchers.anyString().toNotNull()
 
 inline fun <reified T : Any> anyList(): List<T> =
-    ArgumentMatchers.anyList<T>().toNotNull()
+  ArgumentMatchers.anyList<T>().toNotNull()
 
 inline fun <reified T : Any> anySet(): Set<*> =
-    ArgumentMatchers.anySet<T>().toNotNull()
+  ArgumentMatchers.anySet<T>().toNotNull()
 
 inline fun <reified K : Any, reified V : Any> anyMapOf(): Map<K, V> =
-    ArgumentMatchers.anyMap<K, V>().toNotNull()
+  ArgumentMatchers.anyMap<K, V>().toNotNull()
 
 inline fun <reified T : Any> anyCollection(): Collection<*> =
-    ArgumentMatchers.anyCollection<T>().toNotNull()
+  ArgumentMatchers.anyCollection<T>().toNotNull()
 
 inline fun <reified T : Any> isA(): T =
-    ArgumentMatchers.isA(T::class.java).toNotNull()
+  ArgumentMatchers.isA(T::class.java).toNotNull()
 
 inline fun <reified T : Any> eq(value: T): T =
-    ArgumentMatchers.eq(value).toNotNull()
+  ArgumentMatchers.eq(value).toNotNull()
 
 inline fun <reified T : Any> refEq(value: T, vararg excludeFields: String): T =
-    ArgumentMatchers.refEq(value, *excludeFields).toNotNull()
+  ArgumentMatchers.refEq(value, *excludeFields).toNotNull()
 
 inline fun <reified T : Any> same(value: T): T =
-    ArgumentMatchers.same(value).toNotNull()
+  ArgumentMatchers.same(value).toNotNull()
 
 inline fun <reified T : Any> isNull(): T =
-    ArgumentMatchers.isNull<T>().toNotNull()
+  ArgumentMatchers.isNull<T>().toNotNull()
 
 inline fun <reified T : Any> notNull(): T =
-    ArgumentMatchers.notNull<T>().toNotNull()
+  ArgumentMatchers.notNull<T>().toNotNull()
 
 fun contains(substring: String): String =
-    ArgumentMatchers.contains(substring).toNotNull()
+  ArgumentMatchers.contains(substring).toNotNull()
 
 fun matches(regex: String): String =
-    ArgumentMatchers.matches(regex).toNotNull()
+  ArgumentMatchers.matches(regex).toNotNull()
 
 fun endsWith(suffix: String): String =
-    ArgumentMatchers.endsWith(suffix).toNotNull()
+  ArgumentMatchers.endsWith(suffix).toNotNull()
 
 fun startsWith(prefix: String): String =
-    ArgumentMatchers.startsWith(prefix).toNotNull()
+  ArgumentMatchers.startsWith(prefix).toNotNull()
 
 inline fun <reified T : Any> argThat(matcher: ArgumentMatcher<T>): T =
-    ArgumentMatchers.argThat(matcher).toNotNull()
+  ArgumentMatchers.argThat(matcher).toNotNull()

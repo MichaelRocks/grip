@@ -83,7 +83,7 @@ interface MethodMirror : Element<Type.Method>, Annotated {
     fun build(): MethodMirror = ImmutableMethodMirror(this)
 
     private fun buildSignature(): MethodSignatureMirror =
-        signature ?: EmptyMethodSignatureMirror(type!!, exceptions)
+      signature ?: EmptyMethodSignatureMirror(type!!, exceptions)
 
     class ImmutableMethodMirror(builder: Builder) : MethodMirror {
       override val access = builder.access
@@ -94,8 +94,8 @@ interface MethodMirror : Element<Type.Method>, Annotated {
       override val exceptions = builder.exceptions.detachImmutableCopy()
       override val annotations: AnnotationCollection = ImmutableAnnotationCollection(builder.annotations)
       override val parameters =
-          if (builder.parameters.isEmpty()) listOf()
-          else builder.parameters.map { it.build() }.immutable()
+        if (builder.parameters.isEmpty()) listOf()
+        else builder.parameters.map { it.build() }.immutable()
       override val genericDeclaration = builder.genericDeclaration
 
       override fun toString() = "MethodMirror{name = $name, type = $type}"
@@ -109,13 +109,13 @@ val DEFAULT_CONSTRUCTOR_TYPE = getMethodType(Type.Primitive.Void)
 val STATIC_INITIALIZER_TYPE = getMethodType(Type.Primitive.Void)
 
 fun isConstructor(methodName: String): Boolean =
-    CONSTRUCTOR_NAME == methodName
+  CONSTRUCTOR_NAME == methodName
 
 fun isDefaultConstructor(methodName: String, methodType: Type): Boolean =
-    isConstructor(methodName) && methodType == DEFAULT_CONSTRUCTOR_TYPE
+  isConstructor(methodName) && methodType == DEFAULT_CONSTRUCTOR_TYPE
 
 fun isStaticInitializer(methodName: String): Boolean =
-    methodName == STATIC_INITIALIZER_NAME
+  methodName == STATIC_INITIALIZER_NAME
 
 val MethodMirror.isConstructor: Boolean
   get() = isConstructor(name)

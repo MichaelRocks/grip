@@ -17,8 +17,8 @@
 package io.michaelrocks.grip.mirrors
 
 data class InnerClass(
-    val type: Type.Object,
-    val outerType: Type.Object?,
-    val innerName: String?,
-    val access: Int
+  val type: Type.Object,
+  val outerType: Type.Object?,
+  val innerName: String?,
+  val access: Int
 )

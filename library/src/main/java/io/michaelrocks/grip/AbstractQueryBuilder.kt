@@ -20,8 +20,8 @@ import java.io.File
 import kotlin.properties.Delegates
 
 internal abstract class AbstractQueryBuilder<M, R>(
-    val grip: Grip
-) : FromConfigurator<M ,R>, QueryConfigurator<M, R>, Query<R> {
+  val grip: Grip
+) : FromConfigurator<M, R>, QueryConfigurator<M, R>, Query<R> {
 
   private var classMirrorSource by Delegates.notNull<ClassMirrorSource>()
   private var matcher by Delegates.notNull<(Grip, M) -> Boolean>()

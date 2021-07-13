@@ -44,7 +44,7 @@ internal class GenericTypeReader(
 
   override fun visitTypeVariable(name: String) {
     genericType =
-        genericDeclaration.typeVariables.lastOrNull { it.name == name } ?: error("Undeclared type variable $name")
+      genericDeclaration.typeVariables.lastOrNull { it.name == name } ?: error("Undeclared type variable $name")
     visitEnd()
   }
 
@@ -72,12 +72,12 @@ internal class GenericTypeReader(
   override fun visitTypeArgument(name: Char): SignatureVisitor {
     return GenericTypeReader(genericDeclaration) {
       typeArguments.add(
-          when (name) {
-            SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
-            SignatureVisitor.SUPER -> GenericType.LowerBounded(it)
-            SignatureVisitor.INSTANCEOF -> it
-            else -> error("Unknown wildcard type: $name")
-          }
+        when (name) {
+          SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
+          SignatureVisitor.SUPER -> GenericType.LowerBounded(it)
+          SignatureVisitor.INSTANCEOF -> it
+          else -> error("Unknown wildcard type: $name")
+        }
       )
     }
   }
@@ -90,11 +90,11 @@ internal class GenericTypeReader(
   private fun buildGenericType() {
     if (classType != null) {
       val innerType =
-          if (typeArguments.isEmpty()) {
-            GenericType.Raw(classType!!)
-          } else {
-            GenericType.Parameterized(classType!!, typeArguments.toList())
-          }
+        if (typeArguments.isEmpty()) {
+          GenericType.Raw(classType!!)
+        } else {
+          GenericType.Parameterized(classType!!, typeArguments.toList())
+        }
       genericType = genericType?.let { GenericType.Inner(className!!, innerType, it) } ?: innerType
     }
 
@@ -123,9 +123,9 @@ internal class GenericTypeReader(
 internal fun readGenericType(signature: String, genericDeclaration: GenericDeclaration): GenericType {
   var genericType: GenericType? = null
   SignatureReader(signature).acceptType(
-      GenericTypeReader(genericDeclaration) {
-        genericType = it
-      }
+    GenericTypeReader(genericDeclaration) {
+      genericType = it
+    }
   )
   return genericType!!
 }

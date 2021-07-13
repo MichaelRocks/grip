@@ -27,10 +27,10 @@ internal interface MutableGenericDeclaration : GenericDeclaration {
 }
 
 internal class InheritingGenericDeclaration(
-    parent: GenericDeclaration = EmptyGenericDeclaration
+  parent: GenericDeclaration = EmptyGenericDeclaration
 ) : MutableGenericDeclaration {
   override val typeVariables: MutableList<GenericType.TypeVariable> =
-      if (parent.typeVariables.isEmpty()) LazyList() else parent.typeVariables.toMutableList()
+    if (parent.typeVariables.isEmpty()) LazyList() else parent.typeVariables.toMutableList()
 }
 
 internal object EmptyGenericDeclaration : GenericDeclaration {
@@ -45,7 +45,7 @@ internal fun GenericDeclaration(typeVariables: List<GenericType.TypeVariable>): 
 }
 
 internal class LazyGenericDeclaration(
-    builder: () -> GenericDeclaration
+  builder: () -> GenericDeclaration
 ) : GenericDeclaration {
 
   private val delegate by lazy { builder() }
@@ -61,7 +61,7 @@ internal fun GenericDeclaration.inherit(genericDeclaration: GenericDeclaration):
 }
 
 internal inline fun GenericDeclaration.inheritLazily(
-    crossinline genericDeclaration: () -> GenericDeclaration
+  crossinline genericDeclaration: () -> GenericDeclaration
 ): GenericDeclaration {
   return LazyGenericDeclaration { inherit(genericDeclaration()) }
 }

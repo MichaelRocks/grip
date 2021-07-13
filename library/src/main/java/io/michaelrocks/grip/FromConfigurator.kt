@@ -62,15 +62,16 @@ fun Sequence<Type.Object>.asClassMirrors(classRegistry: ClassRegistry): Sequence
 val classpath = Classpath()
 
 fun files(file1: File, file2: File, vararg files: File): List<File> =
-    ArrayList<File>(files.size + 2).apply {
-      add(file1)
-      add(file2)
-      addAll(files)
-    }
+  ArrayList<File>(files.size + 2).apply {
+    add(file1)
+    add(file2)
+    addAll(files)
+  }
 
 interface QueryConfigurator<M, R> {
   infix fun where(matcher: (M) -> Boolean): Query<R> =
-      where(wrap(matcher))
+    where(wrap(matcher))
+
   infix fun where(matcher: (Grip, M) -> Boolean): Query<R>
 }
 

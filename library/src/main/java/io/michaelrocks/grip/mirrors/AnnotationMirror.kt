@@ -126,7 +126,7 @@ internal abstract class AbstractAnnotationMirror : AnnotationMirror {
 }
 
 internal class UnresolvedAnnotationMirror(
-    override val type: Type.Object
+  override val type: Type.Object
 ) : AbstractAnnotationMirror() {
   override val values: Map<String, Any>
     get() = emptyMap()
@@ -140,15 +140,15 @@ internal class UnresolvedAnnotationMirror(
 
 fun buildAnnotation(type: Type.Object, visible: Boolean): AnnotationMirror {
   return AnnotationMirror.Builder()
-      .type(type)
-      .visible(visible)
-      .build()
+    .type(type)
+    .visible(visible)
+    .build()
 }
 
 inline fun buildAnnotation(
-    type: Type.Object,
-    visible: Boolean,
-    body: AnnotationMirror.Builder.() -> Unit
+  type: Type.Object,
+  visible: Boolean,
+  body: AnnotationMirror.Builder.() -> Unit
 ): AnnotationMirror {
   return AnnotationMirror.Builder().run {
     type(type)

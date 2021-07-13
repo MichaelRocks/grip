@@ -59,8 +59,8 @@ interface ClassSignatureMirror {
 }
 
 internal class LazyClassSignatureMirror(
-    private val signature: String,
-    enclosingGenericDeclaration: GenericDeclaration
+  private val signature: String,
+  enclosingGenericDeclaration: GenericDeclaration
 ) : ClassSignatureMirror {
 
   private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -81,18 +81,18 @@ internal class EmptyClassSignatureMirror(superType: Type?, interfaces: List<Type
   override val typeVariables: List<GenericType.TypeVariable>
     get() = Collections.emptyList()
   override val superType =
-      superType?.let { GenericType.Raw(it) } ?: OBJECT_RAW_TYPE
+    superType?.let { GenericType.Raw(it) } ?: OBJECT_RAW_TYPE
   override val interfaces: List<GenericType> =
-      if (interfaces.isEmpty()) emptyList() else GenericTypeListWrapper(interfaces)
+    if (interfaces.isEmpty()) emptyList() else GenericTypeListWrapper(interfaces)
 
   override fun toJvmSignature() = ""
 }
 
 internal fun readClassSignature(signature: String, enclosingGenericDeclaration: GenericDeclaration): ClassSignatureMirror =
-    ClassSignatureReader(enclosingGenericDeclaration).run {
-      SignatureReader(signature).accept(this)
-      toClassSignature()
-    }
+  ClassSignatureReader(enclosingGenericDeclaration).run {
+    SignatureReader(signature).accept(this)
+    toClassSignature()
+  }
 
 internal fun ClassSignatureMirror.asGenericDeclaration(): GenericDeclaration {
   return GenericDeclaration(typeVariables)

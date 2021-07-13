@@ -53,38 +53,96 @@ class ElementMatchersTest {
     given(name).thenReturn("Annotation")
   }
 
-  @Test fun testAccessEqualsTrue() = abstractClass.testAccess(true) { access(ACC_ABSTRACT or ACC_SUPER) }
-  @Test fun testAccessEqualsFalse() = finalClass.testAccess(false) { access(ACC_ABSTRACT or ACC_SUPER) }
-  @Test fun testAccessHasAllOfTrue() = abstractClass.testAccess(true) { accessHasAllOf(ACC_ABSTRACT or ACC_SUPER) }
-  @Test fun testAccessHasAllOfFalse() = abstractClass.testAccess(false) { accessHasAllOf(ACC_ABSTRACT or ACC_STATIC) }
-  @Test fun testAccessHasAnyOfTrue() = abstractClass.testAccess(true) { accessHasAnyOf(ACC_ABSTRACT or ACC_STATIC) }
-  @Test fun testAccessHasAnyOfFalse() = abstractClass.testAccess(false) { accessHasAnyOf(ACC_STATIC or ACC_FINAL) }
-  @Test fun testAccessHasNoneOfTrue() = abstractClass.testAccess(true) { accessHasNoneOf(ACC_STATIC or ACC_FINAL) }
-  @Test fun testAccessHasNoneOfFalse() = abstractClass.testAccess(false) { accessHasNoneOf(ACC_ABSTRACT or ACC_STATIC) }
-  @Test fun testIsPublicTrue() = annotation.testAccess(true) { isPublic() }
-  @Test fun testIsPublicFalse() = enum.testAccess(false) { isPublic() }
-  @Test fun testIsProtectedTrue() = enum.testAccess(true) { isProtected() }
-  @Test fun testIsProtectedFalse() = annotation.testAccess(false) { isProtected() }
-  @Test fun testIsPrivateTrue() = finalClass.testAccess(true) { isPrivate() }
-  @Test fun testIsPrivateFalse() = abstractClass.testAccess(false) { isPrivate() }
-  @Test fun testIsPackagePrivateTrue() = abstractClass.testAccess(true) { isPackagePrivate() }
-  @Test fun testIsPackagePrivateFalse() = finalClass.testAccess(false) { isPackagePrivate() }
-  @Test fun testIsStaticTrue() = finalClass.testAccess(true) { isStatic() }
-  @Test fun testIsStaticFalse() = abstractClass.testAccess(false) { isStatic() }
-  @Test fun testIsFinalTrue() = finalClass.testAccess(true) { isFinal() }
-  @Test fun testIsFinalFalse() = abstractClass.testAccess(false) { isFinal() }
-  @Test fun testIsInterfaceTrue() = annotation.testAccess(true) { isInterface() }
-  @Test fun testIsInterfaceFalse() = enum.testAccess(false) { isInterface() }
-  @Test fun testIsAbstractTrue() = abstractClass.testAccess(true) { isAbstract() }
-  @Test fun testIsAbstractFalse() = finalClass.testAccess(false) { isAbstract() }
-  @Test fun testIsAnnotationTrue() = annotation.testAccess(true) { isAnnotation() }
-  @Test fun testIsAnnotationFalse() = enum.testAccess(false) { isAnnotation() }
-  @Test fun testIsEnumTrue() = enum.testAccess(true) { isEnum() }
-  @Test fun testIsEnumFalse() = annotation.testAccess(false) { isEnum() }
+  @Test
+  fun testAccessEqualsTrue() = abstractClass.testAccess(true) { access(ACC_ABSTRACT or ACC_SUPER) }
 
-  @Test fun testNameTrue() = finalClass.assertAndVerify(true, { name { _, _ -> true } }, { name })
-  @Test fun testNameFalse() = finalClass.assertAndVerify(false, { name { _, _ -> false } }, { name })
+  @Test
+  fun testAccessEqualsFalse() = finalClass.testAccess(false) { access(ACC_ABSTRACT or ACC_SUPER) }
+
+  @Test
+  fun testAccessHasAllOfTrue() = abstractClass.testAccess(true) { accessHasAllOf(ACC_ABSTRACT or ACC_SUPER) }
+
+  @Test
+  fun testAccessHasAllOfFalse() = abstractClass.testAccess(false) { accessHasAllOf(ACC_ABSTRACT or ACC_STATIC) }
+
+  @Test
+  fun testAccessHasAnyOfTrue() = abstractClass.testAccess(true) { accessHasAnyOf(ACC_ABSTRACT or ACC_STATIC) }
+
+  @Test
+  fun testAccessHasAnyOfFalse() = abstractClass.testAccess(false) { accessHasAnyOf(ACC_STATIC or ACC_FINAL) }
+
+  @Test
+  fun testAccessHasNoneOfTrue() = abstractClass.testAccess(true) { accessHasNoneOf(ACC_STATIC or ACC_FINAL) }
+
+  @Test
+  fun testAccessHasNoneOfFalse() = abstractClass.testAccess(false) { accessHasNoneOf(ACC_ABSTRACT or ACC_STATIC) }
+
+  @Test
+  fun testIsPublicTrue() = annotation.testAccess(true) { isPublic() }
+
+  @Test
+  fun testIsPublicFalse() = enum.testAccess(false) { isPublic() }
+
+  @Test
+  fun testIsProtectedTrue() = enum.testAccess(true) { isProtected() }
+
+  @Test
+  fun testIsProtectedFalse() = annotation.testAccess(false) { isProtected() }
+
+  @Test
+  fun testIsPrivateTrue() = finalClass.testAccess(true) { isPrivate() }
+
+  @Test
+  fun testIsPrivateFalse() = abstractClass.testAccess(false) { isPrivate() }
+
+  @Test
+  fun testIsPackagePrivateTrue() = abstractClass.testAccess(true) { isPackagePrivate() }
+
+  @Test
+  fun testIsPackagePrivateFalse() = finalClass.testAccess(false) { isPackagePrivate() }
+
+  @Test
+  fun testIsStaticTrue() = finalClass.testAccess(true) { isStatic() }
+
+  @Test
+  fun testIsStaticFalse() = abstractClass.testAccess(false) { isStatic() }
+
+  @Test
+  fun testIsFinalTrue() = finalClass.testAccess(true) { isFinal() }
+
+  @Test
+  fun testIsFinalFalse() = abstractClass.testAccess(false) { isFinal() }
+
+  @Test
+  fun testIsInterfaceTrue() = annotation.testAccess(true) { isInterface() }
+
+  @Test
+  fun testIsInterfaceFalse() = enum.testAccess(false) { isInterface() }
+
+  @Test
+  fun testIsAbstractTrue() = abstractClass.testAccess(true) { isAbstract() }
+
+  @Test
+  fun testIsAbstractFalse() = finalClass.testAccess(false) { isAbstract() }
+
+  @Test
+  fun testIsAnnotationTrue() = annotation.testAccess(true) { isAnnotation() }
+
+  @Test
+  fun testIsAnnotationFalse() = enum.testAccess(false) { isAnnotation() }
+
+  @Test
+  fun testIsEnumTrue() = enum.testAccess(true) { isEnum() }
+
+  @Test
+  fun testIsEnumFalse() = annotation.testAccess(false) { isEnum() }
+
+  @Test
+  fun testNameTrue() = finalClass.assertAndVerify(true, { name { _, _ -> true } }, { name })
+
+  @Test
+  fun testNameFalse() = finalClass.assertAndVerify(false, { name { _, _ -> false } }, { name })
 
   private inline fun Element<*>.testAccess(condition: Boolean, body: () -> ((Grip, Element<*>) -> Boolean)) =
-      assertAndVerify(condition, body) { access }
+    assertAndVerify(condition, body) { access }
 }

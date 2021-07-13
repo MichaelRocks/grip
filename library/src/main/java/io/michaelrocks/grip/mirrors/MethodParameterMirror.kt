@@ -23,8 +23,8 @@ interface MethodParameterMirror : Annotated {
   val type: Type
 
   class Builder(
-      val index: Int,
-      val type: Type
+    val index: Int,
+    val type: Type
   ) {
     private val annotations = LazyList<AnnotationMirror>()
 

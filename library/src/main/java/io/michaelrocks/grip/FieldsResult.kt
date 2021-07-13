@@ -26,7 +26,7 @@ interface FieldsResult : Map<Type.Object, List<FieldMirror>> {
     get() = keys
 
   fun containsType(type: Type.Object) =
-      containsKey(type)
+    containsKey(type)
 
   class Builder {
     private val fields = LazyMap<Type.Object, List<FieldMirror>>()
@@ -39,16 +39,16 @@ interface FieldsResult : Map<Type.Object, List<FieldMirror>> {
     fun build(): FieldsResult = ImmutableFieldsResult(this)
 
     private class ImmutableFieldsResult(
-        builder: Builder
+      builder: Builder
     ) : FieldsResult, Map<Type.Object, List<FieldMirror>> by builder.fields.detachImmutableCopy()
   }
 }
 
 internal inline fun buildFieldsResult(body: FieldsResult.Builder.() -> Unit) =
-    FieldsResult.Builder().run {
-      body()
-      build()
-    }
+  FieldsResult.Builder().run {
+    body()
+    build()
+  }
 
 val Map.Entry<Type.Object, List<FieldMirror>>.type: Type.Object
   get() = key

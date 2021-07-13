@@ -34,12 +34,13 @@ class AnnotationGenerator private constructor(private val classVisitor: ClassVis
     fun create(classVisitor: ClassVisitor, annotationType: Type.Object): AnnotationGenerator {
       val generator = AnnotationGenerator(classVisitor)
       classVisitor.visit(
-          V1_6,
-          ACC_PUBLIC or ACC_ANNOTATION or ACC_ABSTRACT or ACC_INTERFACE,
-          annotationType.internalName,
-          null,
-          getType<Any>().internalName,
-          arrayOf(getType<Annotation>().internalName))
+        V1_6,
+        ACC_PUBLIC or ACC_ANNOTATION or ACC_ABSTRACT or ACC_INTERFACE,
+        annotationType.internalName,
+        null,
+        getType<Any>().internalName,
+        arrayOf(getType<Annotation>().internalName)
+      )
       return generator
     }
   }
@@ -51,11 +52,12 @@ class AnnotationGenerator private constructor(private val classVisitor: ClassVis
 
   fun addMethod(name: String, type: Type, defaultValue: Any?): AnnotationGenerator {
     val methodVisitor = classVisitor.visitMethod(
-        ACC_PUBLIC or ACC_ABSTRACT,
-        name,
-        getMethodType(type).descriptor,
-        null,
-        null)
+      ACC_PUBLIC or ACC_ABSTRACT,
+      name,
+      getMethodType(type).descriptor,
+      null,
+      null
+    )
     if (defaultValue != null) {
       val annotationVisitor = methodVisitor.visitAnnotationDefault()
       addValue(annotationVisitor, null, defaultValue)

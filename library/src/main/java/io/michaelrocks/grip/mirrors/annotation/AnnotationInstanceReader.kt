@@ -21,17 +21,17 @@ import io.michaelrocks.grip.mirrors.AnnotationMirror
 import io.michaelrocks.grip.mirrors.Type
 
 internal class AnnotationInstanceReader(
-    annotationType: Type.Object,
-    visible: Boolean,
-    classRegistry: ClassRegistry,
-    callback: (AnnotationMirror) -> Unit
+  annotationType: Type.Object,
+  visible: Boolean,
+  classRegistry: ClassRegistry,
+  callback: (AnnotationMirror) -> Unit
 ) : AbstractAnnotationReader<AnnotationMirror>(classRegistry, callback) {
 
   private val builder =
-      AnnotationMirror.Builder()
-          .type(annotationType)
-          .visible(visible)
-          .addValues(classRegistry.getAnnotationMirror(annotationType))
+    AnnotationMirror.Builder()
+      .type(annotationType)
+      .visible(visible)
+      .addValues(classRegistry.getAnnotationMirror(annotationType))
 
   override fun addValue(name: String?, value: Any) {
     builder.addValue(name!!, value)

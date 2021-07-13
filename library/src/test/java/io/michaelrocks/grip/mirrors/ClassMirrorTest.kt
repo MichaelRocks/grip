@@ -134,10 +134,10 @@ class ClassMirrorTest {
   }
 
   private fun ClassMirror.Builder.addInnerClass(
-      type: Type.Object,
-      outerType: Type.Object?,
-      innerName: String?,
-      access: Int
+    type: Type.Object,
+    outerType: Type.Object?,
+    innerName: String?,
+    access: Int
   ) {
     addInnerClass(InnerClass(type, outerType, innerName, access))
   }

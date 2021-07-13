@@ -19,14 +19,33 @@ package io.michaelrocks.grip
 import org.junit.Test
 
 class StringMatchersTest {
-  @Test fun testEqualsTrue() = "FinalClass".assertMatcher(true, equalsTo("FinalClass"))
-  @Test fun testEqualsFalse() = "FinalClass".assertMatcher(false, equalsTo("AbstractClass"))
-  @Test fun testMatchesTrue() = "FinalClass".assertMatcher(true, matches("^[a-zA-Z]+Class$".toRegex()))
-  @Test fun testMatchesFalse() = "FinalClass".assertMatcher(false, matches("^[a-z]+Class$".toRegex()))
-  @Test fun testStartsWithTrue() = "FinalClass".assertMatcher(true, startsWith("Final"))
-  @Test fun testStartsWithFalse() = "FinalClass".assertMatcher(false, startsWith("Abstract"))
-  @Test fun testEndsWithTrue() = "FinalClass".assertMatcher(true, endsWith("Class"))
-  @Test fun testEndsWithFalse() = "FinalClass".assertMatcher(false, endsWith("Annotation"))
-  @Test fun testContainsTrue() = "FinalClass".assertMatcher(true, contains("Cla"))
-  @Test fun testContainsFalse() = "FinalClass".assertMatcher(false, contains("bus"))
+  @Test
+  fun testEqualsTrue() = "FinalClass".assertMatcher(true, equalsTo("FinalClass"))
+
+  @Test
+  fun testEqualsFalse() = "FinalClass".assertMatcher(false, equalsTo("AbstractClass"))
+
+  @Test
+  fun testMatchesTrue() = "FinalClass".assertMatcher(true, matches("^[a-zA-Z]+Class$".toRegex()))
+
+  @Test
+  fun testMatchesFalse() = "FinalClass".assertMatcher(false, matches("^[a-z]+Class$".toRegex()))
+
+  @Test
+  fun testStartsWithTrue() = "FinalClass".assertMatcher(true, startsWith("Final"))
+
+  @Test
+  fun testStartsWithFalse() = "FinalClass".assertMatcher(false, startsWith("Abstract"))
+
+  @Test
+  fun testEndsWithTrue() = "FinalClass".assertMatcher(true, endsWith("Class"))
+
+  @Test
+  fun testEndsWithFalse() = "FinalClass".assertMatcher(false, endsWith("Annotation"))
+
+  @Test
+  fun testContainsTrue() = "FinalClass".assertMatcher(true, contains("Cla"))
+
+  @Test
+  fun testContainsFalse() = "FinalClass".assertMatcher(false, contains("bus"))
 }

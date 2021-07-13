@@ -32,8 +32,8 @@ class ClassRegistryImplTest {
   @Before
   fun createClassRegistry() {
     val fileRegistry = TestFileRegistry(
-        Annotation1::class,
-        Annotation2::class
+      Annotation1::class,
+      Annotation2::class
     )
     val reflector = ReflectorImpl()
     classRegistry = ClassRegistryImpl(fileRegistry, reflector)
@@ -57,8 +57,8 @@ class ClassRegistryImplTest {
     val annotation = mirror.annotations[getObjectType<Annotation2>()]!!
     assertEquals(1, annotation.values.size)
     assertEquals(
-        EnumMirror(getObjectType<AnnotationRetention>(), AnnotationRetention.RUNTIME.toString()),
-        annotation.values["value"]
+      EnumMirror(getObjectType<AnnotationRetention>(), AnnotationRetention.RUNTIME.toString()),
+      annotation.values["value"]
     )
   }
 }

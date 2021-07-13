@@ -28,7 +28,7 @@ internal class GenericTypeListWrapper<T : Type>(private val types: List<T>) : Li
     get() = types.size
 
   override fun contains(element: GenericType): Boolean =
-      element is GenericType.Raw && types.contains(element.type)
+    element is GenericType.Raw && types.contains(element.type)
 
   override fun containsAll(elements: Collection<GenericType>): Boolean {
     for (element in elements) {
@@ -40,26 +40,26 @@ internal class GenericTypeListWrapper<T : Type>(private val types: List<T>) : Li
   }
 
   override fun get(index: Int): GenericType =
-      genericTypes[index]
+    genericTypes[index]
 
   override fun indexOf(element: GenericType): Int =
-      if (element is GenericType.Raw) types.indexOf(element.type) else -1
+    if (element is GenericType.Raw) types.indexOf(element.type) else -1
 
   override fun isEmpty(): Boolean =
-      types.isEmpty()
+    types.isEmpty()
 
   override fun iterator(): Iterator<GenericType> =
-      genericTypes.iterator()
+    genericTypes.iterator()
 
   override fun lastIndexOf(element: GenericType): Int =
-      if (element is GenericType.Raw) types.lastIndexOf(element.type) else -1
+    if (element is GenericType.Raw) types.lastIndexOf(element.type) else -1
 
   override fun listIterator(): ListIterator<GenericType> =
-      genericTypes.listIterator()
+    genericTypes.listIterator()
 
   override fun listIterator(index: Int): ListIterator<GenericType> =
-      genericTypes.listIterator(index)
+    genericTypes.listIterator(index)
 
   override fun subList(fromIndex: Int, toIndex: Int): List<GenericType> =
-      genericTypes.subList(fromIndex, toIndex)
+    genericTypes.subList(fromIndex, toIndex)
 }

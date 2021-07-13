@@ -24,41 +24,41 @@ import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import java.util.Collections
 
 fun createAnnotationMirror(
-    annotationName: String,
-    visible: Boolean = false
+  annotationName: String,
+  visible: Boolean = false
 ): AnnotationMirror {
   return createAnnotationMirror(annotationName, emptyMap(), visible)
 }
 
 fun createAnnotationMirror(
-    annotationName: String,
-    defaultValue: Any,
-    visible: Boolean = false
+  annotationName: String,
+  defaultValue: Any,
+  visible: Boolean = false
 ): AnnotationMirror {
   return createAnnotationMirror(annotationName, "value", defaultValue, visible)
 }
 
 fun createAnnotationMirror(
-    annotationName: String,
-    methodName: String,
-    defaultValue: Any,
-    visible: Boolean = false
+  annotationName: String,
+  methodName: String,
+  defaultValue: Any,
+  visible: Boolean = false
 ): AnnotationMirror {
   return createAnnotationMirror(annotationName, Collections.singletonMap(methodName, defaultValue), visible)
 }
 
 fun createAnnotationMirror(
-    annotationName: String,
-    vararg values: Pair<String, Any>,
-    visible: Boolean = false
+  annotationName: String,
+  vararg values: Pair<String, Any>,
+  visible: Boolean = false
 ): AnnotationMirror {
   return createAnnotationMirror(annotationName, hashMapOf(*values), visible)
 }
 
 fun createAnnotationMirror(
-    annotationName: String,
-    values: Map<String, Any>,
-    visible: Boolean = false
+  annotationName: String,
+  values: Map<String, Any>,
+  visible: Boolean = false
 ): AnnotationMirror {
   return buildAnnotation(getAnnotationType(annotationName), visible) {
     addValues(SimpleAnnotationMirror(getAnnotationType(annotationName), values, visible))
@@ -70,9 +70,9 @@ fun getAnnotationType(annotationName: String): Type.Object {
 }
 
 private class SimpleAnnotationMirror(
-    override val type: Type.Object,
-    override val values: Map<String, Any>,
-    override val visible: Boolean = false
+  override val type: Type.Object,
+  override val values: Map<String, Any>,
+  override val visible: Boolean = false
 ) : AbstractAnnotationMirror() {
   override val resolved: Boolean
     get() = false

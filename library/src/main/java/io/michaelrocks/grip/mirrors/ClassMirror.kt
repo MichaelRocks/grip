@@ -142,7 +142,7 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     fun build(): ClassMirror = ImmutableClassMirror(this)
 
     private fun buildSignature(): ClassSignatureMirror =
-        signature ?: EmptyClassSignatureMirror(superType, interfaces)
+      signature ?: EmptyClassSignatureMirror(superType, interfaces)
 
     private fun buildDeclaringClass(): Type.Object? {
       val innerClass = innerClasses.firstOrNull { it.type == type }
@@ -167,21 +167,20 @@ interface ClassMirror : Element<Type.Object>, Annotated {
     private fun buildSimpleName(): String {
       val type = type!!
       val innerClass = innerClasses.firstOrNull { it.type == type }
-      val enclosure = enclosure as? Enclosure.Method ?:
-          return innerClass?.innerName ?: type.internalName.substringAfterLast('/')
+      val enclosure = enclosure as? Enclosure.Method ?: return innerClass?.innerName ?: type.internalName.substringAfterLast('/')
       return type.internalName
-          .removePrefix(enclosure.enclosingType.internalName)
-          .trimStart { it == '$' || it in '0'..'9' }
+        .removePrefix(enclosure.enclosingType.internalName)
+        .trimStart { it == '$' || it in '0'..'9' }
     }
 
     private fun buildTypes(): Collection<Type.Object> {
       val outerInternalName = type!!.internalName
       return innerClasses
-          .filter {
-            val internalName = it.type.internalName
-            internalName.length > outerInternalName.length && internalName.startsWith(outerInternalName)
-          }
-          .map { it.type }
+        .filter {
+          val internalName = it.type.internalName
+          internalName.length > outerInternalName.length && internalName.startsWith(outerInternalName)
+        }
+        .map { it.type }
     }
 
     private class ImmutableClassMirror(builder: Builder) : ClassMirror {
@@ -210,8 +209,8 @@ interface ClassMirror : Element<Type.Object>, Annotated {
 }
 
 internal class LazyClassMirror(
-    private val classReader: ClassReader,
-    private val builder: () -> ClassMirror
+  private val classReader: ClassReader,
+  private val builder: () -> ClassMirror
 ) : ClassMirror {
   private val delegate by lazy { builder() }
 
@@ -249,5 +248,5 @@ internal class LazyClassMirror(
     get() = delegate.genericDeclaration
 
   private fun getClassVersion(): Int =
-      classReader.readInt(classReader.getItem(1) - 7)
+    classReader.readInt(classReader.getItem(1) - 7)
 }

@@ -39,10 +39,10 @@ sealed class Type private constructor(internal val type: AsmType) {
   }
 
   override fun hashCode(): Int =
-      type.hashCode()
+    type.hashCode()
 
   override fun toString(): String =
-      type.toString()
+    type.toString()
 
   sealed class Primitive(type: AsmType) : Type(type) {
     override val internalName: String
@@ -106,73 +106,90 @@ val KClass<*>.descriptor: String
 fun Type.toAsmType(): AsmType = type
 
 fun AsmType.toType(): Type =
-    when (sort) {
-      AsmType.VOID -> Type.Primitive.Void
-      AsmType.BOOLEAN -> Type.Primitive.Boolean
-      AsmType.CHAR -> Type.Primitive.Char
-      AsmType.BYTE -> Type.Primitive.Byte
-      AsmType.SHORT -> Type.Primitive.Short
-      AsmType.INT -> Type.Primitive.Int
-      AsmType.FLOAT -> Type.Primitive.Float
-      AsmType.LONG -> Type.Primitive.Long
-      AsmType.DOUBLE -> Type.Primitive.Double
-      AsmType.ARRAY -> Type.Array(this)
-      AsmType.OBJECT -> Type.Object(this)
-      AsmType.METHOD -> Type.Method(this)
-      else -> throw IllegalArgumentException("Unsupported ASM type $this")
-    }
+  when (sort) {
+    AsmType.VOID -> Type.Primitive.Void
+    AsmType.BOOLEAN -> Type.Primitive.Boolean
+    AsmType.CHAR -> Type.Primitive.Char
+    AsmType.BYTE -> Type.Primitive.Byte
+    AsmType.SHORT -> Type.Primitive.Short
+    AsmType.INT -> Type.Primitive.Int
+    AsmType.FLOAT -> Type.Primitive.Float
+    AsmType.LONG -> Type.Primitive.Long
+    AsmType.DOUBLE -> Type.Primitive.Double
+    AsmType.ARRAY -> Type.Array(this)
+    AsmType.OBJECT -> Type.Object(this)
+    AsmType.METHOD -> Type.Method(this)
+    else -> throw IllegalArgumentException("Unsupported ASM type $this")
+  }
 
 fun Class<*>.toType(): Type = getType(this)
 fun KClass<*>.toType(): Type = getType(this)
 
 inline fun <reified C : Any, reified T : Type> getTypeAs(): T =
-    getTypeAs(C::class.java)
+  getTypeAs(C::class.java)
+
 inline fun <reified T : Type> getTypeAs(type: Class<*>): T =
-    AsmType.getType(type).toType() as T
+  AsmType.getType(type).toType() as T
+
 inline fun <reified T : Type> getTypeAs(type: KClass<*>): T =
-    AsmType.getType(type.java).toType() as T
+  AsmType.getType(type.java).toType() as T
+
 inline fun <reified T : Type> getTypeAs(descriptor: String): T =
-    AsmType.getType(descriptor).toType() as T
+  AsmType.getType(descriptor).toType() as T
+
 inline fun <reified T : Type> getTypeByInternalNameAs(internalName: String): T =
-    AsmType.getObjectType(internalName).toType() as T
+  AsmType.getObjectType(internalName).toType() as T
 
 inline fun <reified C : Any> getType(): Type =
-    getTypeAs<C, Type>()
+  getTypeAs<C, Type>()
+
 fun getType(type: Class<*>): Type =
-    getTypeAs(type)
+  getTypeAs(type)
+
 fun getType(type: KClass<*>): Type =
-    getTypeAs(type.java)
+  getTypeAs(type.java)
+
 fun getType(descriptor: String): Type =
-    getTypeAs(descriptor)
+  getTypeAs(descriptor)
+
 fun getTypeByInternalName(internalName: String): Type =
-    getTypeByInternalNameAs(internalName)
+  getTypeByInternalNameAs(internalName)
 
 inline fun <reified T : Any> getArrayType(): Type.Array =
-    getTypeAs<T, Type.Array>()
+  getTypeAs<T, Type.Array>()
+
 fun getArrayType(type: Class<*>): Type.Array =
-    getTypeAs(type)
+  getTypeAs(type)
+
 fun getArrayType(type: KClass<*>): Type.Array =
-    getTypeAs(type.java)
+  getTypeAs(type.java)
+
 fun getArrayType(descriptor: String): Type.Array =
-    getTypeAs(descriptor)
+  getTypeAs(descriptor)
+
 fun getArrayTypeByInternalName(internalName: String): Type.Array =
-    getTypeByInternalNameAs(internalName)
+  getTypeByInternalNameAs(internalName)
 
 inline fun <reified T : Any> getObjectType(): Type.Object =
-    getTypeAs<T, Type.Object>()
+  getTypeAs<T, Type.Object>()
+
 fun getObjectType(type: Class<*>): Type.Object =
-    getTypeAs(type)
+  getTypeAs(type)
+
 fun getObjectType(type: KClass<*>): Type.Object =
-    getTypeAs(type.java)
+  getTypeAs(type.java)
+
 fun getObjectType(descriptor: String): Type.Object =
-    getTypeAs(descriptor)
+  getTypeAs(descriptor)
+
 fun getObjectTypeByInternalName(internalName: String): Type.Object =
-    getTypeByInternalNameAs(internalName)
+  getTypeByInternalNameAs(internalName)
 
 fun getMethodType(descriptor: String): Type.Method =
-    getTypeAs(descriptor)
+  getTypeAs(descriptor)
+
 fun getMethodType(returnType: Type, vararg argumentTypes: Type): Type.Method =
-    getTypeAs(AsmType.getMethodDescriptor(returnType.toAsmType(), *argumentTypes.mapToArray { it.toAsmType() }))
+  getTypeAs(AsmType.getMethodDescriptor(returnType.toAsmType(), *argumentTypes.mapToArray { it.toAsmType() }))
 
 fun Type.toArrayType(dimensions: Int = 1): Type.Array {
   check(dimensions > 0) { "The number of array dimensions must be positive, but $dimensions is given" }

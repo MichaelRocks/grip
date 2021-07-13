@@ -45,17 +45,35 @@ class MethodMatchersTest {
     given(type).thenReturn(STATIC_INITIALIZER_TYPE)
   }
 
-  @Test fun testIsConstructorTrue() = defaultConstructor.assert(true) { isConstructor() }
-  @Test fun testIsConstructorFalse() = staticInitializer.assert(false) { isConstructor() }
-  @Test fun testIsDefaultConstructorTrue() = defaultConstructor.assert(true) { isDefaultConstructor() }
-  @Test fun testIsDefaultConstructorFalse() = constructor.assert(false) { isDefaultConstructor() }
-  @Test fun testIsStaticInitializerTrue() = staticInitializer.assert(true) { isStaticInitializer() }
-  @Test fun testIsStaticInitializerFalse() = defaultConstructor.assert(false) { isStaticInitializer() }
-  @Test fun testWithParameterTrue() = constructor.testParameters(true) { withParameter { _, _ -> true } }
-  @Test fun testWithParameterFalse() = constructor.testParameters(false) { withParameter { _, _ -> false } }
-  @Test fun testWithParameterEmpty() = defaultConstructor.testParameters(false) { withParameter { _, _ -> true }
+  @Test
+  fun testIsConstructorTrue() = defaultConstructor.assert(true) { isConstructor() }
+
+  @Test
+  fun testIsConstructorFalse() = staticInitializer.assert(false) { isConstructor() }
+
+  @Test
+  fun testIsDefaultConstructorTrue() = defaultConstructor.assert(true) { isDefaultConstructor() }
+
+  @Test
+  fun testIsDefaultConstructorFalse() = constructor.assert(false) { isDefaultConstructor() }
+
+  @Test
+  fun testIsStaticInitializerTrue() = staticInitializer.assert(true) { isStaticInitializer() }
+
+  @Test
+  fun testIsStaticInitializerFalse() = defaultConstructor.assert(false) { isStaticInitializer() }
+
+  @Test
+  fun testWithParameterTrue() = constructor.testParameters(true) { withParameter { _, _ -> true } }
+
+  @Test
+  fun testWithParameterFalse() = constructor.testParameters(false) { withParameter { _, _ -> false } }
+
+  @Test
+  fun testWithParameterEmpty() = defaultConstructor.testParameters(false) {
+    withParameter { _, _ -> true }
   }
 
   private inline fun MethodMirror.testParameters(condition: Boolean, body: () -> ((Grip, MethodMirror) -> Boolean)) =
-      assertAndVerify(condition, body) { parameters }
+    assertAndVerify(condition, body) { parameters }
 }

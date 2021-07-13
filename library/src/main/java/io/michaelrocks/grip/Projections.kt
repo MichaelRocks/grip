@@ -32,16 +32,16 @@ sealed class Projection<M, R> {
 
   object Classes : Projection<ClassMirror, ClassesResult>() {
     override fun configurator(grip: Grip) =
-        ClassesQueryBuilder(grip)
+      ClassesQueryBuilder(grip)
   }
 
   object Fields : Projection<FieldMirror, FieldsResult>() {
     override fun configurator(grip: Grip) =
-        FieldsQueryBuilder(grip)
+      FieldsQueryBuilder(grip)
   }
 
   object Methods : Projection<MethodMirror, MethodsResult>() {
     override fun configurator(grip: Grip) =
-        MethodsQueryBuilder(grip)
+      MethodsQueryBuilder(grip)
   }
 }

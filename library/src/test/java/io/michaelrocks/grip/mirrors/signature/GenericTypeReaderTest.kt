@@ -31,118 +31,119 @@ class GenericTypeReaderTest {
   @Test
   fun testRawType() {
     assertParsedSignatureEquals(
-        "Ljava/lang/Boolean;",
-        Raw(getObjectType<Boolean>())
+      "Ljava/lang/Boolean;",
+      Raw(getObjectType<Boolean>())
     )
   }
 
   @Test
   fun testTypeVariable() {
     assertParsedSignatureEquals(
-        "TT;",
-        TypeVariable("T"),
-        TypeVariable("T")
+      "TT;",
+      TypeVariable("T"),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testGenericArray() {
     assertParsedSignatureEquals(
-        "[TT;",
-        Array(TypeVariable("T")),
-        TypeVariable("T")
+      "[TT;",
+      Array(TypeVariable("T")),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testParameterizedType() {
     assertParsedSignatureEquals(
-        "Ljava/util/Map<TK;TV;>;",
-        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V")),
-        TypeVariable("K"),
-        TypeVariable("V")
+      "Ljava/util/Map<TK;TV;>;",
+      Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V")),
+      TypeVariable("K"),
+      TypeVariable("V")
     )
   }
 
   @Test
   fun testInnerType() {
     assertParsedSignatureEquals(
-        "Ljava/util/Map<TK;TV;>.Entry<TK;TV;>;",
-        Inner(
-            "Entry",
-            Parameterized(getObjectType<Map.Entry<*, *>>(), TypeVariable("K"), TypeVariable("V")),
-            Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
-        ),
-        TypeVariable("K"),
-        TypeVariable("V")
+      "Ljava/util/Map<TK;TV;>.Entry<TK;TV;>;",
+      Inner(
+        "Entry",
+        Parameterized(getObjectType<Map.Entry<*, *>>(), TypeVariable("K"), TypeVariable("V")),
+        Parameterized(getObjectType<Map<*, *>>(), TypeVariable("K"), TypeVariable("V"))
+      ),
+      TypeVariable("K"),
+      TypeVariable("V")
     )
   }
 
   @Test
   fun testUpperBoundedType() {
     assertParsedSignatureEquals(
-        "Ljava/util/List<+TT;>;",
-        Parameterized(
-            getObjectType<List<*>>(),
-            UpperBounded(TypeVariable("T"))
-        ),
-        TypeVariable("T")
+      "Ljava/util/List<+TT;>;",
+      Parameterized(
+        getObjectType<List<*>>(),
+        UpperBounded(TypeVariable("T"))
+      ),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testLowerBoundedType() {
     assertParsedSignatureEquals(
-        "Ljava/util/List<-TT;>;",
-        Parameterized(
-            getObjectType<List<*>>(),
-            LowerBounded(TypeVariable("T"))
-        ),
-        TypeVariable("T")
+      "Ljava/util/List<-TT;>;",
+      Parameterized(
+        getObjectType<List<*>>(),
+        LowerBounded(TypeVariable("T"))
+      ),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testMultiDimensionalArray() {
     assertParsedSignatureEquals(
-        "[[[Ljava/util/List<TT;>;",
+      "[[[Ljava/util/List<TT;>;",
+      Array(
         Array(
-            Array(
-                Array(
-                    Parameterized(getObjectType<List<*>>(), TypeVariable("T"))
-                )
-            )
-        ),
-        TypeVariable("T")
+          Array(
+            Parameterized(getObjectType<List<*>>(), TypeVariable("T"))
+          )
+        )
+      ),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testParameterizedTypeWithArray() {
     assertParsedSignatureEquals(
-        "Ljava/util/List<[TT;>;",
-        Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T"))),
-        TypeVariable("T")
+      "Ljava/util/List<[TT;>;",
+      Parameterized(getObjectType<List<*>>(), Array(TypeVariable("T"))),
+      TypeVariable("T")
     )
   }
 
   @Test
   fun testNestedParameterizedType() {
     assertParsedSignatureEquals(
-        "Ljava/util/List<Ljava/util/List<Ljava/lang/Boolean;>;>;",
-        Parameterized(getObjectType<List<*>>(),
-            Parameterized(getObjectType<List<*>>(), Raw(getObjectType<Boolean>()))
-        )
+      "Ljava/util/List<Ljava/util/List<Ljava/lang/Boolean;>;>;",
+      Parameterized(
+        getObjectType<List<*>>(),
+        Parameterized(getObjectType<List<*>>(), Raw(getObjectType<Boolean>()))
+      )
     )
   }
 
   @Test
   fun testShadowedTypeVariable() {
     assertParsedSignatureEquals(
-        "TT;",
-        TypeVariable("T", Raw(getObjectType<List<*>>())),
-        TypeVariable("T"),
-        TypeVariable("T", Raw(getObjectType<List<*>>()))
+      "TT;",
+      TypeVariable("T", Raw(getObjectType<List<*>>())),
+      TypeVariable("T"),
+      TypeVariable("T", Raw(getObjectType<List<*>>()))
     )
   }
 

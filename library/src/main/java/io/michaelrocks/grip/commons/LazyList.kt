@@ -26,77 +26,77 @@ internal class LazyList<T>(val factory: () -> MutableList<T> = { ArrayList<T>() 
     get() = delegate.size
 
   override fun contains(element: T): Boolean =
-      delegate.contains(element)
+    delegate.contains(element)
 
   override fun containsAll(elements: Collection<T>): Boolean =
-      delegate.containsAll(elements)
+    delegate.containsAll(elements)
 
   override fun get(index: Int): T =
-      delegate[index]
+    delegate[index]
 
   override fun indexOf(element: T): Int =
-      delegate.indexOf(element)
+    delegate.indexOf(element)
 
   override fun isEmpty(): Boolean =
-      delegate.isEmpty()
+    delegate.isEmpty()
 
   override fun iterator(): MutableIterator<T> =
-      delegate.iterator()
+    delegate.iterator()
 
   override fun lastIndexOf(element: T): Int =
-      delegate.lastIndexOf(element)
+    delegate.lastIndexOf(element)
 
   override fun add(element: T): Boolean =
-      mutate().add(element)
+    mutate().add(element)
 
   override fun add(index: Int, element: T) =
-      mutate().add(index, element)
+    mutate().add(index, element)
 
   override fun addAll(elements: Collection<T>): Boolean =
-      mutate().addAll(elements)
+    mutate().addAll(elements)
 
   override fun addAll(index: Int, elements: Collection<T>): Boolean =
-      mutate().addAll(index, elements)
+    mutate().addAll(index, elements)
 
   override fun clear() =
-      delegate.clear()
+    delegate.clear()
 
   override fun listIterator(): MutableListIterator<T> =
-      delegate.listIterator()
+    delegate.listIterator()
 
   override fun listIterator(index: Int): MutableListIterator<T> =
-      delegate.listIterator(index)
+    delegate.listIterator(index)
 
   override fun remove(element: T): Boolean =
-      delegate.remove(element)
+    delegate.remove(element)
 
   override fun removeAll(elements: Collection<T>): Boolean =
-      delegate.removeAll(elements)
+    delegate.removeAll(elements)
 
   override fun removeAt(index: Int): T =
-      delegate.removeAt(index)
+    delegate.removeAt(index)
 
   override fun retainAll(elements: Collection<T>): Boolean =
-      delegate.retainAll(elements)
+    delegate.retainAll(elements)
 
   override fun set(index: Int, element: T): T =
-      delegate.set(index, element)
+    delegate.set(index, element)
 
   override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> =
-      delegate.subList(fromIndex, toIndex)
+    delegate.subList(fromIndex, toIndex)
 
   fun immutableCopy(): List<T> =
-      if (isEmpty()) listOf()
-      else toMutableList().immutable()
+    if (isEmpty()) listOf()
+    else toMutableList().immutable()
 
   fun detachImmutableCopy(): List<T> =
-      delegate.immutable().apply {
-        delegate = emptyMutableList()
-      }
+    delegate.immutable().apply {
+      delegate = emptyMutableList()
+    }
 
   @Suppress("UNCHECKED_CAST")
   private fun emptyMutableList() =
-      Collections.EMPTY_LIST as MutableList<T>
+    Collections.EMPTY_LIST as MutableList<T>
 
   private fun mutate(): MutableList<T> {
     if (delegate === Collections.EMPTY_LIST) {

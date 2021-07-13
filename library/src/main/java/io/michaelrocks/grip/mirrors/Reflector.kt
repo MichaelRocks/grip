@@ -71,9 +71,9 @@ internal class ReflectorImpl : Reflector {
         classRegistry.resolveGenericDeclarationLazily(getObjectTypeByInternalName(name))
       val signatureMirror = signature?.let { LazyClassSignatureMirror(it, enclosingGenericDeclaration) }
       classGenericDeclaration =
-          signatureMirror?.let {
-            enclosingGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
-          } ?: enclosingGenericDeclaration
+        signatureMirror?.let {
+          enclosingGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
+        } ?: enclosingGenericDeclaration
       builder.apply {
         version(version)
         access(access)
@@ -108,13 +108,15 @@ internal class ReflectorImpl : Reflector {
       }
     }
 
-    override fun visitMethod(access: Int, name: String, desc: String, signature: String?,
-        exceptions: Array<out String>?): MethodVisitor {
+    override fun visitMethod(
+      access: Int, name: String, desc: String, signature: String?,
+      exceptions: Array<out String>?
+    ): MethodVisitor {
       val signatureMirror = signature?.let { LazyMethodSignatureMirror(it, classGenericDeclaration) }
       val methodGenericDeclaration =
-          signatureMirror?.let {
-            classGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
-          } ?: classGenericDeclaration
+        signatureMirror?.let {
+          classGenericDeclaration.inheritLazily { it.asGenericDeclaration() }
+        } ?: classGenericDeclaration
       val methodBuilder = MethodMirror.Builder().apply {
         val type = getMethodType(desc)
         access(access)
@@ -184,15 +186,15 @@ internal class ReflectorImpl : Reflector {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? =
       given(!forAnnotation) {
-          AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
-            builder.addAnnotation(it)
-          }
+        AnnotationInstanceReader(getObjectType(desc), visible, classRegistry) {
+          builder.addAnnotation(it)
         }
+      }
 
     override fun visitAnnotationDefault(): AnnotationVisitor? =
-        AnnotationValueReader(classRegistry) {
-          builder.defaultValue(it)
-        }
+      AnnotationValueReader(classRegistry) {
+        builder.defaultValue(it)
+      }
 
     override fun visitEnd() = callback(builder.build())
   }

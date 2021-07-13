@@ -26,10 +26,10 @@ import org.junit.Assert.assertTrue
 val mockGrip = mock<Grip>()
 
 inline fun <T> T.assertMatcher(condition: Boolean, matcher: (Grip, T) -> Boolean) =
-    if (condition) assertTrue(matcher(mockGrip, this)) else assertFalse(matcher(mockGrip, this))
+  if (condition) assertTrue(matcher(mockGrip, this)) else assertFalse(matcher(mockGrip, this))
 
 inline fun <T : Any> T.assert(condition: Boolean, body: () -> ((Grip, T) -> Boolean)) =
-    assertTrue(body()(mockGrip, this) == condition)
+  assertTrue(body()(mockGrip, this) == condition)
 
 inline fun <T : Any> T.assertAndVerify(condition: Boolean, body: () -> ((Grip, T) -> Boolean), verifier: T.() -> Unit) {
   assertTrue(body()(mockGrip, this) == condition)

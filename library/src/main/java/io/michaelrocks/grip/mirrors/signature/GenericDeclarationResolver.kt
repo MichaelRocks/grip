@@ -21,8 +21,8 @@ import io.michaelrocks.grip.mirrors.Enclosure
 import io.michaelrocks.grip.mirrors.Type
 
 private class GenericDeclarationResolver(
-    private val classRegistry: ClassRegistry,
-    private val type: Type.Object
+  private val classRegistry: ClassRegistry,
+  private val type: Type.Object
 ) {
   operator fun invoke(): GenericDeclaration {
     return resolve(type)

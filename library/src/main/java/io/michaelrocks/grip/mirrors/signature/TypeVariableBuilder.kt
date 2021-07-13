@@ -19,7 +19,7 @@ package io.michaelrocks.grip.mirrors.signature
 import io.michaelrocks.grip.commons.LazyList
 
 internal class TypeVariableBuilder(
-    private val name: String
+  private val name: String
 ) {
   private var classBound: GenericType = OBJECT_RAW_TYPE
   private val interfaceBounds = LazyList<GenericType>()
