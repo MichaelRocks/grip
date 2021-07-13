@@ -191,7 +191,7 @@ internal class ReflectorImpl : Reflector {
         }
       }
 
-    override fun visitAnnotationDefault(): AnnotationVisitor? =
+    override fun visitAnnotationDefault(): AnnotationVisitor =
       AnnotationValueReader(classRegistry) {
         builder.defaultValue(it)
       }

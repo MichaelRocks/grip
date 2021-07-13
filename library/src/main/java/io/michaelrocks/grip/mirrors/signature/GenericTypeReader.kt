@@ -73,9 +73,9 @@ internal class GenericTypeReader(
     return GenericTypeReader(genericDeclaration) {
       typeArguments.add(
         when (name) {
-          SignatureVisitor.EXTENDS -> GenericType.UpperBounded(it)
-          SignatureVisitor.SUPER -> GenericType.LowerBounded(it)
-          SignatureVisitor.INSTANCEOF -> it
+          EXTENDS -> GenericType.UpperBounded(it)
+          SUPER -> GenericType.LowerBounded(it)
+          INSTANCEOF -> it
           else -> error("Unknown wildcard type: $name")
         }
       )

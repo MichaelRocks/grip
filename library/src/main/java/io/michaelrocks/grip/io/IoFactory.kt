@@ -21,24 +21,24 @@ import java.io.File
 object IoFactory : FileSource.Factory, FileSink.Factory {
   override fun createFileSource(inputFile: File): FileSource {
     return when (inputFile.fileType) {
-      IoFactory.FileType.EMPTY -> EmptyFileSource
-      IoFactory.FileType.DIRECTORY -> DirectoryFileSource(inputFile)
-      IoFactory.FileType.JAR -> JarFileSource(inputFile)
+      FileType.EMPTY -> EmptyFileSource
+      FileType.DIRECTORY -> DirectoryFileSource(inputFile)
+      FileType.JAR -> JarFileSource(inputFile)
     }
   }
 
   override fun createFileSink(inputFile: File, outputFile: File): FileSink {
     return when (inputFile.fileType) {
-      IoFactory.FileType.EMPTY -> EmptyFileSink
-      IoFactory.FileType.DIRECTORY -> DirectoryFileSink(outputFile)
-      IoFactory.FileType.JAR -> JarFileSink(outputFile)
+      FileType.EMPTY -> EmptyFileSink
+      FileType.DIRECTORY -> DirectoryFileSink(outputFile)
+      FileType.JAR -> JarFileSink(outputFile)
     }
   }
 
   private val File.fileType: FileType
     get() = when {
-      !exists() || isDirectory -> IoFactory.FileType.DIRECTORY
-      extension.endsWith("jar", ignoreCase = true) -> IoFactory.FileType.JAR
+      !exists() || isDirectory -> FileType.DIRECTORY
+      extension.endsWith("jar", ignoreCase = true) -> FileType.JAR
       else -> error("Unknown file type for file $this")
     }
 

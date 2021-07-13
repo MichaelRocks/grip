@@ -31,7 +31,9 @@ class TestFileRegistry(vararg classes: KClass<*>) : FileRegistry {
 
   override fun readClass(type: Type.Object): ByteArray {
     val classLoader = classesByType[type]!!.java.classLoader
-    return classLoader.getResourceAsStream(type.internalName + ".class").readBytes()
+    return classLoader.getResourceAsStream(type.internalName + ".class").use {
+      checkNotNull(it).readBytes()
+    }
   }
 
   override fun findTypesForFile(file: File): Collection<Type.Object> = classesByType.keys

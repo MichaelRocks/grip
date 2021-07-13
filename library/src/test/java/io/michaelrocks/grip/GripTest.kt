@@ -28,7 +28,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.io.Closeable
 import java.io.File
 
 class GripTest {
@@ -45,7 +44,7 @@ class GripTest {
     )
     val reflector = ReflectorImpl()
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
-    grip = GripImpl(fileRegistry, classRegistry, Closeable {})
+    grip = GripImpl(fileRegistry, classRegistry) {}
   }
 
   @Test
