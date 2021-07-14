@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip
 
-@Annotation1
-public class Class1 {
-  void method1() {
-  }
+import io.michaelrocks.grip.mirrors.ClassMirror
+
+internal class ClassesQueryBuilder(
+  grip: Grip
+) : AbstractQueryBuilder<ClassMirror, ClassesResult>(grip) {
+
+  override fun execute(source: ClassMirrorSource, matcher: (Grip, ClassMirror) -> Boolean): ClassesResult =
+    buildClassesResult {
+      for (classMirror in source.getClassMirrors()) {
+        if (matcher(grip, classMirror)) {
+          addClass(classMirror)
+        }
+      }
+    }
 }

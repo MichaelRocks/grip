@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,5 +18,6 @@ package io.michaelrocks.grip.classes;
 
 @Annotation1
 public class Class2 {
-  void method2() {}
+  void method2() {
+  }
 }

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors
 
-@Annotation1
-public class Class1 {
-  void method1() {
+sealed class Enclosure {
+  object None : Enclosure()
+
+  sealed class Method(
+    val enclosingType: Type.Object
+  ) : Enclosure() {
+
+    class Anonymous(
+      enclosingType: Type.Object
+    ) : Method(enclosingType)
+
+    class Named(
+      enclosingType: Type.Object,
+      val methodName: String,
+      val methodType: Type.Method
+    ) : Method(enclosingType)
   }
 }

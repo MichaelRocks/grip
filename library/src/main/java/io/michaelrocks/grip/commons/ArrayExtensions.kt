@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.commons
 
-@Annotation1
-public class Class1 {
-  void method1() {
-  }
+internal inline fun <T, reified R> Array<out T>.mapToArray(transform: (T) -> R): Array<R> {
+  return Array(size, { index -> transform(this[index]) })
+}
+
+internal inline fun <T, reified R> List<T>.mapToArray(transform: (T) -> R): Array<R> {
+  return Array(size, { index -> transform(this[index]) })
 }

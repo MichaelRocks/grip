@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.io
 
-@Annotation1
-public class Class1 {
-  void method1() {
+object EmptyFileSource : FileSource {
+  override fun listFiles(callback: (String, FileSource.EntryType) -> Unit) {
+  }
+
+  override fun readFile(path: String): ByteArray {
+    throw UnsupportedOperationException()
+  }
+
+  override fun close() {
+  }
+
+  override fun toString(): String {
+    return "EmptyFileSource"
   }
 }

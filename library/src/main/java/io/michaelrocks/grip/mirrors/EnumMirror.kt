@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors
 
-@Annotation1
-public class Class1 {
-  void method1() {
-  }
-}
+fun EnumMirror(desc: String, value: String): EnumMirror = EnumMirror(getObjectType(desc), value)
+
+data class EnumMirror(val type: Type.Object, val value: String)

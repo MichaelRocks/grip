@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.commons
 
-@Annotation1
-public class Class1 {
-  void method1() {
-  }
+internal inline fun <T : Any> given(condition: Boolean, body: () -> T): T? {
+  return if (condition) body() else null
 }

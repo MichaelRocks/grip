@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors.signature
 
-@Annotation1
-public class Class1 {
-  void method1() {
+import io.michaelrocks.grip.commons.LazyList
+
+internal class TypeVariableBuilder(
+  private val name: String
+) {
+  private var classBound: GenericType = OBJECT_RAW_TYPE
+  private val interfaceBounds = LazyList<GenericType>()
+
+  fun classBound(classBound: GenericType) = apply {
+    this.classBound = classBound
+  }
+
+  fun addInterfaceBound(interfaceBound: GenericType) = apply {
+    interfaceBounds += interfaceBound
+  }
+
+  fun build(): GenericType.TypeVariable {
+    return GenericType.TypeVariable(name, classBound, interfaceBounds.detachImmutableCopy())
   }
 }

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.commons
 
-@Annotation1
-public class Class1 {
-  void method1() {
+import java.io.Closeable
+import java.io.IOException
+
+internal fun Closeable.closeQuietly() {
+  try {
+    close()
+  } catch (exception: IOException) {
+    // Ignore the exception.
   }
 }
