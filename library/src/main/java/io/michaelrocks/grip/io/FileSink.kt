@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.io
 
-@Annotation1
-public class Class1 {
-  void method1() {
+import java.io.Closeable
+import java.io.File
+
+interface FileSink : Closeable {
+  fun createFile(path: String, data: ByteArray)
+  fun createDirectory(path: String)
+  fun flush()
+
+  interface Factory {
+    fun createFileSink(inputFile: File, outputFile: File): FileSink
   }
 }

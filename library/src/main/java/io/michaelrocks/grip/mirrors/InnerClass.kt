@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors
 
-@Annotation1
-public class Class1 {
-  void method1() {
-  }
-}
+data class InnerClass(
+  val type: Type.Object,
+  val outerType: Type.Object?,
+  val innerName: String?,
+  val access: Int
+)

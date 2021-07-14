@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors.annotation
 
-@Annotation1
-public class Class1 {
-  void method1() {
+import io.michaelrocks.grip.ClassRegistry
+import io.michaelrocks.grip.commons.LazyList
+
+internal class AnnotationArrayReader(
+  asmApi: Int,
+  classRegistry: ClassRegistry,
+  callback: (List<Any>) -> Unit
+) : AbstractAnnotationReader<List<Any>>(asmApi, classRegistry, callback) {
+
+  private val values = LazyList<Any>()
+
+  override fun addValue(name: String?, value: Any) {
+    check(name == null)
+    values.add(value)
   }
+
+  override fun buildResult(): List<Any> =
+    values.detachImmutableCopy()
 }

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package io.michaelrocks.grip.classes;
+package io.michaelrocks.grip.mirrors.annotation
 
-@Annotation1
-public class Class1 {
-  void method1() {
+import io.michaelrocks.grip.ClassRegistry
+
+internal class AnnotationValueReader(
+  asmApi: Int,
+  classRegistry: ClassRegistry,
+  callback: (Any) -> Unit
+) : AbstractAnnotationReader<Any>(asmApi, classRegistry, callback) {
+
+  private var value: Any? = null
+
+  override fun addValue(name: String?, value: Any) {
+    check(name == null)
+    check(this.value == null)
+    this.value = value
   }
+
+  override fun buildResult(): Any = value!!
 }
