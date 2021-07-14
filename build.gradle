@@ -18,17 +18,17 @@ allprojects {
   version = '0.8.0-beta'
   group = 'io.michaelrocks'
 
-  ext.kotlinVersion = '1.2.60'
-  ext.asmVersion = '6.2.1'
-  ext.pabloVersion = '1.0.3'
+  ext.kotlinVersion = '1.4.31'
+  ext.asmVersion = '9.1'
+  ext.pabloVersion = '1.1.0'
 
-  ext.junitVersion = '4.12'
-  ext.mockitoVersion = '2.21.0'
+  ext.junitVersion = '4.13.2'
+  ext.mockitoVersion = '3.8.0'
 
   buildscript {
     repositories {
       mavenLocal()
-      jcenter()
+      mavenCentral()
     }
 
     dependencies {
@@ -39,6 +39,6 @@ allprojects {
 
   repositories {
     mavenLocal()
-    jcenter()
+    mavenCentral()
   }
 }

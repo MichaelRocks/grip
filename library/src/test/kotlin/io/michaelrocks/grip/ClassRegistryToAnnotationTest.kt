@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ class ClassRegistryToAnnotationTest {
   @Test
   fun testNestedAnnotationAnnotation() {
     val nestedAnnotationType = getAnnotationType("NestedAnnotation")
-    val nestedAnnotation = createAnnotationMirror("NestedAnnotation", "Nested")
+    val nestedAnnotation = createAnnotationMirror("NestedAnnotation", "Nested", visible = true)
     val annotationType = getObjectTypeByInternalName("NestedAnnotationAnnotation")
     val classRegistry = createClassRegistry(
         nestedAnnotationType to generateAnnotation(nestedAnnotationType),
@@ -207,9 +207,9 @@ class ClassRegistryToAnnotationTest {
   fun testNestedAnnotationArrayAnnotation() {
     val nestedAnnotationType = getAnnotationType("NestedAnnotation")
     val nestedAnnotations = arrayOf(
-        createAnnotationMirror("NestedAnnotation", "Nested1"),
-        createAnnotationMirror("NestedAnnotation", "Nested2"),
-        createAnnotationMirror("NestedAnnotation", "Nested3")
+        createAnnotationMirror("NestedAnnotation", "Nested1", visible = true),
+        createAnnotationMirror("NestedAnnotation", "Nested2", visible = true),
+        createAnnotationMirror("NestedAnnotation", "Nested3", visible = true)
     )
     val annotationArrayType = getArrayType("[${nestedAnnotations[0].type.descriptor}")
     val annotationType = getObjectTypeByInternalName("NestedAnnotationArrayAnnotation")

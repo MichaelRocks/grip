@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Michael Rozumyanskiy
+ * Copyright 2019 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,6 +90,13 @@ class AnnotationMirrorTest {
   fun testNotEqualsByType() {
     val annotation1 = createAnnotationMirror("NotEqualsByType1")
     val annotation2 = createAnnotationMirror("NotEqualsByType2")
+    assertNotEquals(annotation1, annotation2)
+  }
+
+  @Test
+  fun testNotEqualsByVisibility() {
+    val annotation1 = createAnnotationMirror("NotEqualsByVisibility", visible = true)
+    val annotation2 = createAnnotationMirror("NotEqualsByVisibility", visible = false)
     assertNotEquals(annotation1, annotation2)
   }
 
