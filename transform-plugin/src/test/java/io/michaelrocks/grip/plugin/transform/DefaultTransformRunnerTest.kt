@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Michael Rozumyanskiy
+ * Copyright 2021 Michael Rozumyanskiy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@ class DefaultTransformRunnerTest {
           }
         }
 
-        return DefaultGripFactory.createInternal(
+        return DefaultGripFactory(GripFactory.ASM_API_DEFAULT).createInternal(
           classpath,
           outputDirectory,
           fileCanonicalizer,
