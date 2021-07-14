@@ -20,9 +20,10 @@ import io.michaelrocks.grip.ClassRegistry
 import io.michaelrocks.grip.commons.LazyList
 
 internal class AnnotationArrayReader(
+  asmApi: Int,
   classRegistry: ClassRegistry,
   callback: (List<Any>) -> Unit
-) : AbstractAnnotationReader<List<Any>>(classRegistry, callback) {
+) : AbstractAnnotationReader<List<Any>>(asmApi, classRegistry, callback) {
 
   private val values = LazyList<Any>()
 

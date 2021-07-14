@@ -18,20 +18,40 @@ package io.michaelrocks.grip
 
 import io.michaelrocks.grip.io.IoFactory
 import io.michaelrocks.grip.mirrors.ReflectorImpl
+import org.objectweb.asm.Opcodes
 import java.io.File
 import java.util.ArrayList
 
-object GripFactory {
-  fun create(file: File, vararg files: File): Grip {
+interface GripFactory {
+  fun create(file: File, vararg files: File): Grip
+  fun create(files: Iterable<File>): Grip
+
+  companion object {
+    const val ASM_API_DEFAULT = Opcodes.ASM9
+
+    @JvmStatic
+    val INSTANCE = newInstance(ASM_API_DEFAULT)
+
+    @JvmStatic
+    fun newInstance(asmApi: Int): GripFactory {
+      return GripFactoryImpl(asmApi)
+    }
+  }
+}
+
+internal class GripFactoryImpl(
+  private val asmApi: Int,
+) : GripFactory {
+  override fun create(file: File, vararg files: File): Grip {
     val allFiles = ArrayList<File>(files.size + 1)
     allFiles.add(file)
     allFiles.addAll(files)
     return create(allFiles)
   }
 
-  fun create(files: Iterable<File>): Grip {
+  override fun create(files: Iterable<File>): Grip {
     val fileRegistry = FileRegistryImpl(files, IoFactory)
-    val reflector = ReflectorImpl()
+    val reflector = ReflectorImpl(asmApi)
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
     return GripImpl(fileRegistry, classRegistry, fileRegistry)
   }

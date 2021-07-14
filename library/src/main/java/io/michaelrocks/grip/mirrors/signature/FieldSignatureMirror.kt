@@ -41,10 +41,15 @@ interface FieldSignatureMirror {
 }
 
 internal class LazyFieldSignatureMirror(
+  asmApi: Int,
+  genericDeclaration: GenericDeclaration,
   private val signature: String,
-  private val genericDeclaration: GenericDeclaration
 ) : FieldSignatureMirror {
-  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) { readFieldSignature(signature, genericDeclaration) }
+  private val delegate by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    FieldSignatureMirror.Builder()
+      .type(readGenericType(asmApi, genericDeclaration, signature))
+      .build()
+  }
 
   override val type: GenericType
     get() = delegate.type
@@ -57,8 +62,3 @@ internal class EmptyFieldSignatureMirror(type: Type) : FieldSignatureMirror {
 
   override fun toJvmSignature() = ""
 }
-
-internal fun readFieldSignature(signature: String, genericDeclaration: GenericDeclaration): FieldSignatureMirror =
-  FieldSignatureMirror.Builder()
-    .type(readGenericType(signature, genericDeclaration))
-    .build()

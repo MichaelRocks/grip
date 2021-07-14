@@ -16,6 +16,7 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
+import io.michaelrocks.grip.GripFactory
 import io.michaelrocks.grip.mirrors.getObjectType
 import io.michaelrocks.grip.mirrors.signature.GenericType.Array
 import io.michaelrocks.grip.mirrors.signature.GenericType.Inner
@@ -149,12 +150,12 @@ class GenericTypeReaderTest {
 
   @Test(expected = IllegalStateException::class)
   fun testUndefinedTypeVariable() {
-    readGenericType("TT;", EmptyGenericDeclaration)
+    readGenericType(GripFactory.ASM_API_DEFAULT, EmptyGenericDeclaration, "TT;")
   }
 }
 
 private fun assertParsedSignatureEquals(signature: String, expected: GenericType, vararg typeVariables: TypeVariable) {
   val genericDeclaration = GenericDeclaration(typeVariables.asList())
-  val actual = readGenericType(signature, genericDeclaration)
+  val actual = readGenericType(GripFactory.ASM_API_DEFAULT, genericDeclaration, signature)
   assertEquals(expected, actual)
 }

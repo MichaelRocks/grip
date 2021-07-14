@@ -35,7 +35,7 @@ class ClassRegistryImplTest {
       Annotation1::class,
       Annotation2::class
     )
-    val reflector = ReflectorImpl()
+    val reflector = ReflectorImpl(GripFactory.ASM_API_DEFAULT)
     classRegistry = ClassRegistryImpl(fileRegistry, reflector)
   }
 

@@ -42,7 +42,7 @@ class GripTest {
       Annotation2::class,
       Enum1::class
     )
-    val reflector = ReflectorImpl()
+    val reflector = ReflectorImpl(GripFactory.ASM_API_DEFAULT)
     val classRegistry = ClassRegistryImpl(fileRegistry, reflector)
     grip = GripImpl(fileRegistry, classRegistry) {}
   }

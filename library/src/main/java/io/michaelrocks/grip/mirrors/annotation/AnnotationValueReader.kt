@@ -19,9 +19,10 @@ package io.michaelrocks.grip.mirrors.annotation
 import io.michaelrocks.grip.ClassRegistry
 
 internal class AnnotationValueReader(
+  asmApi: Int,
   classRegistry: ClassRegistry,
   callback: (Any) -> Unit
-) : AbstractAnnotationReader<Any>(classRegistry, callback) {
+) : AbstractAnnotationReader<Any>(asmApi, classRegistry, callback) {
 
   private var value: Any? = null
 

@@ -16,12 +16,12 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureVisitor
 
-class MethodSignatureReader(
+internal class MethodSignatureReader(
+  asmApi: Int,
   classGenericDeclaration: GenericDeclaration
-) : SignatureVisitor(Opcodes.ASM9) {
+) : SignatureVisitor(asmApi) {
 
   private val builder = MethodSignatureMirror.Builder()
   private var typeVariableBuilder: TypeVariableBuilder? = null
@@ -35,25 +35,25 @@ class MethodSignatureReader(
   }
 
   override fun visitClassBound(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.classBound(it) }
+    return GenericTypeReader(api, genericDeclaration) { typeVariableBuilder!!.classBound(it) }
   }
 
   override fun visitInterfaceBound(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
+    return GenericTypeReader(api, genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
   }
 
   override fun visitParameterType(): SignatureVisitor {
     buildTypeVariable()
-    return GenericTypeReader(genericDeclaration) { builder.addParameterType(it) }
+    return GenericTypeReader(api, genericDeclaration) { builder.addParameterType(it) }
   }
 
   override fun visitReturnType(): SignatureVisitor {
     buildTypeVariable()
-    return GenericTypeReader(genericDeclaration) { builder.returnType(it) }
+    return GenericTypeReader(api, genericDeclaration) { builder.returnType(it) }
   }
 
   override fun visitExceptionType(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { builder.addExceptionType(it) }
+    return GenericTypeReader(api, genericDeclaration) { builder.addExceptionType(it) }
   }
 
   private fun buildTypeVariable() {

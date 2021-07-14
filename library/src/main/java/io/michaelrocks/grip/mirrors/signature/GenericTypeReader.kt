@@ -21,16 +21,16 @@ import io.michaelrocks.grip.mirrors.Type
 import io.michaelrocks.grip.mirrors.getObjectTypeByInternalName
 import io.michaelrocks.grip.mirrors.getType
 import io.michaelrocks.grip.mirrors.toArrayType
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 
 private val OBJECT_UPPER_BOUNDED_TYPE = GenericType.UpperBounded(OBJECT_RAW_TYPE)
 
 internal class GenericTypeReader(
+  asmApi: Int,
   private val genericDeclaration: GenericDeclaration,
   private val callback: (GenericType) -> Unit
-) : SignatureVisitor(Opcodes.ASM9) {
+) : SignatureVisitor(asmApi) {
   private var genericType: GenericType? = null
   private var classType: Type.Object? = null
   private var className: String? = null
@@ -70,7 +70,7 @@ internal class GenericTypeReader(
   }
 
   override fun visitTypeArgument(name: Char): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) {
+    return GenericTypeReader(api, genericDeclaration) {
       typeArguments.add(
         when (name) {
           EXTENDS -> GenericType.UpperBounded(it)
@@ -120,10 +120,10 @@ internal class GenericTypeReader(
   }
 }
 
-internal fun readGenericType(signature: String, genericDeclaration: GenericDeclaration): GenericType {
+internal fun readGenericType(asmApi: Int, genericDeclaration: GenericDeclaration, signature: String): GenericType {
   var genericType: GenericType? = null
   SignatureReader(signature).acceptType(
-    GenericTypeReader(genericDeclaration) {
+    GenericTypeReader(asmApi, genericDeclaration) {
       genericType = it
     }
   )

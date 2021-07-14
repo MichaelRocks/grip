@@ -16,12 +16,12 @@
 
 package io.michaelrocks.grip.mirrors.signature
 
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureVisitor
 
 internal class ClassSignatureReader(
+  asmApi: Int,
   enclosingGenericDeclaration: GenericDeclaration
-) : SignatureVisitor(Opcodes.ASM9) {
+) : SignatureVisitor(asmApi) {
 
   private val builder = ClassSignatureMirror.Builder()
   private var typeVariableBuilder: TypeVariableBuilder? = null
@@ -35,20 +35,20 @@ internal class ClassSignatureReader(
   }
 
   override fun visitClassBound(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.classBound(it) }
+    return GenericTypeReader(api, genericDeclaration) { typeVariableBuilder!!.classBound(it) }
   }
 
   override fun visitInterfaceBound(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
+    return GenericTypeReader(api, genericDeclaration) { typeVariableBuilder!!.addInterfaceBound(it) }
   }
 
   override fun visitSuperclass(): SignatureVisitor {
     buildTypeVariable()
-    return GenericTypeReader(genericDeclaration) { builder.superType(it) }
+    return GenericTypeReader(api, genericDeclaration) { builder.superType(it) }
   }
 
   override fun visitInterface(): SignatureVisitor {
-    return GenericTypeReader(genericDeclaration) { builder.addInterface(it) }
+    return GenericTypeReader(api, genericDeclaration) { builder.addInterface(it) }
   }
 
   private fun buildTypeVariable() {

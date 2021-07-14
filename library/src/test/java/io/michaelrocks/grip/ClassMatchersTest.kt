@@ -38,7 +38,7 @@ class ClassMatchersTest {
     given(interfaces).thenReturn(listOf(getObjectType("Lio/michaelrocks/Interface;")))
     given(fields).thenReturn(
       listOf(
-        FieldMirror.Builder(EmptyGenericDeclaration).name("field").type(Type.Primitive.Int).build()
+        FieldMirror.Builder(GripFactory.ASM_API_DEFAULT, EmptyGenericDeclaration).name("field").type(Type.Primitive.Int).build()
       )
     )
     given(constructors).thenReturn(

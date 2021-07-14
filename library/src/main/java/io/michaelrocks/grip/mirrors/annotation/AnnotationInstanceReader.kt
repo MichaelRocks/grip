@@ -21,11 +21,12 @@ import io.michaelrocks.grip.mirrors.AnnotationMirror
 import io.michaelrocks.grip.mirrors.Type
 
 internal class AnnotationInstanceReader(
+  asmApi: Int,
   annotationType: Type.Object,
   visible: Boolean,
   classRegistry: ClassRegistry,
   callback: (AnnotationMirror) -> Unit
-) : AbstractAnnotationReader<AnnotationMirror>(classRegistry, callback) {
+) : AbstractAnnotationReader<AnnotationMirror>(asmApi, classRegistry, callback) {
 
   private val builder =
     AnnotationMirror.Builder()
