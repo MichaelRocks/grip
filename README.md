@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MichaelRocks/grip.svg?branch=master)](https://travis-ci.org/MichaelRocks/grip)
+[![Build](https://github.com/MichaelRocks/grip/actions/workflows/build.yml/badge.svg)](https://github.com/MichaelRocks/grip/actions/workflows/build.yml)
 
 Grip
 ====
@@ -72,7 +72,7 @@ it in queries.
 
 License
 =======
-    Copyright 2016 Michael Rozumyanskiy
+    Copyright 2021 Michael Rozumyanskiy
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
